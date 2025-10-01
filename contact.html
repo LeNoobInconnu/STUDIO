@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeNoobInconnu STUDIO - Nous Contacter</title>
+    
+    <!-- Intégration de Font Awesome pour les icônes -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        /* CSS INTERNE (Style Moderne) */
+        
+        /* Variables CSS pour les couleurs modernes */
+        :root {
+            --primary-color: #5b5ff5; /* Un bleu-violet moderne */
+            --background-dark: #1e1e2f; /* Fond très sombre */
+            --background-light: #2c2c40; /* Couleur des cartes/éléments */
+            --text-light: #f0f0f5; /* Texte clair */
+            --text-secondary: #a0a0b0; /* Texte secondaire */
+            --shadow-elevation: 0 10px 25px rgba(0, 0, 0, 0.25);
+            --font-stack: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        /* Réinitialisation de base */
+        body {
+            margin: 0;
+            font-family: var(--font-stack);
+            background-color: var(--background-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+        }
+
+        /* --- NAVIGATION BAR STYLES --- */
+
+        .navbar {
+            background-color: var(--background-light);
+            padding: 15px 30px;
+            box-shadow: var(--shadow-elevation); 
+            display: flex;
+            justify-content: space-between; 
+            align-items: center;
+        }
+        
+        .studio-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            letter-spacing: 1px;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 25px; 
+        }
+
+        .nav-item {
+            color: var(--text-light);
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: background-color 0.3s, color 0.3s, transform 0.1s;
+            font-size: 1rem;
+            font-weight: 500;
+            white-space: nowrap; 
+            display: flex; 
+            align-items: center;
+        }
+
+        .nav-item i {
+            margin-right: 8px;
+            color: var(--primary-color); 
+        }
+        
+        .nav-item:hover {
+            background-color: var(--primary-color);
+            color: var(--background-dark);
+            transform: translateY(-2px); 
+            box-shadow: 0 5px 15px rgba(91, 95, 245, 0.4);
+        }
+        
+        .nav-item:hover i {
+            color: var(--background-dark); 
+        }
+
+        /* --- CONTACT PAGE SPECIFIC STYLES --- */
+
+        .content {
+            padding: 60px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .contact-card {
+            background-color: var(--background-light);
+            padding: 40px 30px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-elevation);
+            max-width: 450px;
+            width: 100%;
+            margin-top: 30px;
+        }
+        
+        .content h1 {
+            color: var(--text-light);
+            font-size: 2.5rem;
+            margin-bottom: 5px;
+            letter-spacing: 0.5px;
+        }
+        
+        .content p.subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+
+        /* Styles pour les liens de contact directs */
+        .contact-link {
+            display: block;
+            background-color: #3c3c54; /* Fond pour le lien */
+            color: var(--text-light);
+            text-decoration: none;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: background-color 0.3s, transform 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .contact-link i {
+            margin-right: 12px;
+            color: var(--primary-color);
+            font-size: 1.3rem;
+        }
+
+        .contact-link:hover {
+            background-color: #484860;
+            transform: translateY(-2px);
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 600px) {
+            .navbar {
+                flex-direction: column;
+                padding: 15px 10px;
+            }
+            .nav-links {
+                margin-top: 15px;
+                gap: 10px;
+                flex-wrap: wrap; 
+                justify-content: center;
+            }
+            .studio-title {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Bande de navigation (Identique à la page d'accueil) -->
+    <header class="navbar">
+        <a href="index.html" class="studio-title">LeNoobInconnu STUDIO</a>
+        
+        <nav class="nav-links">
+            <a href="index.html" class="nav-item"><i class="fa-solid fa-house"></i> Accueil</a>
+            <a href="contact.html" class="nav-item"><i class="fa-solid fa-envelope"></i> Nous Contacter</a>
+            <a href="https://discord.gg/votre-invitation" class="nav-item" target="_blank"><i class="fa-brands fa-discord"></i> Discord</a>
+            <a href="videos.html" class="nav-item"><i class="fa-solid fa-video"></i> Vidéos</a>
+            <a href="a-propos.html" class="nav-item"><i class="fa-solid fa-circle-info"></i> À Propos</a>
+        </nav>
+    </header>
+
+    <!-- Contenu de la page Contact simplifié -->
+    <main class="content">
+        <h1>Entrez en Contact</h1>
+        <p class="subtitle">La meilleure façon de nous joindre est via l'e-mail ou notre serveur Discord !</p>
+
+        <div class="contact-card">
+            
+            <p>Cliquez ci-dessous pour nous envoyer un message ou rejoindre notre communauté :</p>
+            
+            <!-- Lien E-mail -->
+            <a href="mailto:votre.email@exemple.com" class="contact-link">
+                <i class="fa-solid fa-at"></i> Envoyer un Email
+            </a> 
+
+            <!-- Lien Discord (Ouvre un nouvel onglet) -->
+            <a href="https://discord.gg/votre-invitation" target="_blank" class="contact-link">
+                <i class="fa-brands fa-discord"></i> Rejoindre Discord
+            </a>
+            
+            <p style="color: var(--text-secondary); margin-top: 20px; font-size: 0.9rem;">
+                *N'oubliez pas de remplacer les liens génériques par votre **vrai e-mail** et votre **vrai lien Discord** !
+            </p>
+        </div>
+    </main>
+
+</body>
+</html>
