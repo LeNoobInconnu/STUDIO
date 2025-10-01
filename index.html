@@ -15,6 +15,7 @@
         /* Variables CSS pour les couleurs modernes */
         :root {
             --primary-color: #5b5ff5; /* Un bleu-violet moderne */
+            --youtube-red: #ff0000;
             --background-dark: #1e1e2f; /* Fond très sombre */
             --background-light: #2c2c40; /* Couleur des cartes/éléments */
             --text-light: #f0f0f5; /* Texte clair */
@@ -32,17 +33,17 @@
             min-height: 100vh;
         }
 
-        /* Style de la barre de navigation (la bande en haut) */
+        /* --- NAVIGATION BAR STYLES --- */
+
         .navbar {
             background-color: var(--background-light);
             padding: 15px 30px;
             box-shadow: var(--shadow-elevation); 
             display: flex;
-            justify-content: space-between; /* Pour séparer le logo des liens */
+            justify-content: space-between; 
             align-items: center;
         }
         
-        /* Nom du Studio (Titre/Logo) */
         .studio-title {
             font-size: 1.5rem;
             font-weight: 700;
@@ -51,13 +52,11 @@
             text-decoration: none;
         }
         
-        /* Conteneur des liens de navigation */
         .nav-links {
             display: flex;
-            gap: 25px; /* Espace entre les liens */
+            gap: 25px; 
         }
 
-        /* Style des liens individuels */
         .nav-item {
             color: var(--text-light);
             text-decoration: none;
@@ -67,53 +66,179 @@
             font-size: 1rem;
             font-weight: 500;
             white-space: nowrap; 
-            display: flex; /* Permet d'aligner l'icône et le texte */
+            display: flex; 
             align-items: center;
         }
 
-        /* Espacement entre l'icône et le texte */
         .nav-item i {
             margin-right: 8px;
-            color: var(--primary-color); /* Couleur d'accent pour l'icône */
+            color: var(--primary-color); 
         }
         
-        /* Effet de survol (hover) */
         .nav-item:hover {
             background-color: var(--primary-color);
             color: var(--background-dark);
-            transform: translateY(-2px); /* Petit effet 3D */
+            transform: translateY(-2px); 
             box-shadow: 0 5px 15px rgba(91, 95, 245, 0.4);
         }
         
-        /* Changement de couleur de l'icône au survol */
         .nav-item:hover i {
-            color: var(--background-dark); /* L'icône devient sombre au survol */
+            color: var(--background-dark); 
         }
 
-
-        /* Style pour le contenu principal de la page */
+        /* --- CONTENT STYLES --- */
+        
         .content {
-            padding: 60px 20px;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             text-align: center;
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .content h1 {
-            color: var(--text-light);
-            font-size: 2.8rem;
-            margin-bottom: 10px;
-            letter-spacing: 0.5px;
+            gap: 50px; /* Espace entre les sections */
         }
         
-        .content p {
+        h1 {
+            color: var(--text-light);
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
             color: var(--text-secondary);
-            font-size: 1.1rem;
-            line-height: 1.6;
+            font-size: 1.2rem;
+            margin-bottom: 40px;
         }
 
-        /* Rendre la navigation plus compacte sur mobile */
-        @media (max-width: 600px) {
+        /* Hero/Annonce Section */
+        .hero-section {
+            background-color: var(--background-light);
+            padding: 50px 30px;
+            border-radius: 15px;
+            box-shadow: var(--shadow-elevation);
+            max-width: 900px;
+            width: 100%;
+            border: 1px solid rgba(91, 95, 245, 0.2);
+        }
+        
+        .hero-section h2 {
+            color: var(--youtube-red);
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+        
+        .hero-section p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+
+        /* Styles de bouton réutilisables */
+        .action-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 15px 35px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.3s;
+        }
+
+        .primary-button {
+            background-color: var(--primary-color);
+            color: var(--background-dark);
+            box-shadow: 0 5px 15px rgba(91, 95, 245, 0.4);
+        }
+        
+        .primary-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(91, 95, 245, 0.6);
+        }
+
+        .secondary-button {
+            background-color: var(--background-light);
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            margin-top: 20px;
+        }
+        
+        .secondary-button:hover {
+            transform: translateY(-2px);
+            background-color: var(--primary-color);
+            color: var(--background-dark);
+        }
+        
+        .action-button i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        /* Réseaux Sociaux Section */
+        .social-section {
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 2rem;
+            color: var(--text-light);
+            transition: transform 0.2s, box-shadow 0.3s;
+            /* RETRAIT DU SOULIGNEMENT */
+            text-decoration: none; 
+        }
+        
+        .social-link:hover {
+            transform: scale(1.15);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Couleurs spécifiques des réseaux sociaux */
+        .social-youtube { background-color: var(--youtube-red); }
+        .social-discord { background-color: #5865F2; }
+        .social-twitter { background-color: #1DA1F2; }
+        .social-twitch { background-color: #9146FF; }
+
+        /* Collaboration Section */
+        .collaboration-section {
+            padding: 40px 20px;
+            background-color: #383850; /* Couleur d'arrière-plan légèrement différente */
+            border-radius: 10px;
+            max-width: 700px;
+            width: 100%;
+            margin-bottom: 40px;
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            .hero-section h2 {
+                font-size: 1.8rem;
+            }
+            .hero-section {
+                padding: 30px 15px;
+            }
+            .action-button {
+                padding: 12px 25px;
+                font-size: 1rem;
+            }
             .navbar {
                 flex-direction: column;
                 padding: 15px 10px;
@@ -127,48 +252,81 @@
             .studio-title {
                 font-size: 1.3rem;
             }
-            .content h1 {
-                font-size: 2rem;
-            }
         }
     </style>
 </head>
 <body>
 
-    <!-- Bande de navigation : Style Moderne et Sombre avec ICÔNES -->
+    <!-- Bande de navigation (Identique aux autres pages) -->
     <header class="navbar">
-        <!-- Titre du Studio -->
         <a href="index.html" class="studio-title">LeNoobInconnu STUDIO</a>
         
-        <!-- Liens de Navigation -->
         <nav class="nav-links">
-            <!-- Maison pour l'Accueil -->
             <a href="index.html" class="nav-item"><i class="fa-solid fa-house"></i> Accueil</a>
-            
-            <!-- Enveloppe pour Contacter -->
             <a href="contact.html" class="nav-item"><i class="fa-solid fa-envelope"></i> Nous Contacter</a>
-            
-            <!-- Logo officiel Discord (marque) - S'ouvre dans un nouvel onglet -->
-            <a href="https://discord.gg/PbntRm5sNy" class="nav-item" target="_blank"><i class="fa-brands fa-discord"></i> Discord</a>
-            
-            <!-- Caméra vidéo pour Vidéos -->
+            <a href="https://discord.gg/votre-invitation" class="nav-item" target="_blank"><i class="fa-brands fa-discord"></i> Discord</a>
             <a href="videos.html" class="nav-item"><i class="fa-solid fa-video"></i> Vidéos</a>
-            
-            <!-- Icône d'information pour À Propos -->
             <a href="a-propos.html" class="nav-item"><i class="fa-solid fa-circle-info"></i> À Propos</a>
         </nav>
     </header>
 
-    <!-- Contenu principal -->
+    <!-- Contenu Principal de la page d'Accueil -->
     <main class="content">
-        <h1>Bienvenue chez LeNoobInconnu STUDIO !</h1>
-        <p>
-            L'endroit où la créativité prend vie. Explorez nos projets, regardez nos vidéos et rejoignez notre communauté 
-            sur Discord pour ne rien manquer de nos dernières aventures.
-        </p>
-        <p>
-            N'oubliez pas d'utiliser les vrais noms de fichiers (`contact.html`, `videos.html`, etc.) et le vrai lien Discord !
-        </p>
+        <h1>Bienvenue sur LeNoobInconnu STUDIO</h1>
+ <!-- 1. Section Réseaux Sociaux (MAINTENANT EN PREMIER) -->
+        <section class="social-section">
+            <h2>Suivez-nous sur les Réseaux Sociaux</h2>
+            <p style="color: var(--text-secondary);">
+                Ne manquez aucune annonce, vidéo ou stream en nous rejoignant sur toutes nos plateformes !
+            </p>
+            
+            <div class="social-links">
+                <!-- YouTube -->
+                <a href="#" class="social-link social-youtube" target="_blank" title="YouTube">
+                    <i class="fa-brands fa-youtube"></i>
+                </a>
+                <!-- Discord -->
+                <a href="https://discord.gg/votre-invitation" class="social-link social-discord" target="_blank" title="Discord">
+                    <i class="fa-brands fa-discord"></i>
+                </a>
+                <!-- Twitter/X -->
+                <a href="#" class="social-link social-twitter" target="_blank" title="Twitter / X">
+                    <i class="fa-brands fa-x-twitter"></i>
+                </a>
+                <!-- Twitch (ou autre) -->
+                <a href="#" class="social-link social-twitch" target="_blank" title="Twitch">
+                    <i class="fa-brands fa-twitch"></i>
+                </a>
+            </div>
+            <p style="color: var(--text-secondary); margin-top: 40px; font-size: 0.9rem;">
+                *N'oubliez pas de remplacer les liens '#' et l'invitation Discord par vos URLs réelles !
+            </p>
+        </section>
+
+        <!-- 2. Section Collaboration (MAINTENANT EN DEUXIÈME) -->
+        <section class="collaboration-section">
+            <h2>Envie de Collaborer ?</h2>
+            <p style="color: var(--text-light); font-weight: 500;">
+                Vous êtes créateur de contenu, développeur ou artiste, et vous avez une idée de projet passionnant ? Nous sommes toujours ouverts aux collaborations !
+            </p>
+            <!-- Bouton vers la page de collaboration -->
+            <a href="collaboration.html" class="action-button secondary-button">
+                <i class="fa-solid fa-handshake"></i> Proposer une Collaboration
+            </a>
+        </section>
+        
+        <!-- 3. Section Annonce / Montage Vidéo (MAINTENANT EN DERNIER) -->
+        <section class="hero-section">
+            <h2>Besoin d'un Montage Vidéo Époustouflant ?</h2>
+            <p>
+                Vous avez des clips, des idées, mais pas le temps ou les compétences pour un montage professionnel ? LeNoobInconnu STUDIO peut vous aider à donner vie à vos projets vidéo, que ce soit pour YouTube, TikTok ou tout autre plateforme.
+            </p>
+            <!-- Bouton vers la page de commande de montage -->
+            <a href="commande-montage.html" class="action-button primary-button">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Commander votre Montage
+            </a>
+        </section>
+
     </main>
 
 </body>
