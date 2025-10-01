@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proposer une Collaboration</title>
+    
+    <!-- Intégration de Font Awesome pour les icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        /* CSS basé sur le style de la page d'accueil */
+        :root {
+            --primary-color: #5b5ff5;
+            --background-dark: #1e1e2f; 
+            --background-light: #2c2c40; 
+            --text-light: #f0f0f5; 
+            --text-secondary: #a0a0b0; 
+            --shadow-elevation: 0 10px 25px rgba(0, 0, 0, 0.25);
+            --font-stack: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            margin: 0;
+            font-family: var(--font-stack);
+            background-color: var(--background-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+        }
+        
+        /* --- NAVIGATION BAR STYLES (Simple) --- */
+
+        .navbar { 
+            background-color: var(--background-light);
+            padding: 15px 30px;
+            box-shadow: var(--shadow-elevation); 
+            display: flex;
+            justify-content: space-between; 
+            align-items: center;
+        }
+        .studio-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            letter-spacing: 1px;
+            text-decoration: none;
+        }
+        
+        /* --- CONTENT STYLES --- */
+
+        .content {
+            padding: 60px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .card {
+            background-color: var(--background-light);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-elevation);
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        .card p {
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+        
+        /* Liste des exigences */
+        .card ul {
+            text-align: left; 
+            list-style-type: none; /* Enlève les puces par défaut */
+            color: var(--text-light); 
+            margin-bottom: 30px; 
+            padding-left: 0;
+        }
+        .card ul li {
+            /* Retrait du text-indent: -1.5em; et padding-left: 1.5em; pour simplifier */
+            margin-bottom: 15px; /* Plus d'espace entre les éléments */
+            font-weight: 500;
+            display: flex;
+            align-items: flex-start;
+        }
+        .card ul li i {
+            margin-right: 10px;
+            color: var(--primary-color);
+            /* Assure que l'icône est au sommet du texte */
+            margin-top: 5px; 
+            font-size: 1.1rem;
+        }
+
+        /* Bouton de retour */
+        .return-button {
+            display: inline-flex;
+            align-items: center;
+            background-color: var(--primary-color);
+            color: var(--background-dark);
+            text-decoration: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+        .return-button:hover {
+            transform: translateY(-2px);
+        }
+        .return-button i {
+            margin-right: 10px;
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 600px) {
+            .card {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Bande de navigation simplifiée -->
+    <header class="navbar">
+        <a href="index.html" class="studio-title">LeNoobInconnu STUDIO</a>
+        <nav></nav>
+    </header>
+
+    <main class="content">
+        <div class="card">
+            <h1><i class="fa-solid fa-handshake-angle"></i> Proposer une Collaboration</h1>
+            <p>
+                Nous sommes ravis que vous souhaitiez collaborer avec LeNoobInconnu STUDIO ! Les partenariats sont au cœur de la création de contenu génial.
+            </p>
+            <p style="color: var(--text-light); font-weight: bold;">
+                Pour commencer, veuillez nous contacter via Discord ou par e-mail avec les détails suivants :
+            </p>
+            
+            <ul>
+                <li><i class="fa-solid fa-circle-check"></i> Présentation Complète : Qui êtes-vous, votre chaîne/plateforme, et votre style de contenu.</li>
+                <li><i class="fa-solid fa-circle-check"></i> Concept de Collaboration : Une idée claire du projet que nous ferions ensemble (jeu, défi, vidéo, etc.).</li>
+                <li><i class="fa-solid fa-circle-check"></i> Attentes et Plateformes : Quels sont les objectifs de la collaboration et sur quelle plateforme principale cela se déroulerait.</li>
+                <li><i class="fa-solid fa-circle-check"></i> Liens Utiles : Vos liens vers vos réseaux sociaux pour que nous puissions découvrir votre travail.</li>
+            </ul>
+            
+            <p style="color: var(--primary-color); font-weight: bold; margin-top: 40px;">
+                Nous étudierons toutes les propositions. Hâte de lire votre idée !
+            </p>
+            
+            <a href="index.html" class="return-button">
+                <i class="fa-solid fa-arrow-left"></i> Retour à l'accueil
+            </a>
+        </div>
+    </main>
+
+</body>
+</html>
