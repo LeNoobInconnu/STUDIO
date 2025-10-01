@@ -3,267 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Accueil - LeNoobInconnu STUDIO</title>
-    <!-- Chargement de Tailwind CSS via CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Configuration de la police Inter et des couleurs personnalisées -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'primary': '#4f46e5', // Indigo foncé
-                        'secondary': '#1e3a8a', // Bleu plus sombre
-                        'accent': '#34d399', // Vert menthe
-                        'text-light': '#e5e7eb',
-                        'youtube': '#ff0000', // Rouge YouTube
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                }
-            }
-        }
-    </script>
-    <!-- Chargement des icônes Lucide -->
-    <script type="module">
-        import lucide from 'https://cdn.jsdelivr.net/npm/lucide-esm@latest/lib/lucide.js';
-        lucide.createIcons();
-    </script>
+    <title>LeNoobInconnu STUDIO - Accueil</title>
+    
+    <!-- Intégration de Font Awesome pour les icônes -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
     <style>
-        /* Style général du corps pour un fond sombre et moderne */
+        /* CSS INTERNE (Style Moderne) */
+        
+        /* Variables CSS pour les couleurs modernes */
+        :root {
+            --primary-color: #5b5ff5; /* Un bleu-violet moderne */
+            --background-dark: #1e1e2f; /* Fond très sombre */
+            --background-light: #2c2c40; /* Couleur des cartes/éléments */
+            --text-light: #f0f0f5; /* Texte clair */
+            --text-secondary: #a0a0b0; /* Texte secondaire */
+            --shadow-elevation: 0 10px 25px rgba(0, 0, 0, 0.25);
+            --font-stack: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        /* Réinitialisation de base */
         body {
-            background-color: #0f172a; /* Bleu très foncé */
-            color: #e5e7eb;
-            font-family: 'Inter', sans-serif;
+            margin: 0;
+            font-family: var(--font-stack);
+            background-color: var(--background-dark);
+            color: var(--text-light);
             min-height: 100vh;
-            padding-top: 4rem; /* Espace pour la barre de navigation fixe */
         }
-        /* Style pour masquer les icônes sur les petits écrans pour gagner de la place, sauf Discord */
-        .nav-link-icon {
-            display: none;
+
+        /* Style de la barre de navigation (la bande en haut) */
+        .navbar {
+            background-color: var(--background-light);
+            padding: 15px 30px;
+            box-shadow: var(--shadow-elevation); 
+            display: flex;
+            justify-content: space-between; /* Pour séparer le logo des liens */
+            align-items: center;
         }
-        @media (min-width: 640px) {
-            .nav-link-icon {
-                display: inline-block;
+        
+        /* Nom du Studio (Titre/Logo) */
+        .studio-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            letter-spacing: 1px;
+            text-decoration: none;
+        }
+        
+        /* Conteneur des liens de navigation */
+        .nav-links {
+            display: flex;
+            gap: 25px; /* Espace entre les liens */
+        }
+
+        /* Style des liens individuels */
+        .nav-item {
+            color: var(--text-light);
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: background-color 0.3s, color 0.3s, transform 0.1s;
+            font-size: 1rem;
+            font-weight: 500;
+            white-space: nowrap; 
+            display: flex; /* Permet d'aligner l'icône et le texte */
+            align-items: center;
+        }
+
+        /* Espacement entre l'icône et le texte */
+        .nav-item i {
+            margin-right: 8px;
+            color: var(--primary-color); /* Couleur d'accent pour l'icône */
+        }
+        
+        /* Effet de survol (hover) */
+        .nav-item:hover {
+            background-color: var(--primary-color);
+            color: var(--background-dark);
+            transform: translateY(-2px); /* Petit effet 3D */
+            box-shadow: 0 5px 15px rgba(91, 95, 245, 0.4);
+        }
+        
+        /* Changement de couleur de l'icône au survol */
+        .nav-item:hover i {
+            color: var(--background-dark); /* L'icône devient sombre au survol */
+        }
+
+
+        /* Style pour le contenu principal de la page */
+        .content {
+            padding: 60px 20px;
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .content h1 {
+            color: var(--text-light);
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+        
+        .content p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        /* Rendre la navigation plus compacte sur mobile */
+        @media (max-width: 600px) {
+            .navbar {
+                flex-direction: column;
+                padding: 15px 10px;
+            }
+            .nav-links {
+                margin-top: 15px;
+                gap: 10px;
+                flex-wrap: wrap; 
+                justify-content: center;
+            }
+            .studio-title {
+                font-size: 1.3rem;
+            }
+            .content h1 {
+                font-size: 2rem;
             }
         }
     </style>
 </head>
-<body class="antialiased">
+<body>
 
-    <!-- Nouvelle Barre de Navigation Fixe (MISE À JOUR DES LIENS) -->
-    <nav class="fixed top-0 left-0 right-0 z-50 bg-gray-900/95 backdrop-blur-sm shadow-xl border-b border-gray-800">
-        <div class="container mx-auto px-4 max-w-7xl flex justify-between items-center py-3">
-            <!-- Logo/Nom -->
-            <a href="#" class="text-2xl font-extrabold tracking-wider text-accent hover:text-white transition duration-200">
-                [Votre Nom]
-            </a>
-
-            <!-- Menu de Navigation (Liens complets avec icônes) -->
-            <div class="flex space-x-2 sm:space-x-3 md:space-x-6 text-sm font-medium items-center">
-                
-                <!-- 1. Accueil (Reste un scroll vers le haut) -->
-                <a href="#" class="text-gray-300 hover:text-accent transition duration-200 flex items-center nav-internal">
-                    <i data-lucide="home" class="w-4 h-4 mr-1 nav-link-icon"></i>
-                    Accueil
-                </a>
-
-                <!-- 2. Colab (Va vers une page dédiée : collab.html) -->
-                <a href="collab.html" class="text-gray-300 hover:text-accent transition duration-200 hidden sm:flex items-center">
-                    <i data-lucide="zap" class="w-4 h-4 mr-1 nav-link-icon"></i>
-                    Colab
-                </a>
-                
-                <!-- 3. Discord (Va vers une page dédiée : discord.html) -->
-                <a href="discord.html" class="inline-flex items-center text-primary font-bold hover:text-indigo-400 transition duration-200 rounded-lg py-1 px-2 border border-primary/50">
-                    <i data-lucide="message-square-text" class="w-4 h-4 mr-1"></i>
-                    Discord
-                </a>
-
-                <!-- 4. Demande de Montage (Va vers une page dédiée : demande_montage.html) -->
-                <a href="demande_montage.html" class="text-gray-300 hover:text-accent transition duration-200 hidden md:flex items-center">
-                    <i data-lucide="cut" class="w-4 h-4 mr-1 nav-link-icon"></i>
-                    Montage
-                </a>
-                
-                <!-- 5. Nous Contacter (Va vers une page dédiée : contact.html) -->
-                <a href="contact.html" class="text-gray-300 hover:text-accent transition duration-200 hidden sm:flex items-center">
-                    <i data-lucide="mail" class="w-4 h-4 mr-1 nav-link-icon"></i>
-                    Contact
-                </a>
-                
-                <!-- 6. Réseaux Sociaux (Reste un scroll vers le footer) -->
-                <a href="#footer" class="text-gray-300 hover:text-accent transition duration-200 flex items-center nav-internal">
-                    <i data-lucide="share-2" class="w-4 h-4 mr-1 nav-link-icon"></i>
-                    Réseaux
-                </a>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Contenu Principal -->
-    <main class="py-12 lg:py-16">
-        <div class="container mx-auto px-4 max-w-7xl space-y-20">
-
-            <!-- Section 1: Collaboration Commerciale en Cours -->
-            <section id="collab-en-cours" class="text-center p-8 md:p-12 rounded-2xl shadow-2xl bg-primary/20 border-2 border-primary/50">
-                <h2 class="text-4xl font-extrabold mb-4 text-white">
-                    <i data-lucide="zap" class="w-8 h-8 inline-block mr-2 text-primary"></i>
-                    Collaboration Commerciale en Cours
-                </h2>
-                <p class="text-xl text-text-light max-w-4xl mx-auto mb-6">
-                    Nous travaillons actuellement en partenariat avec **[Nom du Partenaire]** ! Découvrez notre projet exclusif : **[Titre du Projet]**.
-                </p>
-
-                <!-- Carte de la Collab -->
-                <div class="bg-gray-800 p-6 rounded-xl shadow-lg inline-block w-full max-w-3xl transition duration-300 hover:shadow-accent/30 hover:scale-[1.01]">
-                    <h3 class="text-2xl font-semibold mb-2 text-accent">Découvrez [Nom du Produit/Service]</h3>
-                    <img src="https://placehold.co/800x200/4f46e5/ffffff?text=Bannière+Collab" alt="Bannière Collaboration Commerciale" class="w-full h-auto rounded-lg mb-4">
-                    <p class="text-gray-400 mb-4">Cliquez ci-dessous pour le tutoriel et notre avis complet sur le produit/service du partenaire.</p>
-                    <!-- Ce bouton peut pointer vers la page de collaboration ou un lien externe spécifique à la collab -->
-                    <a href="[Lien vers la Vidéo de Collab]" target="_blank" class="inline-flex items-center justify-center px-6 py-3 text-base font-bold rounded-xl shadow-md text-secondary bg-accent hover:bg-green-300 transition duration-300">
-                        <i data-lucide="star" class="w-5 h-5 mr-2"></i>
-                        Voir l'Offre et le Tuto
-                    </a>
-                </div>
-            </section>
+    <!-- Bande de navigation : Style Moderne et Sombre avec ICÔNES -->
+    <header class="navbar">
+        <!-- Titre du Studio -->
+        <a href="index.html" class="studio-title">LeNoobInconnu STUDIO</a>
+        
+        <!-- Liens de Navigation -->
+        <nav class="nav-links">
+            <!-- Maison pour l'Accueil -->
+            <a href="index.html" class="nav-item"><i class="fa-solid fa-house"></i> Accueil</a>
             
-            ---
-
-            <!-- NOUVELLE SECTION (Réintégrée) : Ma Chaîne YouTube -->
-            <section id="youtube-channel" class="text-center p-8 md:p-12 rounded-2xl shadow-2xl bg-gray-800 border-2 border-youtube">
-                <h2 class="text-4xl font-extrabold mb-4 text-white">
-                    <i data-lucide="clapperboard" class="w-8 h-8 inline-block mr-2 text-youtube"></i>
-                    Découvrez Ma Chaîne YouTube : LeNoobInconnu
-                </h2>
-                <p class="text-xl text-text-light max-w-4xl mx-auto mb-6">
-                    Plongez dans l'univers de **LeNoobInconnu** ! Retrouvez ici tous nos tutoriels vidéo, nos gameplays exclusifs, et nos analyses détaillées. Abonnez-vous pour ne rien manquer !
-                </p>
-
-                <!-- BOUTON VERS YOUTUBE -->
-                <a href="[Lien de votre Chaîne YouTube]" target="_blank" class="inline-flex items-center justify-center px-10 py-4 text-lg font-bold rounded-xl shadow-xl text-white bg-youtube hover:bg-red-700 transition duration-300 transform hover:scale-105">
-                    <i data-lucide="youtube" class="w-6 h-6 mr-3"></i>
-                    Visiter la Chaîne LeNoobInconnu
-                </a>
-            </section>
+            <!-- Enveloppe pour Contacter -->
+            <a href="contact.html" class="nav-item"><i class="fa-solid fa-envelope"></i> Nous Contacter</a>
             
-            ---
-
-            <!-- Section 3: Demande de Montage Vidéo (Lien vers demande_montage.html) -->
-            <section id="montage" class="text-center p-8 md:p-12 rounded-2xl shadow-2xl bg-gray-800 border-2 border-accent/50">
-                <h2 class="text-4xl font-bold mb-4 text-white">
-                    <i data-lucide="cut" class="w-8 h-8 inline-block mr-2 text-accent"></i>
-                    Besoin d'un Montage Vidéo Professionnel ?
-                </h2>
-                <p class="text-xl text-gray-400 max-w-4xl mx-auto mb-8">
-                    Découvrez nos services de montage sur mesure pour vos projets YouTube, courts-métrages ou campagnes promotionnelles.
-                </p>
-
-                <!-- BOUTON VERS LA NOUVELLE PAGE demande_montage.html -->
-                <a href="demande_montage.html" class="inline-flex items-center justify-center px-10 py-4 text-lg font-bold rounded-xl shadow-xl text-secondary bg-accent hover:bg-green-600 transition duration-300 transform hover:scale-105">
-                    <i data-lucide="file-text" class="w-6 h-6 mr-3"></i>
-                    Faire une Demande de Devis Maintenant
-                </a>
-            </section>
+            <!-- Logo officiel Discord (marque) - S'ouvre dans un nouvel onglet -->
+            <a href="https://discord.gg/votre-invitation" class="nav-item" target="_blank"><i class="fa-brands fa-discord"></i> Discord</a>
             
-            ---
+            <!-- Caméra vidéo pour Vidéos -->
+            <a href="videos.html" class="nav-item"><i class="fa-solid fa-video"></i> Vidéos</a>
+            
+            <!-- Icône d'information pour À Propos -->
+            <a href="a-propos.html" class="nav-item"><i class="fa-solid fa-circle-info"></i> À Propos</a>
+        </nav>
+    </header>
 
-            <!-- Section 4: Discord et Communauté (Lien vers discord.html) -->
-            <section id="discord" class="text-center bg-gray-900 p-10 rounded-2xl shadow-2xl border border-gray-700">
-                <h2 class="text-4xl font-bold mb-4 text-white">
-                    <i data-lucide="users" class="w-8 h-8 inline-block mr-2 text-accent"></i>
-                    Rejoignez la Communauté
-                </h2>
-                <p class="text-lg text-gray-400 max-w-4xl mx-auto mb-8">
-                    Discutez en direct, partagez vos projets, demandez de l'aide et trouvez des coéquipiers sur notre serveur Discord officiel.
-                </p>
-
-                <!-- BOUTON VERS LA NOUVELLE PAGE discord.html -->
-                <a href="discord.html" class="inline-flex items-center justify-center px-10 py-4 text-lg font-bold rounded-xl shadow-xl text-white bg-primary hover:bg-indigo-700 transition duration-300 transform hover:scale-105">
-                    <i data-lucide="message-square-text" class="w-6 h-6 mr-3"></i>
-                    Découvrir le Discord
-                </a>
-            </section>
-
-            ---
-
-            <!-- Section 5: Nous Contacter (Lien vers contact.html) -->
-            <section id="contact" class="text-center p-8 md:p-12 rounded-2xl shadow-2xl bg-primary/20 border-2 border-primary/50">
-                <h2 class="text-4xl font-bold mb-4 text-white">
-                    <i data-lucide="mail" class="w-8 h-8 inline-block mr-2 text-primary"></i>
-                    Contactez-nous
-                </h2>
-                <p class="text-xl text-gray-400 max-w-4xl mx-auto mb-6">
-                    Pour toute question spécifique, partenariat ou demande professionnelle qui ne concerne pas le montage vidéo.
-                </p>
-
-                <!-- BOUTON VERS LA NOUVELLE PAGE contact.html -->
-                <a href="contact.html" class="inline-flex items-center justify-center px-10 py-4 text-lg font-bold rounded-xl shadow-xl text-white bg-accent hover:bg-green-600 transition duration-300 transform hover:scale-105">
-                    <i data-lucide="send" class="w-6 h-6 mr-3"></i>
-                    Accéder au Formulaire de Contact
-                </a>
-                <p class="text-sm text-gray-500 mt-4">Vous pouvez également nous envoyer un e-mail directement : <a href="mailto:[Votre Email Pro]" class="text-accent hover:text-white">[Votre Email Pro]</a></p>
-            </section>
-
-        </div>
+    <!-- Contenu principal -->
+    <main class="content">
+        <h1>Bienvenue chez LeNoobInconnu STUDIO !</h1>
+        <p>
+            L'endroit où la créativité prend vie. Explorez nos projets, regardez nos vidéos et rejoignez notre communauté 
+            sur Discord pour ne rien manquer de nos dernières aventures.
+        </p>
+        <p>
+            N'oubliez pas d'utiliser les vrais noms de fichiers (`contact.html`, `videos.html`, etc.) et le vrai lien Discord !
+        </p>
     </main>
-
-    <!-- Pied de Page (Footer - Utilisé pour les Réseaux Sociaux) -->
-    <footer id="footer" class="bg-gray-900 py-8 mt-16 border-t border-gray-800">
-        <div class="container mx-auto px-4 max-w-7xl text-center">
-            <h3 class="text-2xl font-bold mb-4 text-white">Réseaux Sociaux</h3>
-            
-            <!-- Liens Sociaux -->
-            <div class="flex justify-center space-x-6 mb-4">
-                <!-- YouTube/Twitch -->
-                <a href="[Votre Lien YouTube]" target="_blank" title="Chaîne Vidéo" class="text-gray-400 hover:text-red-500 transition duration-200">
-                    <i data-lucide="youtube" class="w-7 h-7"></i>
-                </a>
-                <!-- Discord -->
-                <a href="[Lien de votre Discord]" target="_blank" title="Discord" class="text-gray-400 hover:text-indigo-400 transition duration-200">
-                    <i data-lucide="message-square-text" class="w-7 h-7"></i>
-                </a>
-                <!-- Autre Réseau (ex: Twitter/X) -->
-                <a href="[Votre Lien X]" target="_blank" title="X/Twitter" class="text-gray-400 hover:text-gray-100 transition duration-200">
-                    <i data-lucide="twitter" class="w-7 h-7"></i>
-                </a>
-                <!-- Instagram/Autre -->
-                <a href="[Votre Lien Insta]" target="_blank" title="Instagram" class="text-gray-400 hover:text-pink-500 transition duration-200">
-                    <i data-lucide="instagram" class="w-7 h-7"></i>
-                </a>
-            </div>
-
-            <p class="text-sm text-gray-500 mt-6">
-                © 2024 [Votre Nom de Créateur]. Tous droits réservés.
-            </p>
-        </div>
-    </footer>
-
-    <script>
-        // Script pour smooth scrolling vers les sections (Uniquement pour les liens internes : Accueil et Réseaux)
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                // S'assurer que les liens vers des pages externes (qui ne commencent pas par #) ne sont pas affectés
-                // Les seuls liens qui commencent par # sont l'Accueil (#) et Réseaux (#footer)
-                if (this.getAttribute('href').length > 1) { // Ignore '#' (Accueil) sauf si on veut défiler
-                    e.preventDefault();
-                    const targetId = this.getAttribute('href');
-                    const targetElement = document.querySelector(targetId);
-                    
-                    if (targetElement) {
-                        const navHeight = document.querySelector('nav').offsetHeight;
-                        const targetPosition = targetElement.getBoundingClientRect().top + window.scrollY - navHeight;
-
-                        window.scrollTo({
-                            top: targetPosition,
-                            behavior: 'smooth'
-                        });
-                    }
-                }
-            });
-        });
-    </script>
 
 </body>
 </html>
