@@ -125,7 +125,7 @@
             color: var(--text-light);
             text-decoration: none;
             padding: 15px 20px;
-            margin: 15px 0;
+            margin: 10px 0; /* Réduit à 10px de marge verticale (était 15px) */
             border-radius: 8px;
             font-size: 1.1rem;
             font-weight: 600;
@@ -133,6 +133,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            cursor: pointer; /* Indique que l'élément est cliquable */
         }
 
         .contact-link i {
@@ -144,6 +145,27 @@
         .contact-link:hover {
             background-color: #484860;
             transform: translateY(-2px);
+        }
+        
+        /* Style pour afficher l'adresse email */
+        .email-display {
+            background-color: #333;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 15px;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: bold;
+            word-break: break-all; /* Important pour les petits écrans */
+        }
+
+        /* Message de confirmation de copie */
+        #copy-message {
+            margin-top: 10px;
+            color: #38c172; /* Vert de succès */
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
         }
 
         /* Mobile adjustments */
@@ -186,22 +208,81 @@
 
         <div class="contact-card">
             
-            <p>Cliquez ci-dessous pour nous envoyer un message ou rejoindre notre communauté :</p>
+            <p>Cliquez ci-dessous pour copier l'adresse ou rejoindre notre communauté :</p>
             
-            <!-- Lien E-mail -->
-            <a href="mailto:contact.lenoobinconnu@gmail.com" class="contact-link">
-                <i class="fa-solid fa-at"></i> Envoyer un Email
-            </a> 
+            <!-- Bouton E-mail (déclenche la fonction de copie) -->
+            <div id="email-button" class="contact-link">
+                <i class="fa-solid fa-at"></i> Copier l'Adresse Email
+            </div> 
+            
+            <!-- Message de confirmation -->
+            <p id="copy-message">Copié ! Vous pouvez coller l'adresse.</p>
+
+            <!-- Affichage de l'email masqué, utilisé par le JS pour la copie -->
+            <input type="hidden" id="email-to-copy" value="contact.lenoobinconnu@gmail.com">
 
             <!-- Lien Discord (Ouvre un nouvel onglet) -->
+            <!-- J'ai supprimé le style inline "margin-top: 30px;" pour que le bouton Discord suive le flux normal. -->
             <a href="https://discord.gg/PbntRm5sNy" target="_blank" class="contact-link">
                 <i class="fa-brands fa-discord"></i> Rejoindre Discord
             </a>
             
             <p style="color: var(--text-secondary); margin-top: 20px; font-size: 0.9rem;">
+                Pour les demandes de montage, veuillez utiliser la page "Commander votre Montage".
             </p>
         </div>
     </main>
+
+    <!-- JavaScript pour la fonction de copie -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const emailButton = document.getElementById('email-button');
+            const emailInput = document.getElementById('email-to-copy');
+            const copyMessage = document.getElementById('copy-message');
+
+            emailButton.addEventListener('click', () => {
+                // Utilise le navigateur API pour copier
+                const emailAddress = emailInput.value;
+                
+                // On utilise document.execCommand('copy') pour la compatibilité dans cet environnement
+                // 1. Crée un élément temporaire (textarea)
+                const tempTextArea = document.createElement('textarea');
+                tempTextArea.value = emailAddress;
+                document.body.appendChild(tempTextArea);
+                
+                // 2. Sélectionne le contenu
+                tempTextArea.select();
+                
+                // 3. Exécute la commande de copie
+                try {
+                    document.execCommand('copy');
+
+                    // 4. Affiche le message de succès
+                    copyMessage.style.opacity = '1';
+                    
+                    // 5. Masque le message après 2 secondes
+                    setTimeout(() => {
+                        copyMessage.style.opacity = '0';
+                    }, 2000);
+
+                } catch (err) {
+                    console.error('Erreur lors de la tentative de copie :', err);
+                    // Fallback si la copie échoue (par exemple, afficher l'adresse)
+                    copyMessage.textContent = 'La copie a échoué. Adresse: ' + emailAddress;
+                    copyMessage.style.opacity = '1';
+                    setTimeout(() => {
+                        copyMessage.style.opacity = '0';
+                        copyMessage.textContent = 'Copié ! Vous pouvez coller l\'adresse.'; // Reset message
+                    }, 3000);
+                }
+                
+                // 6. Supprime l'élément temporaire
+                document.body.removeChild(tempTextArea);
+            });
+        });
+    </script>
+</body>
+</html>
 
 </body>
 </html>
