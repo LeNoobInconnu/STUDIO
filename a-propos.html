@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeNoobInconnu STUDIO - À Propos</title>
+    
+    <!-- Intégration de Font Awesome pour les icônes -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        /* CSS INTERNE (Style Moderne) */
+        
+        /* Variables CSS pour les couleurs modernes */
+        :root {
+            --primary-color: #5b5ff5; /* Un bleu-violet moderne */
+            --background-dark: #1e1e2f; /* Fond très sombre */
+            --background-light: #2c2c40; /* Couleur des cartes/éléments */
+            --text-light: #f0f0f5; /* Texte clair */
+            --text-secondary: #a0a0b0; /* Texte secondaire */
+            --shadow-elevation: 0 10px 25px rgba(0, 0, 0, 0.25);
+            --font-stack: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        /* Réinitialisation de base */
+        body {
+            margin: 0;
+            font-family: var(--font-stack);
+            background-color: var(--background-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+        }
+
+        /* --- NAVIGATION BAR STYLES (Identique aux autres pages) --- */
+
+        .navbar {
+            background-color: var(--background-light);
+            padding: 15px 30px;
+            box-shadow: var(--shadow-elevation); 
+            display: flex;
+            justify-content: space-between; 
+            align-items: center;
+        }
+        
+        .studio-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            letter-spacing: 1px;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 25px; 
+        }
+
+        .nav-item {
+            color: var(--text-light);
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: background-color 0.3s, color 0.3s, transform 0.1s;
+            font-size: 1rem;
+            font-weight: 500;
+            white-space: nowrap; 
+            display: flex; 
+            align-items: center;
+        }
+
+        .nav-item i {
+            margin-right: 8px;
+            color: var(--primary-color); 
+        }
+        
+        .nav-item:hover {
+            background-color: var(--primary-color);
+            color: var(--background-dark);
+            transform: translateY(-2px); 
+            box-shadow: 0 5px 15px rgba(91, 95, 245, 0.4);
+        }
+        
+        .nav-item:hover i {
+            color: var(--background-dark); 
+        }
+
+        /* --- ABOUT PAGE SPECIFIC STYLES --- */
+
+        .content {
+            padding: 60px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .about-section {
+            background-color: var(--background-light);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-elevation);
+            max-width: 800px;
+            width: 100%;
+            margin-bottom: 30px;
+            text-align: left; /* Aligner le texte à gauche pour la lecture */
+        }
+        
+        .content h1 {
+            color: var(--text-light);
+            font-size: 2.5rem;
+            margin-bottom: 5px;
+            letter-spacing: 0.5px;
+        }
+        
+        .content p.subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+
+        .about-section h2 {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 5px;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+        
+        .about-section p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+            color: var(--text-secondary);
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 600px) {
+            .navbar {
+                flex-direction: column;
+                padding: 15px 10px;
+            }
+            .nav-links {
+                margin-top: 15px;
+                gap: 10px;
+                flex-wrap: wrap; 
+                justify-content: center;
+            }
+            .studio-title {
+                font-size: 1.3rem;
+            }
+            .about-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Bande de navigation (Identique aux autres pages) -->
+    <header class="navbar">
+        <a href="index.html" class="studio-title">LeNoobInconnu STUDIO</a>
+        
+        <nav class="nav-links">
+            <a href="index.html" class="nav-item"><i class="fa-solid fa-house"></i> Accueil</a>
+            <a href="contact.html" class="nav-item"><i class="fa-solid fa-envelope"></i> Nous Contacter</a>
+            <a href="https://discord.gg/votre-invitation" class="nav-item" target="_blank"><i class="fa-brands fa-discord"></i> Discord</a>
+            <a href="videos.html" class="nav-item"><i class="fa-solid fa-video"></i> Vidéos</a>
+            <a href="a-propos.html" class="nav-item"><i class="fa-solid fa-circle-info"></i> À Propos</a>
+        </nav>
+    </header>
+
+    <!-- Contenu de la page À Propos -->
+    <main class="content">
+        <h1>À Propos de LeNoobInconnu STUDIO</h1>
+        <p class="subtitle">Découvrez qui nous sommes et ce qui nous motive.</p>
+
+        <div class="about-section">
+            <h2>Notre Histoire</h2>
+            <p>
+                **LeNoobInconnu STUDIO** a été fondé avec une idée simple : partager notre passion et créer une communauté autour de nos projets. Ce studio est le lieu où nos idées prennent vie, que ce soit à travers des jeux, des vidéos ou d'autres formes de contenu créatif.
+            </p>
+            <p>
+                Nous croyons en l'apprentissage continu et en la puissance de l'imagination pour rendre le monde numérique plus amusant. Chaque projet est une nouvelle aventure que nous sommes ravis de partager avec vous.
+            </p>
+        </div>
+
+        <div class="about-section">
+            <h2>Notre Mission</h2>
+            <p>
+                Notre mission principale est double :
+            </p>
+            <p style="margin-left: 20px; border-left: 3px solid var(--primary-color); padding-left: 15px;">
+                <i class="fa-solid fa-bullseye" style="color: var(--primary-color); margin-right: 8px;"></i> **Créer du Contenu Engageant** : Produire des vidéos et des projets qui sont à la fois divertissants et inspirants.
+            </p>
+            <p style="margin-left: 20px; border-left: 3px solid var(--primary-color); padding-left: 15px;">
+                <i class="fa-solid fa-users" style="color: var(--primary-color); margin-right: 8px;"></i> **Construire une Communauté Positive** : Offrir un espace accueillant (comme sur notre Discord) où les fans peuvent se connecter et partager leurs propres passions.
+            </p>
+        </div>
+        
+        <div class="about-section">
+            <h2>L'Équipe</h2>
+            <p>
+                **LeNoobInconnu STUDIO** est dirigé par [Votre Nom/Pseudo] et peut inclure d'autres contributeurs talentueux. Nous sommes une petite équipe dédiée à vous offrir le meilleur. N'hésitez pas à nous suivre sur YouTube pour ne rien manquer !
+            </p>
+        </div>
+
+    </main>
+
+</body>
+</html>
