@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commander votre Montage</title>
+    
+    <!-- Intégration de Font Awesome pour les icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        /* CSS basé sur le style de la page d'accueil */
+        :root {
+            --primary-color: #5b5ff5;
+            --background-dark: #1e1e2f; 
+            --background-light: #2c2c40; 
+            --text-light: #f0f0f5; 
+            --text-secondary: #a0a0b0; 
+            --shadow-elevation: 0 10px 25px rgba(0, 0, 0, 0.25);
+            --font-stack: 'Segoe UI', Tahoma, Geneva, Verdana, Verdana, sans-serif;
+            --secondary-color: #f59e0b; /* Couleur pour le service de montage */
+        }
+        body {
+            margin: 0;
+            font-family: var(--font-stack);
+            background-color: var(--background-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+        }
+        
+        /* --- NAVIGATION BAR STYLES (Simple) --- */
+
+        .navbar { 
+            background-color: var(--background-light);
+            padding: 15px 30px;
+            box-shadow: var(--shadow-elevation); 
+            display: flex;
+            justify-content: space-between; 
+            align-items: center;
+        }
+        .studio-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            letter-spacing: 1px;
+            text-decoration: none;
+        }
+        
+        /* --- CONTENT STYLES --- */
+
+        .content {
+            padding: 60px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .card {
+            background-color: var(--background-light);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-elevation);
+            max-width: 700px;
+            width: 100%;
+        }
+        h1 {
+            color: var(--secondary-color);
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        .card p {
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+        
+        /* Liste des exigences */
+        .card ul {
+            text-align: left; 
+            list-style-type: none;
+            color: var(--text-light); 
+            margin-bottom: 30px; 
+            padding-left: 0;
+        }
+        .card ul li {
+            margin-bottom: 15px;
+            font-weight: 500;
+            display: flex;
+            align-items: flex-start;
+        }
+        .card ul li i {
+            margin-right: 10px;
+            color: var(--secondary-color);
+            margin-top: 5px; 
+            font-size: 1.1rem;
+        }
+
+        /* Bouton d'action pour aller au formulaire */
+        .action-button {
+            display: inline-flex;
+            align-items: center;
+            background-color: var(--primary-color); /* On utilise la couleur primaire pour le bouton d'action */
+            color: var(--background-dark);
+            text-decoration: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: 700;
+            transition: transform 0.2s, background-color 0.2s;
+            margin-top: 20px;
+            font-size: 1.1rem;
+            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+        }
+        .action-button:hover {
+            transform: translateY(-2px);
+            background-color: #4a4fec; /* Lighthing up the primary color */
+        }
+        .action-button i {
+            margin-right: 10px;
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 600px) {
+            .card {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Bande de navigation simplifiée -->
+    <header class="navbar">
+        <a href="index.html" class="studio-title">LeNoobInconnu STUDIO</a>
+        <nav></nav>
+    </header>
+
+    <main class="content">
+        <div class="card">
+            <h1><i class="fa-solid fa-scissors"></i> Commandez Votre Montage Vidéo !</h1>
+            <p>
+                Prêt à transformer vos rushs en chef-d'œuvre ? Répondez à notre formulaire pour que nous puissions évaluer votre projet avec précision et vous envoyer un devis rapide.
+            </p>
+            <p style="color: var(--text-light); font-weight: bold;">
+                Voici les informations que vous devez préparer avant de commencer le formulaire :
+            </p>
+            
+            <ul>
+                <li><i class="fa-solid fa-video"></i> **Type de Vidéo** : Gaming, Vlog, Critique, Tuto, etc.</li>
+                <li><i class="fa-solid fa-clock"></i> **Durée et Rushs** : Durée finale souhaitée et lien vers vos fichiers bruts.</li>
+                <li><i class="fa-solid fa-music"></i> **Exigences Spécifiques** : Musique, effets sonores, style de texte, etc.</li>
+                <li><i class="fa-solid fa-sack-dollar"></i> **Budget / Délai** : Votre budget approximatif et la date limite.</li>
+            </ul>
+            
+            <p style="color: var(--secondary-color); font-weight: bold; margin-top: 40px; margin-bottom: 20px;">
+                Cliquez sur le bouton ci-dessous pour accéder au formulaire de commande.
+            </p>
+            
+            <!-- Lien vers le formulaire de commande -->
+            <a href="formulaire-montage.html" class="action-button">
+                <i class="fa-solid fa-arrow-right-to-bracket"></i> Accéder au Formulaire
+            </a>
+            
+        </div>
+    </main>
+
+</body>
+</html>
