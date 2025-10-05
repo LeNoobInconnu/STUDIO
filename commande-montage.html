@@ -6,20 +6,23 @@
     <title>Commander votre Montage</title>
     
     <!-- Intégration de Font Awesome pour les icônes -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
     <style>
         /* CSS basé sur le style de la page d'accueil */
         :root {
-            --primary-color: #5b5ff5;
-            --background-dark: #1e1e2f; 
-            --background-light: #2c2c40; 
-            --text-light: #f0f0f5; 
-            --text-secondary: #a0a0b0; 
+            --primary-color: #5b5ff5; /* Un bleu-violet moderne */
+            --background-dark: #1e1e2f; /* Fond très sombre */
+            --background-light: #2c2c40; /* Couleur des cartes/éléments */
+            --text-light: #f0f0f5; /* Texte clair */
+            --text-secondary: #a0a0b0; /* Texte secondaire */
             --shadow-elevation: 0 10px 25px rgba(0, 0, 0, 0.25);
-            --font-stack: 'Segoe UI', Tahoma, Geneva, Verdana, Verdana, sans-serif;
-            --secondary-color: #f59e0b; /* Couleur pour le service de montage */
+            --font-stack: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --secondary-color: #f59e0b; /* Couleur pour le service de montage (Orange) */
         }
+        
+        /* Réinitialisation de base */
         body {
             margin: 0;
             font-family: var(--font-stack);
@@ -27,10 +30,10 @@
             color: var(--text-light);
             min-height: 100vh;
         }
-        
-        /* --- NAVIGATION BAR STYLES (Simple) --- */
 
-        .navbar { 
+        /* --- NAVIGATION BAR STYLES --- */
+
+        .navbar {
             background-color: var(--background-light);
             padding: 15px 30px;
             box-shadow: var(--shadow-elevation); 
@@ -38,6 +41,7 @@
             justify-content: space-between; 
             align-items: center;
         }
+        
         .studio-title {
             font-size: 1.5rem;
             font-weight: 700;
@@ -46,6 +50,50 @@
             text-decoration: none;
         }
         
+        .nav-links {
+            display: flex;
+            gap: 25px; 
+        }
+
+        .nav-item {
+            color: var(--text-light);
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: background-color 0.3s, color 0.3s, transform 0.1s;
+            font-size: 1rem;
+            font-weight: 500;
+            white-space: nowrap; 
+            display: flex; 
+            align-items: center;
+        }
+
+        .nav-item i {
+            margin-right: 8px;
+            color: var(--primary-color); 
+        }
+        
+        .nav-item:hover {
+            background-color: var(--primary-color);
+            color: var(--background-dark);
+            transform: translateY(-2px); 
+            box-shadow: 0 5px 15px rgba(91, 95, 245, 0.4);
+        }
+        
+        .nav-item:hover i {
+            color: var(--background-dark); 
+        }
+
+        /* Style pour indiquer la page active (maintenu au cas où d'autres pages l'utilisent, mais retiré de la nav ici) */
+        .nav-item.active {
+            background-color: var(--secondary-color);
+            color: var(--background-dark);
+            font-weight: 700;
+        }
+        .nav-item.active i {
+            color: var(--background-dark);
+        }
+
         /* --- CONTENT STYLES --- */
 
         .content {
@@ -120,6 +168,19 @@
 
         /* Mobile adjustments */
         @media (max-width: 600px) {
+            .navbar {
+                flex-direction: column;
+                padding: 15px 10px;
+            }
+            .nav-links {
+                margin-top: 15px;
+                gap: 10px;
+                flex-wrap: wrap; 
+                justify-content: center;
+            }
+            .studio-title {
+                font-size: 1.3rem;
+            }
             .card {
                 padding: 20px;
             }
@@ -131,10 +192,18 @@
 </head>
 <body>
 
-    <!-- Bande de navigation simplifiée -->
+    <!-- Bande de navigation COMPLÈTE (sans le bouton "Commander Montage") -->
     <header class="navbar">
         <a href="index.html" class="studio-title">LeNoobInconnu STUDIO</a>
-        <nav></nav>
+        
+        <nav class="nav-links">
+            <a href="index.html" class="nav-item"><i class="fa-solid fa-house"></i> Accueil</a>
+            <a href="serveur.html" class="nav-item"><i class="fa-solid fa-gamepad"></i> Serveur MC</a> 
+            <a href="https://discord.gg/votre-invitation" class="nav-item" target="_blank"><i class="fa-brands fa-discord"></i> Discord</a>
+            <a href="videos.html" class="nav-item"><i class="fa-solid fa-video"></i> Vidéos</a>
+            <a href="a-propos.html" class="nav-item"><i class="fa-solid fa-circle-info"></i> À Propos</a>
+            <a href="contact.html" class="nav-item"><i class="fa-solid fa-envelope"></i> Nous Contacter</a>
+        </nav>
     </header>
 
     <main class="content">
