@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeNoobInconnu STUDIO - Serveur Minecraft</title>
+    
+    <!-- Intégration de Font Awesome pour les icônes -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        /* CSS INTERNE (Style Moderne) */
+        
+        /* Variables CSS pour les couleurs modernes */
+        :root {
+            --primary-color: #5b5ff5; /* Un bleu-violet moderne */
+            --youtube-red: #ff0000;
+            --background-dark: #1e1e2f; /* Fond très sombre */
+            --background-light: #2c2c40; /* Couleur des cartes/éléments */
+            --text-light: #f0f0f5; /* Texte clair */
+            --text-secondary: #a0a0b0; /* Texte secondaire */
+            --shadow-elevation: 0 10px 25px rgba(0, 0, 0, 0.25);
+            --font-stack: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --minecraft-green: #5aa667; /* Couleur verte pour Minecraft */
+            --minecraft-blue: #3498db; /* Couleur bleue pour Bedrock */
+        }
+        
+        /* Réinitialisation de base */
+        body {
+            margin: 0;
+            font-family: var(--font-stack);
+            background-color: var(--background-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+        }
+
+        /* --- NAVIGATION BAR STYLES --- */
+
+        .navbar {
+            background-color: var(--background-light);
+            padding: 15px 30px;
+            box-shadow: var(--shadow-elevation); 
+            display: flex;
+            justify-content: space-between; 
+            align-items: center;
+        }
+        
+        .studio-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            letter-spacing: 1px;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 25px; 
+        }
+
+        .nav-item {
+            color: var(--text-light);
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: background-color 0.3s, color 0.3s, transform 0.1s;
+            font-size: 1rem;
+            font-weight: 500;
+            white-space: nowrap; 
+            display: flex; 
+            align-items: center;
+        }
+
+        .nav-item i {
+            margin-right: 8px;
+            color: var(--primary-color); 
+        }
+        
+        .nav-item:hover {
+            background-color: var(--primary-color);
+            color: var(--background-dark);
+            transform: translateY(-2px); 
+            box-shadow: 0 5px 15px rgba(91, 95, 245, 0.4);
+        }
+        
+        .nav-item:hover i {
+            color: var(--background-dark); 
+        }
+        
+        .nav-item.active {
+            background-color: var(--primary-color);
+            color: var(--background-dark);
+            font-weight: 700;
+        }
+        .nav-item.active i {
+            color: var(--background-dark);
+        }
+
+        /* --- CONTENT STYLES --- */
+        
+        .content {
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 50px;
+        }
+        
+        h1 {
+            color: var(--text-light);
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+        }
+
+        /* Carte de connexion */
+        .connection-card {
+            background-color: var(--background-light);
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: var(--shadow-elevation);
+            max-width: 900px;
+            width: 100%;
+            border: 1px solid rgba(91, 95, 245, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .connection-card h2 {
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .connection-card p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+
+        /* Conteneur des deux versions */
+        .versions-container {
+            display: flex;
+            gap: 30px;
+            margin-top: 30px;
+            justify-content: center;
+            width: 100%;
+        }
+
+        /* Style pour chaque version (Java/Bedrock) */
+        .version-box {
+            flex: 1;
+            min-width: 280px;
+            background-color: #383850;
+            padding: 25px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 2px solid #383850;
+            transition: border-color 0.3s;
+        }
+
+        .version-box.java { border-color: var(--minecraft-green); }
+        .version-box.bedrock { border-color: var(--minecraft-blue); }
+
+        .version-box h3 {
+            margin: 0 0 15px 0;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .version-box.java h3 { color: var(--minecraft-green); }
+        .version-box.bedrock h3 { color: var(--minecraft-blue); }
+
+
+        .address-line {
+            background-color: var(--background-dark);
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            font-family: monospace;
+            color: var(--text-light);
+            font-weight: 500;
+            word-break: break-all;
+            width: 100%;
+        }
+
+        /* Styles de bouton réutilisables */
+        .action-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 15px 35px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.3s;
+            cursor: pointer;
+            border: none;
+        }
+
+        /* Boutons de copie spécifiques */
+        .copy-button {
+            padding: 12px 25px;
+            font-size: 1rem;
+            width: 100%;
+            text-align: center;
+        }
+
+        .copy-button.java {
+            background-color: var(--minecraft-green);
+            color: var(--background-dark);
+            box-shadow: 0 5px 15px rgba(90, 166, 103, 0.4);
+        }
+        .copy-button.java:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(90, 166, 103, 0.6);
+        }
+
+        .copy-button.bedrock {
+            background-color: var(--minecraft-blue);
+            color: var(--background-dark);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+        .copy-button.bedrock:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.6);
+        }
+        
+        .action-button i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        /* Message de confirmation de copie */
+        .copy-message {
+            margin-top: 15px;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            min-height: 20px; /* Réserve l'espace pour éviter les sauts de mise en page */
+        }
+        /* Message de confirmation pour chaque version */
+        .copy-message.java { color: var(--minecraft-green); }
+        .copy-message.bedrock { color: var(--minecraft-blue); }
+        
+        /* NOUVEAU: Styles pour la division IP/Port Bedrock (Empilés) */
+        .bedrock-details-container {
+            display: flex;
+            flex-direction: column; /* Force l'empilement vertical */
+            gap: 20px; /* Espace entre l'IP et le Port */
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .detail-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%; /* Prend toute la largeur, forçant les éléments à rester sur leur ligne */
+        }
+
+        .detail-group label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .address-line.small-line {
+            padding: 8px 10px;
+            font-size: 1.1rem;
+            margin-bottom: 10px; 
+        }
+
+        .copy-button.small-button {
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            width: 100%;
+        }
+        .copy-message.small-message {
+            min-height: 10px;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        /* Section Règles (Identique) */
+        .rules-card {
+            background-color: var(--background-light);
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: var(--shadow-elevation);
+            max-width: 900px;
+            width: 100%;
+            border: 1px solid rgba(91, 95, 245, 0.2);
+        }
+
+        .rules-list {
+            text-align: left;
+            margin: 20px auto 0;
+            list-style: none;
+            padding-left: 0;
+            max-width: 600px;
+        }
+
+        .rules-list li {
+            background-color: var(--background-dark);
+            margin-bottom: 10px;
+            padding: 12px;
+            border-radius: 8px;
+            display: flex;
+            align-items: flex-start;
+            border-left: 4px solid var(--primary-color);
+            font-size: 1rem;
+        }
+
+        .rules-list li i {
+            margin-right: 10px;
+            color: var(--minecraft-green);
+            font-size: 1.2rem;
+            line-height: 1.5;
+        }
+
+        /* Mobile adjustments (simplifié car l'empilement est maintenant la valeur par défaut) */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            .versions-container {
+                flex-direction: column;
+                gap: 20px;
+            }
+            .version-box {
+                min-width: unset;
+                width: 100%;
+            }
+            .address-line {
+                font-size: 1.1rem;
+            }
+            .navbar {
+                flex-direction: column;
+                padding: 15px 10px;
+            }
+            .nav-links {
+                margin-top: 15px;
+                gap: 10px;
+                flex-wrap: wrap; 
+                justify-content: center;
+            }
+            .studio-title {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Bande de navigation -->
+    <header class="navbar">
+        <a href="index.html" class="studio-title">LeNoobInconnu STUDIO</a>
+        
+        <nav class="nav-links">
+            <a href="index.html" class="nav-item"><i class="fa-solid fa-house"></i> Accueil</a>
+            <a href="serveur.html" class="nav-item active"><i class="fa-solid fa-gamepad"></i> Serveur MC</a> 
+            <a href="https://discord.gg/PbntRm5sNy" class="nav-item" target="_blank"><i class="fa-brands fa-discord"></i> Discord</a>
+            <a href="videos.html" class="nav-item"><i class="fa-solid fa-video"></i> Vidéos</a>
+            <a href="a-propos.html" class="nav-item"><i class="fa-solid fa-circle-info"></i> À Propos</a>
+            <a href="contact.html" class="nav-item"><i class="fa-solid fa-envelope"></i> Nous Contacter</a>
+        </nav>
+    </header>
+
+    <!-- Contenu Principal de la page Serveur -->
+    <main class="content">
+        <h1>Rejoignez notre Serveur Minecraft ! ⛏️</h1>
+        <p class="subtitle">
+            Jouez avec nous sur PC/Mac (Java) ou sur Console/Mobile (Bedrock).
+        </p>
+
+        <!-- 1. Section Adresses du Serveur (Double Version) -->
+        <section class="connection-card">
+            <h2>Détails de Connexion</h2>
+            <p>
+                Cliquez sur le bouton de la version correspondante pour copier l'adresse et le port (si nécessaire).
+            </p>
+            
+            <div class="versions-container">
+                
+                <!-- Version Java (PC/Mac) -->
+                <div class="version-box java">
+                    <h3><i class="fa-brands fa-java"></i> Java Edition</h3>
+                    <div id="javaIP" class="address-line">
+                        play.lenoobinconnu-mc.net
+                    </div>
+                    
+                    <button onclick="copyAddress('javaIP', 'javaConfirmation')" class="action-button copy-button java">
+                        <i class="fa-solid fa-copy"></i> Copier l'IP Java
+                    </button>
+
+                    <p id="javaConfirmation" class="copy-message java"></p>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 5px 0 0 0;">
+                        Version recommandée : **1.20.4** ou supérieure.
+                    </p>
+                </div>
+
+                <!-- Version Bedrock (Console/Mobile) - MODIFIÉ pour IP/Port séparés sur deux lignes -->
+                <div class="version-box bedrock">
+                    <h3><i class="fa-solid fa-mobile-screen-button"></i> Bedrock Edition</h3>
+                    
+                    <div class="bedrock-details-container">
+                        
+                        <!-- IP Section (1ère ligne) -->
+                        <div class="detail-group">
+                            <label>Adresse IP/Domaine</label>
+                            <div id="bedrockIP" class="address-line small-line">
+                                bedrock.lenoobinconnu-mc.net
+                            </div>
+                            <button onclick="copyAddress('bedrockIP', 'bedrockConfirmationIP')" class="action-button copy-button bedrock small-button">
+                                <i class="fa-solid fa-copy"></i> Copier l'IP
+                            </button>
+                            <p id="bedrockConfirmationIP" class="copy-message bedrock small-message"></p>
+                        </div>
+
+                        <!-- Port Section (2ème ligne) -->
+                        <div class="detail-group">
+                            <label>Port</label>
+                            <div id="bedrockPort" class="address-line small-line">
+                                19132
+                            </div>
+                            <button onclick="copyAddress('bedrockPort', 'bedrockConfirmationPort')" class="action-button copy-button bedrock small-button">
+                                <i class="fa-solid fa-copy"></i> Copier le Port
+                            </button>
+                            <p id="bedrockConfirmationPort" class="copy-message bedrock small-message"></p>
+                        </div>
+
+                    </div>
+                    
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 5px 0 0 0;">
+                        Entrez l'IP dans le champ "Adresse" et le Port dans le champ "Port".
+                    </p>
+                </div>
+                
+            </div>
+        </section>
+
+        <!-- 2. Section Règles Principales -->
+        <section class="rules-card">
+            <h2>Règles de Base & Communauté</h2>
+            <p>
+                Pour garantir une bonne expérience pour tout le monde, rejoignez-nous sur Discord pour lire les règles complètes !
+            </p>
+            
+            <ul class="rules-list">
+                <li><i class="fa-solid fa-shield-halved"></i> Respectez les autres joueurs. Le harcèlement et les propos haineux sont strictement interdits.</li>
+                <li><i class="fa-solid fa-house-chimney-crack"></i> Pas de grief (destruction) ni de vol dans les zones protégées.</li>
+                <li><i class="fa-solid fa-bug"></i> L'utilisation de cheats, de mods de triche ou d'exploits est formellement bannie.</li>
+                <li><i class="fa-brands fa-discord"></i> Pour le support et les discussions, rejoignez notre serveur Discord !</li>
+            </ul>
+
+            <a href="https://discord.gg/PbntRm5sNy" class="action-button primary-button" target="_blank" style="margin-top: 30px;">
+                <i class="fa-brands fa-discord"></i> Lire les Règles Complètes sur Discord
+            </a>
+        </section>
+
+    </main>
+
+    <!-- Script de Copie d'IP Adapté -->
+    <script>
+        /**
+         * Copie l'adresse contenue dans un élément spécifié et affiche un message de confirmation.
+         * @param {string} ipElementId - L'ID de l'élément HTML contenant l'adresse/port à copier.
+         * @param {string} confirmationElementId - L'ID de l'élément HTML où afficher la confirmation.
+         */
+        function copyAddress(ipElementId, confirmationElementId) {
+            // 1. Récupérer le texte de l'adresse (on enlève les espaces superflus)
+            const addressElement = document.getElementById(ipElementId);
+            const addressText = addressElement.innerText.trim();
+            
+            // 2. Préparer l'affichage de la confirmation
+            const confirmation = document.getElementById(confirmationElementId);
+            confirmation.innerText = 'Copié !'; // Message plus court pour les petits espaces
+            
+            // 3. Utiliser l'API Clipboard
+            navigator.clipboard.writeText(addressText)
+                .then(() => {
+                    // 4. Afficher le message de confirmation
+                    confirmation.style.opacity = '1';
+                    
+                    // 5. Masquer le message après 3 secondes
+                    setTimeout(() => {
+                        confirmation.style.opacity = '0';
+                        confirmation.innerText = ''; // Efface le texte après masquage
+                    }, 3000);
+                })
+                .catch(err => {
+                    console.error('Erreur de copie:', err);
+                    // Utiliser une boîte de message personnalisée au lieu d'alert() si possible
+                    confirmation.innerText = "Erreur de copie. Copiez manuellement: " + addressText;
+                    confirmation.style.opacity = '1';
+                });
+        }
+    </script>
+
+</body>
+</html>
