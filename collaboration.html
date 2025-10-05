@@ -6,19 +6,24 @@
     <title>Proposer une Collaboration</title>
     
     <!-- Intégration de Font Awesome pour les icônes -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
     <style>
-        /* CSS basé sur le style de la page d'accueil */
+        /* CSS basé sur le style de la page d'accueil (avec toutes les variables nécessaires) */
         :root {
-            --primary-color: #5b5ff5;
-            --background-dark: #1e1e2f; 
-            --background-light: #2c2c40; 
-            --text-light: #f0f0f5; 
-            --text-secondary: #a0a0b0; 
+            --primary-color: #5b5ff5; /* Un bleu-violet moderne */
+            --background-dark: #1e1e2f; /* Fond très sombre */
+            --background-light: #2c2c40; /* Couleur des cartes/éléments */
+            --text-light: #f0f0f5; /* Texte clair */
+            --text-secondary: #a0a0b0; /* Texte secondaire */
             --shadow-elevation: 0 10px 25px rgba(0, 0, 0, 0.25);
             --font-stack: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --secondary-color: #f59e0b; /* Couleur pour le service de montage (Orange) */
+            --collaboration-color: #33d9b2; /* Nouvelle couleur pour la collaboration (Vert-Bleu) */
         }
+        
+        /* Réinitialisation de base */
         body {
             margin: 0;
             font-family: var(--font-stack);
@@ -26,10 +31,10 @@
             color: var(--text-light);
             min-height: 100vh;
         }
-        
-        /* --- NAVIGATION BAR STYLES (Simple) --- */
 
-        .navbar { 
+        /* --- NAVIGATION BAR STYLES --- */
+
+        .navbar {
             background-color: var(--background-light);
             padding: 15px 30px;
             box-shadow: var(--shadow-elevation); 
@@ -37,6 +42,7 @@
             justify-content: space-between; 
             align-items: center;
         }
+        
         .studio-title {
             font-size: 1.5rem;
             font-weight: 700;
@@ -45,6 +51,50 @@
             text-decoration: none;
         }
         
+        .nav-links {
+            display: flex;
+            gap: 25px; 
+        }
+
+        .nav-item {
+            color: var(--text-light);
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: background-color 0.3s, color 0.3s, transform 0.1s;
+            font-size: 1rem;
+            font-weight: 500;
+            white-space: nowrap; 
+            display: flex; 
+            align-items: center;
+        }
+
+        .nav-item i {
+            margin-right: 8px;
+            color: var(--primary-color); 
+        }
+        
+        .nav-item:hover {
+            background-color: var(--primary-color);
+            color: var(--background-dark);
+            transform: translateY(-2px); 
+            box-shadow: 0 5px 15px rgba(91, 95, 245, 0.4);
+        }
+        
+        .nav-item:hover i {
+            color: var(--background-dark); 
+        }
+
+        /* Style pour la page active (Collaboration) - MAINTENU, AU CAS OÙ LE BOUTON ÉTAIT AILLEURS */
+        .nav-item.active {
+            background-color: var(--collaboration-color);
+            color: var(--background-dark);
+            font-weight: 700;
+        }
+        .nav-item.active i {
+            color: var(--background-dark);
+        }
+
         /* --- CONTENT STYLES --- */
 
         .content {
@@ -59,11 +109,12 @@
             padding: 40px;
             border-radius: 12px;
             box-shadow: var(--shadow-elevation);
-            max-width: 600px;
+            max-width: 600px; /* Taille légèrement ajustée pour la collaboration */
             width: 100%;
         }
         h1 {
-            color: var(--primary-color);
+            /* Utilisation de la couleur de collaboration pour le titre */
+            color: var(--collaboration-color);
             font-size: 2.5rem;
             margin-bottom: 20px;
         }
@@ -76,47 +127,63 @@
         /* Liste des exigences */
         .card ul {
             text-align: left; 
-            list-style-type: none; /* Enlève les puces par défaut */
+            list-style-type: none; 
             color: var(--text-light); 
             margin-bottom: 30px; 
             padding-left: 0;
         }
         .card ul li {
-            /* Retrait du text-indent: -1.5em; et padding-left: 1.5em; pour simplifier */
-            margin-bottom: 15px; /* Plus d'espace entre les éléments */
+            margin-bottom: 15px; 
             font-weight: 500;
             display: flex;
             align-items: flex-start;
         }
         .card ul li i {
             margin-right: 10px;
-            color: var(--primary-color);
-            /* Assure que l'icône est au sommet du texte */
+            color: var(--collaboration-color); /* Icônes en couleur de collaboration */
             margin-top: 5px; 
             font-size: 1.1rem;
         }
 
-        /* Bouton de retour */
-        .return-button {
+        /* Bouton de contact Discord (remplace le bouton retour) */
+        .contact-button {
             display: inline-flex;
             align-items: center;
-            background-color: var(--primary-color);
-            color: var(--background-dark);
+            /* Utilisation de la couleur primaire pour le bouton principal */
+            background-color: #7289DA; /* Couleur officielle de Discord */
+            color: var(--text-light);
             text-decoration: none;
             padding: 12px 25px;
             border-radius: 8px;
-            font-weight: 600;
-            transition: transform 0.2s;
+            font-weight: 700;
+            transition: transform 0.2s, background-color 0.2s;
+            margin-top: 20px;
+            font-size: 1.1rem;
+            box-shadow: 0 5px 15px rgba(114, 137, 218, 0.4);
         }
-        .return-button:hover {
+        .contact-button:hover {
             transform: translateY(-2px);
+            background-color: #677BC4; 
         }
-        .return-button i {
+        .contact-button i {
             margin-right: 10px;
         }
 
         /* Mobile adjustments */
         @media (max-width: 600px) {
+            .navbar {
+                flex-direction: column;
+                padding: 15px 10px;
+            }
+            .nav-links {
+                margin-top: 15px;
+                gap: 10px;
+                flex-wrap: wrap; 
+                justify-content: center;
+            }
+            .studio-title {
+                font-size: 1.3rem;
+            }
             .card {
                 padding: 20px;
             }
@@ -128,10 +195,18 @@
 </head>
 <body>
 
-    <!-- Bande de navigation simplifiée -->
+    <!-- Bande de navigation COMPLÈTE (sans les boutons Montage et Collaboration) -->
     <header class="navbar">
         <a href="index.html" class="studio-title">LeNoobInconnu STUDIO</a>
-        <nav></nav>
+        
+        <nav class="nav-links">
+            <a href="index.html" class="nav-item"><i class="fa-solid fa-house"></i> Accueil</a>
+            <a href="serveur.html" class="nav-item"><i class="fa-solid fa-gamepad"></i> Serveur MC</a> 
+            <a href="https://discord.gg/votre-invitation" class="nav-item" target="_blank"><i class="fa-brands fa-discord"></i> Discord</a>
+            <a href="videos.html" class="nav-item"><i class="fa-solid fa-video"></i> Vidéos</a>
+            <a href="a-propos.html" class="nav-item"><i class="fa-solid fa-circle-info"></i> À Propos</a>
+            <a href="contact.html" class="nav-item"><i class="fa-solid fa-envelope"></i> Nous Contacter</a>
+        </nav>
     </header>
 
     <main class="content">
@@ -151,12 +226,13 @@
                 <li><i class="fa-solid fa-circle-check"></i> Liens Utiles : Vos liens vers vos réseaux sociaux pour que nous puissions découvrir votre travail.</li>
             </ul>
             
-            <p style="color: var(--primary-color); font-weight: bold; margin-top: 40px;">
+            <p style="color: var(--collaboration-color); font-weight: bold; margin-top: 40px;">
                 Nous étudierons toutes les propositions. Hâte de lire votre idée !
             </p>
             
-            <a href="index.html" class="return-button">
-                <i class="fa-solid fa-arrow-left"></i> Retour à l'accueil
+            <!-- NOUVEAU BOUTON : Contacter par Discord -->
+            <a href="https://discord.gg/votre-invitation" target="_blank" class="contact-button">
+                <i class="fa-brands fa-discord"></i> Contacter par Discord
             </a>
         </div>
     </main>
