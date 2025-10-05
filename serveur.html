@@ -209,6 +209,20 @@
             cursor: pointer;
             border: none;
         }
+        
+        /* Bouton principal pour démarrer le serveur */
+        /* NOTE: margin-top ajusté pour ne pas être écrasé par le bouton et le subtitle */
+        .main-action-button {
+            background-color: var(--primary-color);
+            color: var(--background-dark);
+            margin-top: 0px; /* Réinitialisé car il est juste après le subtitle */
+            margin-bottom: 40px; /* Ajouté pour séparer de la section Détails de Connexion */
+            box-shadow: 0 8px 20px rgba(91, 95, 245, 0.5);
+        }
+        .main-action-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(91, 95, 245, 0.7);
+        }
 
         /* Boutons de copie spécifiques */
         .copy-button {
@@ -386,6 +400,11 @@
         <p class="subtitle">
             Jouez avec nous sur PC/Mac (Java) ou sur Console/Mobile (Bedrock).
         </p>
+        
+        <!-- BOUTON D'ACTION PRINCIPAL : Démarrer le serveur (MAINTENANT AU DESSUS) -->
+        <a href="https://votre-lien-de-demarrage-serveur.com" class="action-button main-action-button" target="_blank">
+            <i class="fa-solid fa-play"></i> Démarrer le Serveur Maintenant !
+        </a>
 
         <!-- 1. Section Adresses du Serveur (Double Version) -->
         <section class="connection-card">
@@ -413,7 +432,7 @@
                     </p>
                 </div>
 
-                <!-- Version Bedrock (Console/Mobile) - MODIFIÉ pour IP/Port séparés sur deux lignes -->
+                <!-- Version Bedrock (Console/Mobile) -->
                 <div class="version-box bedrock">
                     <h3><i class="fa-solid fa-mobile-screen-button"></i> Bedrock Edition</h3>
                     
@@ -451,6 +470,7 @@
                 </div>
                 
             </div>
+            
         </section>
 
         <!-- 2. Section Règles Principales -->
@@ -467,7 +487,8 @@
                 <li><i class="fa-brands fa-discord"></i> Pour le support et les discussions, rejoignez notre serveur Discord !</li>
             </ul>
 
-            <a href="https://discord.gg/PbntRm5sNy" class="action-button primary-button" target="_blank" style="margin-top: 30px;">
+            <a href="https://discord.gg/PbntRm5sNy" class="action-button" target="_blank" 
+               style="background-color: #7289DA; color: var(--text-light); margin-top: 30px; box-shadow: 0 5px 15px rgba(114, 137, 218, 0.4);">
                 <i class="fa-brands fa-discord"></i> Lire les Règles Complètes sur Discord
             </a>
         </section>
@@ -482,34 +503,33 @@
          * @param {string} confirmationElementId - L'ID de l'élément HTML où afficher la confirmation.
          */
         function copyAddress(ipElementId, confirmationElementId) {
-            // 1. Récupérer le texte de l'adresse (on enlève les espaces superflus)
             const addressElement = document.getElementById(ipElementId);
             const addressText = addressElement.innerText.trim();
-            
-            // 2. Préparer l'affichage de la confirmation
             const confirmation = document.getElementById(confirmationElementId);
-            confirmation.innerText = 'Copié !'; // Message plus court pour les petits espaces
+            confirmation.innerText = 'Copié !';
             
-            // 3. Utiliser l'API Clipboard
+            // Tente d'utiliser l'API Clipboard
             navigator.clipboard.writeText(addressText)
                 .then(() => {
-                    // 4. Afficher le message de confirmation
                     confirmation.style.opacity = '1';
-                    
-                    // 5. Masquer le message après 3 secondes
                     setTimeout(() => {
                         confirmation.style.opacity = '0';
-                        confirmation.innerText = ''; // Efface le texte après masquage
+                        confirmation.innerText = '';
                     }, 3000);
                 })
                 .catch(err => {
                     console.error('Erreur de copie:', err);
-                    // Utiliser une boîte de message personnalisée au lieu d'alert() si possible
-                    confirmation.innerText = "Erreur de copie. Copiez manuellement: " + addressText;
+                    // Fallback en cas d'échec
+                    confirmation.innerText = "Erreur de copie. Copiez manuellement.";
                     confirmation.style.opacity = '1';
+                    
+                    setTimeout(() => {
+                        confirmation.style.opacity = '0';
+                    }, 3000);
                 });
         }
     </script>
 
 </body>
 </html>
+
