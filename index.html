@@ -10,36 +10,6 @@
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
-    <!-- SCRIPT DE REDIRECTION MOBILE AJOUTÉ ICI -->
-    <script type="text/javascript">
-        // Fonction pour vérifier si l'utilisateur est sur mobile
-        function isMobile() {
-            // Détection de mobile, tablette, ou petits écrans.
-            // On peut aussi utiliser la largeur de l'écran pour une meilleure compatibilité.
-            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-            const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-
-            // Détection basée sur l'agent utilisateur ou la petite taille d'écran
-            if (
-                /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent) ||
-                (window.innerWidth <= 768 && isTouchDevice)
-            ) {
-                return true;
-            }
-            return false;
-        }
-
-        // --- ATTENTION : MODIFIEZ CETTE URL VERS VOTRE PAGE OU SITE MOBILE DÉDIÉ ---
-        const mobileURL = "mobile.html"; 
-        // Si vous voulez rediriger vers un autre domaine : "https://votre-domaine.com/mobile-version.html"
-
-        if (isMobile()) {
-            // Effectue la redirection immédiate
-            window.location.href = mobileURL;
-        }
-    </script>
-    <!-- FIN DU SCRIPT DE REDIRECTION MOBILE -->
-
     <style>
         /* CSS INTERNE (Style Moderne) */
         
