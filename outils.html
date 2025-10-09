@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <!-- Note: J'ai retiré le favicon car l'URL "favicon.png" n'est pas fournie. -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeNoobInconnu STUDIO - Outils YouTubeur</title>
+    
+    <!-- Intégration de Font Awesome pour les icônes (via CDN moderne pour compatibilité) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <style>
+        /* Variables CSS pour les couleurs modernes (Identiques à votre modèle) */
+        :root {
+            --primary-color: #5b5ff5; /* Un bleu-violet moderne */
+            --primary-light: #7c80ff; /* Pour les effets de survol/ombre */
+            --background-dark: #1e1e2f; /* Fond très sombre */
+            --background-light: #2c2c40; /* Couleur des cartes/éléments */
+            --background-lighter: #393950; /* Couleur de survol des cartes */
+            --text-light: #f0f0f5; /* Texte clair */
+            --text-secondary: #a0a0b0; /* Texte secondaire */
+            --shadow-elevation: 0 10px 25px rgba(0, 0, 0, 0.25);
+            --font-stack: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --success-color: #38c172; /* Vert pour disponible (NON UTILISÉ ACTUELLEMENT) */
+            --warning-color: #ff9800; /* Orange pour maintenance */
+        }
+        
+        /* Réinitialisation de base */
+        body {
+            margin: 0;
+            font-family: var(--font-stack);
+            background-color: var(--background-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+        }
+
+        /* --- NAVIGATION BAR STYLES (Identique à votre modèle) --- */
+        .navbar {
+            background-color: var(--background-light);
+            padding: 15px 30px;
+            box-shadow: var(--shadow-elevation); 
+            display: flex;
+            justify-content: space-between; 
+            align-items: center;
+        }
+        
+        .studio-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            letter-spacing: 1px;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 25px; 
+        }
+
+        .nav-item {
+            color: var(--text-light);
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: background-color 0.3s, color 0.3s, transform 0.1s;
+            font-size: 1rem;
+            font-weight: 500;
+            white-space: nowrap; 
+            display: flex; 
+            align-items: center;
+        }
+
+        .nav-item.active {
+            background-color: var(--primary-color);
+            color: var(--background-dark);
+            box-shadow: 0 5px 15px rgba(91, 95, 245, 0.4);
+        }
+        
+        .nav-item.active i {
+             color: var(--background-dark) !important;
+        }
+
+        .nav-item i {
+            margin-right: 8px;
+            color: var(--primary-color); 
+        }
+        
+        .nav-item:not(.active):hover {
+            background-color: var(--primary-color);
+            color: var(--background-dark);
+            transform: translateY(-2px); 
+            box-shadow: 0 5px 15px rgba(91, 95, 245, 0.4);
+        }
+        
+        .nav-item:not(.active):hover i {
+            color: var(--background-dark); 
+        }
+
+        /* --- STYLES SPÉCIFIQUES AU MENU DES OUTILS --- */
+
+        .content {
+            padding: 60px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .content h1 {
+            color: var(--text-light);
+            font-size: 2.8rem;
+            margin-bottom: 5px;
+            letter-spacing: 0.5px;
+        }
+        
+        .content p.subtitle {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+        }
+
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .tool-card {
+            background-color: var(--background-light);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: var(--shadow-elevation);
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            background-color: var(--background-lighter);
+        }
+
+        .tool-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .tool-card h2 {
+            font-size: 1.5rem;
+            color: var(--text-light);
+            margin: 0 0 10px 0;
+        }
+
+        .tool-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            flex-grow: 1; /* Permet aux cartes d'avoir la même hauteur */
+            margin-bottom: 20px;
+        }
+
+        .tool-status {
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 5px 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        /* Cette classe n'est plus utilisée, mais maintenue pour référence */
+        /*
+        .status-available {
+            background-color: var(--success-color);
+            color: var(--background-dark);
+        }
+        */
+
+        .status-maintenance {
+            background-color: var(--warning-color);
+            color: var(--background-dark);
+        }
+
+        .tool-button {
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s, opacity 0.3s;
+            width: 100%;
+        }
+
+        .button-primary {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+        }
+
+        .button-primary:hover {
+            background-color: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(91, 95, 245, 0.4);
+        }
+        
+        .button-disabled {
+            background-color: #555;
+            color: #ccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+            box-shadow: none;
+        }
+        
+        .button-disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* --- MODAL (Message box au lieu d'alert) --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none; /* Masqué par défaut */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background-color: var(--background-light);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: var(--shadow-elevation);
+            max-width: 400px;
+            text-align: center;
+            transform: scale(0.9);
+            animation: fadeIn 0.3s forwards;
+        }
+        
+        @keyframes fadeIn {
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-content h3 {
+            color: var(--warning-color);
+            margin-top: 0;
+            font-size: 1.4rem;
+        }
+        
+        .modal-content p {
+            color: var(--text-light);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .modal-close-btn {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        
+        .modal-close-btn:hover {
+            background-color: var(--primary-light);
+        }
+
+
+        /* Mobile adjustments */
+        @media (max-width: 768px) {
+            .tool-grid {
+                grid-template-columns: 1fr; /* Une seule colonne sur mobile */
+            }
+            .navbar {
+                flex-direction: column;
+                padding: 15px 10px;
+            }
+            .nav-links {
+                margin-top: 15px;
+                gap: 10px;
+                flex-wrap: wrap; 
+                justify-content: center;
+            }
+            .studio-title {
+                font-size: 1.3rem;
+            }
+            .content h1 {
+                font-size: 2rem;
+            }
+            .tool-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Bande de navigation -->
+    <header class="navbar">
+        <a href="index.html" class="studio-title">LeNoobInconnu STUDIO</a>
+        
+        <nav class="nav-links">
+            <!-- Ajout du lien "Outils" et ajustement des icônes/classes -->
+            <a href="index.html" class="nav-item"><i class="fa-solid fa-house"></i> Accueil</a>
+            <a href="outils.html" class="nav-item active"><i class="fa-solid fa-screwdriver-wrench"></i> Outils</a>
+            <a href="serveur.html" class="nav-item"><i class="fa-solid fa-gamepad"></i> Serveur MC</a> 
+            <a href="https://discord.gg/g8TsHz6ntb" class="nav-item" target="_blank"><i class="fa-brands fa-discord"></i> Discord</a>
+            <a href="videos.html" class="nav-item"><i class="fa-solid fa-video"></i> Vidéos</a>
+            <a href="a-propos.html" class="nav-item"><i class="fa-solid fa-circle-info"></i> À Propos</a>
+            <a href="contact.html" class="nav-item"><i class="fa-solid fa-envelope"></i> Nous Contacter</a>
+        </nav>
+    </header>
+
+    <!-- Contenu du menu des outils -->
+    <main class="content">
+        <h1>Boîte à Outils du YouTubeur</h1>
+        <p class="subtitle">Des ressources essentielles pour propulser votre chaîne au niveau supérieur.</p>
+
+        <div class="tool-grid">
+            
+            <!-- Outil 1 : Création de Miniature (Indisponible) -->
+            <div class="tool-card">
+                <i class="fa-solid fa-crop-alt tool-icon"></i>
+                <h2>Générateur de Miniatures</h2>
+                <p>Créez des vignettes (thumbnails) accrocheuses et optimisées pour attirer les clics sur YouTube.</p>
+                <span class="tool-status status-maintenance">En Maintenance</span>
+                <button 
+                    class="tool-button button-disabled" 
+                    onclick="showModal('Générateur de Miniatures', 'Cet outil est en **maintenance** pour des mises à jour importantes. Revenez vite !')">
+                    Outil Indisponible
+                </button>
+            </div>
+
+            <!-- Outil 2 : Création de Logo (Indisponible) -->
+            <div class="tool-card">
+                <i class="fa-solid fa-palette tool-icon"></i>
+                <h2>Concepteur de Logo / Branding</h2>
+                <p>Développez une identité visuelle forte (logo, bannières) pour professionnaliser votre marque.</p>
+                <span class="tool-status status-maintenance">En Développement</span>
+                <button 
+                    class="tool-button button-disabled" 
+                    onclick="showModal('Concepteur de Logo / Branding', 'L\'outil est **prévu pour être opérationnel**, mais sa page est encore en cours de création. Patience !')">
+                    Bientôt Disponible
+                </button>
+            </div>
+
+            <!-- Outil 3 : Montage Vidéo (Indisponible) -->
+            <div class="tool-card">
+                <i class="fa-solid fa-film tool-icon"></i>
+                <h2>Éditeur Vidéo Simplifié</h2>
+                <p>Un outil léger pour les coupes rapides, l'ajout de texte et la musique libre de droits.</p>
+                <span class="tool-status status-maintenance">En Développement</span>
+                <button 
+                    class="tool-button button-disabled" 
+                    onclick="showModal('Éditeur Vidéo Simplifié', 'Cet éditeur est **bientôt prêt** ! Nous finalisons les derniers détails avant le lancement.')">
+                    Bientôt Disponible
+                </button>
+            </div>
+
+            <!-- Outil 4 : Emploi du Temps de Publication (Indisponible) -->
+            <div class="tool-card">
+                <i class="fa-solid fa-calendar-alt tool-icon"></i>
+                <h2>Planificateur de Publications</h2>
+                <p>Gérez votre calendrier de contenu, planifiez vos idées de vidéos et respectez vos échéances.</p>
+                <span class="tool-status status-maintenance">En Développement</span>
+                <button 
+                    class="tool-button button-disabled" 
+                    onclick="showModal('Planificateur de Publications', 'Le planificateur est en **développement actif** ! Nous travaillons pour qu\'il soit parfait.')">
+                    Bientôt Disponible
+                </button>
+            </div>
+
+            <!-- Outil 5 : Analyse de Mots-Clés (Indisponible) -->
+             <div class="tool-card">
+                <i class="fa-solid fa-chart-line tool-icon"></i>
+                <h2>Analyse de Mots-Clés</h2>
+                <p>Trouvez les meilleurs mots-clés pour le référencement (SEO) de vos vidéos.</p>
+                <span class="tool-status status-maintenance">En Maintenance</span>
+                <button 
+                    class="tool-button button-disabled" 
+                    onclick="showModal('Analyse de Mots-Clés', 'Outil temporairement retiré pour une **refonte complète** afin d\'améliorer les performances.')">
+                    Outil Indisponible
+                </button>
+            </div>
+
+            <!-- Outil 6 : Générateur de Scripts (Indisponible) -->
+             <div class="tool-card">
+                <i class="fa-solid fa-microphone-lines tool-icon"></i>
+                <h2>Générateur de Scripts</h2>
+                <p>Utilisez l'IA pour générer ou structurer vos idées de scénarios vidéo.</p>
+                <span class="tool-status status-maintenance">En Développement</span>
+                <button 
+                    class="tool-button button-disabled" 
+                    onclick="showModal('Générateur de Scripts', 'Le module d\'IA est en **phase de test**. Son déploiement est imminent !')">
+                    Bientôt Disponible
+                </button>
+            </div>
+
+        </div>
+
+    </main>
+    
+    <!-- Modal pour les messages d'indisponibilité -->
+    <div id="status-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="modal-title"></h3>
+            <p id="modal-message"></p>
+            <button class="modal-close-btn" onclick="closeModal()">Fermer</button>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * Affiche le modal de message avec un titre et un contenu personnalisés.
+         * @param {string} toolName - Le nom de l'outil à afficher dans le titre du modal.
+         * @param {string} specificMessage - Le message détaillé à afficher (peut contenir de l'HTML/Markdown).
+         */
+        function showModal(toolName, specificMessage) {
+            const modal = document.getElementById('status-modal');
+            const title = document.getElementById('modal-title');
+            const message = document.getElementById('modal-message');
+
+            title.textContent = `${toolName} : Information`;
+            // Utilise innerHTML pour interpréter le Markdown/HTML du message
+            message.innerHTML = specificMessage;
+            
+            modal.style.display = 'flex';
+        }
+
+        // Fonction pour masquer le modal
+        function closeModal() {
+            document.getElementById('status-modal').style.display = 'none';
+        }
+
+        // Empêcher l'ouverture du modal si on clique sur l'overlay (optionnel)
+        document.getElementById('status-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
