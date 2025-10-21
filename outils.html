@@ -1,15 +1,15 @@
-
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Studio du Créateur - Tableau de Bord</title>
     
-    <!-- Intégration de Font Awesome pour les icônes (comme dans votre exemple) -->
+    <!-- Intégration de Font Awesome pour les icônes -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
     <style>
-        /* Variables CSS pour les couleurs du thème sombre (reprises de votre exemple) */
+        /* Variables CSS pour les couleurs du thème sombre */
         :root {
             --primary-color: #5b5ff5; /* Un bleu-violet moderne */
             --background-dark: #1e1e2f; /* Fond très sombre */
@@ -17,7 +17,7 @@
             --text-light: #f0f0f5; /* Texte clair */
             --text-secondary: #a0a0b0; /* Texte secondaire */
             --shadow-elevation: 0 10px 25px rgba(0, 0, 0, 0.25);
-            --font-stack: 'Inter', sans-serif; /* Utilisation d'Inter, comme dans la version précédente */
+            --font-stack: 'Inter', sans-serif;
         }
         
         /* Réinitialisation de base et corps */
@@ -27,7 +27,7 @@
             background-color: var(--background-dark);
             color: var(--text-light);
             min-height: 100vh;
-            display: flex; /* Permet à la barre latérale et au contenu de fonctionner côte à côte */
+            display: flex;
             flex-direction: column;
         }
 
@@ -65,7 +65,7 @@
             width: 100%;
             padding: 10px 15px;
             border-radius: 8px;
-            border: 2px solid #3c3c54; /* Bordure légèrement plus claire */
+            border: 2px solid #3c3c54;
             background-color: #1e1e2f;
             color: var(--text-light);
             font-size: 1rem;
@@ -81,10 +81,6 @@
             border-color: var(--primary-color);
         }
         
-        .nav-links {
-            display: none; /* Cache les liens principaux sur desktop pour laisser la place à la recherche */
-        }
-
         /* --- MENU DÉROULANT (Burger Icon/Mobile) --- */
         .burger-menu {
             display: flex;
@@ -110,7 +106,7 @@
 
         .mobile-nav {
             position: fixed;
-            top: 60px; /* Hauteur de la barre de navigation */
+            top: 60px;
             right: 0;
             width: 250px;
             height: calc(100% - 60px);
@@ -120,7 +116,7 @@
             transition: transform 0.3s ease-in-out;
             padding: 20px;
             z-index: 999;
-            overflow-y: auto; /* Permet le défilement si beaucoup d'éléments */
+            overflow-y: auto;
         }
 
         .mobile-nav.open {
@@ -140,28 +136,7 @@
             align-items: center;
             white-space: nowrap;
         }
-
-        .nav-item i {
-            margin-right: 12px;
-            color: var(--primary-color); 
-            font-size: 1.2rem;
-        }
         
-        .nav-item:hover {
-            background-color: #3c3c54;
-            transform: none; 
-        }
-
-        .nav-item.active {
-            background-color: var(--primary-color);
-            color: var(--background-dark);
-            font-weight: 700;
-        }
-        .nav-item.active i {
-            color: var(--background-dark);
-        }
-
-
         /* --- MAIN CONTENT & TOOL CARDS --- */
 
         .main-content {
@@ -172,20 +147,8 @@
             margin: 0 auto;
         }
         
-        .welcome-section h1 {
-            font-size: 2.2rem;
-            margin-bottom: 5px;
-            color: var(--text-light);
-        }
-        
-        .welcome-section p {
-            color: var(--text-secondary);
-            margin-bottom: 30px;
-        }
-
         .tools-grid {
             display: grid;
-            /* 4 colonnes sur desktop, s'adapte au mobile */
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 30px;
             margin-top: 20px;
@@ -196,9 +159,9 @@
             padding: 30px;
             border-radius: 12px;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-            border-left: 5px solid transparent; /* Bordure pour les couleurs d'accentuation */
+            border-left: 5px solid transparent;
             transition: transform 0.3s, box-shadow 0.3s;
-            display: flex; /* Gardé en flex pour le layout interne */
+            display: flex;
             flex-direction: column;
             justify-content: space-between;
         }
@@ -212,6 +175,8 @@
             font-size: 1.5rem;
             font-weight: 600;
             margin-bottom: 10px;
+            display: flex;
+            align-items: center;
         }
 
         .tool-card p {
@@ -222,16 +187,29 @@
         }
         
         /* Couleurs spécifiques pour les 8 cartes */
-        .card-ideas { border-left-color: #ff5e5e; } /* Rouge/YouTube */
-        .card-branding { border-left-color: #5b5ff5; } /* Bleu/Primaire */
-        .card-seo { border-left-color: #48c9b0; } /* Vert menthe */
-        .card-tutorial { border-left-color: #ff9f43; } /* Orange */
+        .card-ideas { border-left-color: #ff5e5e; }
+        .card-branding { border-left-color: #5b5ff5; }
+        .card-seo { border-left-color: #48c9b0; }
+        .card-tutorial { border-left-color: #ff9f43; }
+        .card-planner { border-left-color: #3498db; }
+        .card-audio { border-left-color: #9b59b6; }
+        .card-polls { border-left-color: #2ecc71; }
+        .card-revenue { border-left-color: #f1c40f; }
 
-        /* NOUVELLES COULEURS */
-        .card-planner { border-left-color: #3498db; } /* Bleu Ciel */
-        .card-audio { border-left-color: #9b59b6; } /* Violet */
-        .card-polls { border-left-color: #2ecc71; } /* Vert Émeraude */
-        .card-revenue { border-left-color: #f1c40f; } /* Jaune */
+        /* --- NOUVEAU: BADGE DE STATUT --- */
+        .status-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 6px;
+            margin-left: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #1e1e2f; /* Texte sombre sur le badge clair */
+            
+            /* Les couleurs de fond seront appliquées par JS */
+            background-color: #ccc; 
+        }
 
         /* Bouton "Aller à l'outil" */
         .tool-button {
@@ -245,36 +223,14 @@
             font-weight: 600;
             text-decoration: none;
             transition: background-color 0.3s, transform 0.1s;
-            margin-top: auto; /* Pousse le bouton vers le bas de la carte */
+            margin-top: auto;
         }
         
         .tool-button:hover {
-            background-color: #7a7fe6; /* Lighter primary color */
+            background-color: #7a7fe6;
             transform: translateY(-1px);
         }
         
-        .tool-button i {
-            margin-left: 8px;
-            color: var(--background-dark);
-            font-size: 0.9rem;
-        }
-
-        /* Message box pour la recherche (simule le comportement de la v1) */
-        .message-box {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: #48c9b0;
-            color: #1e1e2f;
-            padding: 12px 20px;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out;
-            z-index: 10000;
-            font-weight: 600;
-        }
-
         /* --- Media Queries pour la réactivité --- */
         @media (max-width: 768px) {
             .header-bar {
@@ -282,7 +238,7 @@
                 justify-content: space-between;
             }
             .search-container {
-                display: none; /* Cache la barre de recherche dans le header sur mobile */
+                display: none;
             }
             .studio-title {
                 font-size: 1.3rem;
@@ -293,7 +249,7 @@
         }
     </style>
 </head>
-<body>
+<body onload="updateToolStatusBadges()">
 
     <!-- BARRE DE NAVIGATION (Header) avec style sombre -->
     <header class="header-bar">
@@ -359,7 +315,7 @@
         <section class="tools-grid">
             
             <!-- NOUVEL OUTIL 1: Planificateur de Contenu -->
-            <div class="tool-card card-planner">
+            <div class="tool-card card-planner" data-tool-id="planificateur.html">
                 <div>
                     <h2><i class="fa-solid fa-calendar-days" style="color: #3498db; margin-right: 10px;"></i> Planificateur de Contenu</h2>
                     <p>Organisez vos idées, définissez les dates de publication et suivez le statut de chaque vidéo (Idée, En cours, Publié).</p>
@@ -370,7 +326,7 @@
             </div>
 
             <!-- Outil 1 (Ancien): Idées de Contenu Tendance -->
-            <div class="tool-card card-ideas">
+            <div class="tool-card card-ideas" data-tool-id="idees.html">
                 <div>
                     <h2><i class="fa-solid fa-fire-flame-curved" style="color: #ff5e5e; margin-right: 10px;"></i> Idées Tendance</h2>
                     <p>Découvrez ce qui est populaire sur YouTube en ce moment. Ne manquez jamais un sujet vidéo qui pourrait faire le buzz.</p>
@@ -381,7 +337,7 @@
             </div>
 
             <!-- Outil 3 (Ancien): Optimisation SEO (Mots-clés) -->
-            <div class="tool-card card-seo">
+            <div class="tool-card card-seo" data-tool-id="seo.html">
                 <div>
                     <h2><i class="fa-solid fa-magnifying-glass-chart" style="color: #48c9b0; margin-right: 10px;"></i> Outil SEO</h2>
                     <p>Trouvez les meilleurs mots-clés pour le titre et la description de vos vidéos afin d'être mieux classé dans les recherches.</p>
@@ -392,7 +348,7 @@
             </div>
             
             <!-- NOUVEL OUTIL 2: Bibliothèque Audio -->
-            <div class="tool-card card-audio">
+            <div class="tool-card card-audio" data-tool-id="audio.html">
                 <div>
                     <h2><i class="fa-solid fa-music" style="color: #9b59b6; margin-right: 10px;"></i> Bibliothèque Audio</h2>
                     <p>Accédez à une collection de musiques de fond et d'effets sonores libres de droits pour sublimer vos montages.</p>
@@ -403,7 +359,7 @@
             </div>
 
             <!-- NOUVEL OUTIL 3: Gestionnaire d'Engagement -->
-            <div class="tool-card card-polls">
+            <div class="tool-card card-polls" data-tool-id="sondages.html">
                 <div>
                     <h2><i class="fa-solid fa-comments" style="color: #2ecc71; margin-right: 10px;"></i> Gestionnaire d'Engagement</h2>
                     <p>Créez et organisez des sondages ou des questions pour impliquer votre communauté et mieux connaître leurs attentes.</p>
@@ -414,7 +370,7 @@
             </div>
 
             <!-- NOUVEL OUTIL 4: Suivi des Revenus -->
-            <div class="tool-card card-revenue">
+            <div class="tool-card card-revenue" data-tool-id="revenus.html">
                 <div>
                     <h2><i class="fa-solid fa-dollar-sign" style="color: #f1c40f; margin-right: 10px;"></i> Suivi des Revenus</h2>
                     <p>Gardez un œil sur vos gains estimés, analysez les sources de revenus et fixez-vous des objectifs financiers.</p>
@@ -425,7 +381,7 @@
             </div>
 
             <!-- Outil 2 (Ancien): Kit de Branding Rapide -->
-            <div class="tool-card card-branding">
+            <div class="tool-card card-branding" data-tool-id="branding.html">
                 <div>
                     <h2><i class="fa-solid fa-palette" style="color: var(--primary-color); margin-right: 10px;"></i> Kit de Marque</h2>
                     <p>Créez rapidement une identité visuelle pour votre chaîne : logos simples, bannières et miniatures de base.</p>
@@ -436,7 +392,7 @@
             </div>
             
             <!-- Outil 4 (Ancien): Check-list de Publication -->
-            <div class="tool-card card-tutorial">
+            <div class="tool-card card-tutorial" data-tool-id="checklist.html">
                 <div>
                     <h2><i class="fa-solid fa-list-check" style="color: #ff9f43; margin-right: 10px;"></i> Liste de Lancement</h2>
                     <p>La liste complète des étapes (miniature, écran de fin, cartes, description) à ne jamais oublier avant de publier.</p>
@@ -454,6 +410,19 @@
     <div id="message-container"></div>
 
     <script>
+        // ==========================================================
+        // CONFIGURATION MANUELLE DES STATUTS DES OUTILS
+        // Clé: le nom du fichier HTML de l'outil (ex: "planificateur.html")
+        // Valeurs: status (message à afficher), color (code hexadécimal de la couleur du badge)
+        // ==========================================================
+        const TOOL_STATUS = {
+            "planificateur.html": { status: "Maintenance", color: "#f39c12" },      // Orange pour maintenance
+            "audio.html": { status: "En développement", color: "#e74c3c" },         // Rouge pour en cours
+            "revenus.html": { status: "Nouveau", color: "#2ecc71" },                // Vert pour nouveau
+            // Laissez les autres outils absents ou mettez leur statut à null pour ne rien afficher
+        };
+        // ==========================================================
+
         // Fonction utilitaire pour afficher les notifications (remplace alert())
         function showNotification(message) {
             const container = document.getElementById('message-container');
@@ -462,15 +431,12 @@
             messageBox.textContent = message;
             container.appendChild(messageBox);
             
-            // Force l'affichage (opacity: 1)
             setTimeout(() => {
                 messageBox.style.opacity = '1';
             }, 10); 
 
-            // Disparaître le message après 3 secondes
             setTimeout(() => {
                 messageBox.style.opacity = '0';
-                // Supprimer de la DOM après la transition
                 messageBox.addEventListener('transitionend', () => {
                     messageBox.remove();
                 });
@@ -479,38 +445,58 @@
 
         /**
          * FILTRAGE DES OUTILS EN TEMPS RÉEL
-         * Cette fonction est appelée sur l'événement 'oninput' des barres de recherche.
-         * Elle filtre les cartes d'outils en fonction du titre ou de la description.
-         * @param {string} query Le texte entré par l'utilisateur.
          */
         function handleSearch(query) {
             const filter = query.toUpperCase().trim();
             const cards = document.querySelectorAll('.tools-grid .tool-card');
 
             cards.forEach(card => {
-                // Récupération et mise en majuscules du texte pour une comparaison insensible à la casse
                 const titleText = card.querySelector('h2').textContent.toUpperCase();
                 const descriptionText = card.querySelector('p').textContent.toUpperCase();
                 
-                // Vérifie si la requête correspond au titre OU à la description
                 if (titleText.includes(filter) || descriptionText.includes(filter)) {
-                    card.style.display = 'flex'; // Afficher la carte (pour maintenir le grid layout)
+                    card.style.display = 'flex';
                 } else {
-                    card.style.display = 'none'; // Masquer la carte
+                    card.style.display = 'none';
                 }
             });
         }
 
+        /**
+         * Fonction pour appliquer les badges de statut aux cartes
+         */
+        function updateToolStatusBadges() {
+            const cards = document.querySelectorAll('.tools-grid .tool-card');
+
+            cards.forEach(card => {
+                const toolId = card.getAttribute('data-tool-id');
+                const statusInfo = TOOL_STATUS[toolId];
+
+                if (statusInfo && statusInfo.status) {
+                    const h2 = card.querySelector('h2');
+                    
+                    // Créer le badge
+                    const badge = document.createElement('span');
+                    badge.className = 'status-badge';
+                    badge.textContent = statusInfo.status;
+                    badge.style.backgroundColor = statusInfo.color;
+
+                    // L'insérer après le texte du titre
+                    h2.appendChild(badge);
+                }
+            });
+        }
+
+
         // Fonction appelée lorsque l'utilisateur appuie sur Entrée (pour la notification)
         function performSearch() {
-            // Récupère la valeur actuelle (déjà filtrée par handleSearch)
             const queryDesktop = document.getElementById('search-input-desktop')?.value.trim() || '';
             const queryMobile = document.getElementById('search-input-mobile')?.value.trim() || '';
             const query = queryDesktop || queryMobile;
             
             if (query) {
                 showNotification(`Recherche filtrée pour : "${query}".`);
-                closeMobileMenu(); // Ferme le menu mobile après une recherche
+                closeMobileMenu();
             } else {
                 showNotification("Veuillez entrer un terme de recherche.");
             }
@@ -530,10 +516,9 @@
             burgerMenu.classList.toggle('open');
         });
 
-        // Fermer le menu si l'utilisateur clique en dehors (ou sur un lien)
         document.addEventListener('click', (event) => {
             if (!mobileNav.contains(event.target) && !burgerMenu.contains(event.target) && mobileNav.classList.contains('open')) {
-                // closeMobileMenu(); // Désactivé pour laisser l'utilisateur interagir avec le reste de la page
+                 //closeMobileMenu();
             }
         });
         
