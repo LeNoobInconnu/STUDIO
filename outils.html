@@ -197,6 +197,7 @@
         .card-revenue { border-left-color: #f1c40f; }
 
         /* --- NOUVEAU: BADGE DE STATUT --- */
+        /* NOTE: Ce style de badge est maintenant utilisé SEULEMENT dans le bouton désactivé */
         .status-badge {
             font-size: 0.75rem;
             font-weight: 700;
@@ -205,10 +206,7 @@
             margin-left: 15px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            color: #1e1e2f; /* Texte sombre sur le badge clair */
-            
-            /* Les couleurs de fond seront appliquées par JS */
-            background-color: #ccc; 
+            color: #1e1e2f; 
         }
 
         /* Bouton "Aller à l'outil" */
@@ -229,6 +227,35 @@
         .tool-button:hover {
             background-color: #7a7fe6;
             transform: translateY(-1px);
+        }
+        
+        /* --- NOUVEAU: REMPLACEMENT DU BOUTON DESACTIVE --- */
+        .status-placeholder {
+            /* Simule la taille et la position du bouton */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-top: auto;
+            
+            /* Style Inactif */
+            background-color: #3c3c54; /* Gris foncé, pour indiquer l'inactivité */
+            color: var(--text-light);
+            pointer-events: none; /* Rendre inactif au clic */
+            cursor: default;
+            border: 2px solid var(--text-secondary);
+            opacity: 0.8;
+            box-shadow: none;
+        }
+
+        .status-placeholder .status-badge {
+            /* Mettre le badge en évidence à l'intérieur du placeholder */
+            margin: 0 0 0 10px; 
+            padding: 6px 12px; 
+            color: #1e1e2f;
+            line-height: 1; /* S'assurer que le texte est bien centré */
         }
         
         /* --- Media Queries pour la réactivité --- */
@@ -412,15 +439,28 @@
     <script>
         // ==========================================================
         // CONFIGURATION MANUELLE DES STATUTS DES OUTILS
+        // ----------------------------------------------------------
+        // Si un outil est listé ici, son bouton sera désactivé et 
+        // remplacé par le statut et la couleur spécifiés.
         // Clé: le nom du fichier HTML de l'outil (ex: "planificateur.html")
-        // Valeurs: status (message à afficher), color (code hexadécimal de la couleur du badge)
+        // Valeurs: 
+        // - status: Le message à afficher ("En développement", "Maintenance", "Nouveau", etc.)
+        // - color: Le code hexadécimal de la couleur du badge
         // ==========================================================
         const TOOL_STATUS = {
-            "planificateur.html": { status: "Maintenance", color: "#f39c12" },      
-            "audio.html": { status: "En développement", color: "#e74c3c" },         
-            "revenus.html": { status: "Nouveau", color: "#2ecc71" },   
-            "tutoriels.html": { status: "Nouveau", color: "#2ecc71" },
-            // Laissez les autres outils absents ou mettez leur statut à null pour ne rien afficher
+            "planificateur.html": { status: "En développement", color: "#e74c3c" }, // Rouge pour en cours
+            "idees.html": { status: "En développement", color: "#e74c3c" },
+            "seo.html": { status: "En développement", color: "#e74c3c" },
+            "audio.html": { status: "En développement", color: "#e74c3c" },
+            "sondages.html": { status: "En développement", color: "#e74c3c" },
+            "revenus.html": { status: "En développement", color: "#e74c3c" },
+            "audio.html": { status: "En développement", color: "#e74c3c" },
+            "branding.html": { status: "En développement", color: "#e74c3c" },
+            "checklist.html": { status: "En développement", color: "#e74c3c" },
+            "tutoriels.html": { status: "En développement", color: "#e74c3c" },
+            "": { status: "Nouveau", color: "#2ecc71" },                // Vert pour nouveau
+            "": { status: "Beta", color: "#5b5ff5" },                       // Bleu pour Beta
+            "": { status: "Maintenance", color: "#f39c12" },      // Orange pour maintenance
         };
         // ==========================================================
 
@@ -465,6 +505,8 @@
 
         /**
          * Fonction pour appliquer les badges de statut aux cartes
+         * et désactiver le bouton de l'outil si un statut est défini.
+         * NOTE: Le badge à côté du titre a été retiré, seul le bouton est remplacé.
          */
         function updateToolStatusBadges() {
             const cards = document.querySelectorAll('.tools-grid .tool-card');
@@ -472,18 +514,23 @@
             cards.forEach(card => {
                 const toolId = card.getAttribute('data-tool-id');
                 const statusInfo = TOOL_STATUS[toolId];
+                const toolButton = card.querySelector('.tool-button');
 
+                
                 if (statusInfo && statusInfo.status) {
-                    const h2 = card.querySelector('h2');
                     
-                    // Créer le badge
-                    const badge = document.createElement('span');
-                    badge.className = 'status-badge';
-                    badge.textContent = statusInfo.status;
-                    badge.style.backgroundColor = statusInfo.color;
+                    // Désactiver le bouton et le remplacer par le message de statut
+                    if (toolButton) {
+                        const placeholder = document.createElement('div');
+                        placeholder.className = 'status-placeholder';
+                        placeholder.innerHTML = `
+                            OUtIL ${statusInfo.status.toUpperCase()} 
+                            <span class="status-badge" style="background-color: ${statusInfo.color};">${statusInfo.status}</span>
+                        `;
 
-                    // L'insérer après le texte du titre
-                    h2.appendChild(badge);
+                        // Remplacer l'élément
+                        toolButton.parentNode.replaceChild(placeholder, toolButton);
+                    }
                 }
             });
         }
