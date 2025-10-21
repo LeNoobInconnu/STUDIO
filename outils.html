@@ -197,13 +197,11 @@
         .card-revenue { border-left-color: #f1c40f; }
 
         /* --- NOUVEAU: BADGE DE STATUT --- */
-        /* NOTE: Ce style de badge est maintenant utilisé SEULEMENT dans le bouton désactivé */
         .status-badge {
             font-size: 0.75rem;
             font-weight: 700;
-            padding: 4px 8px;
-            border-radius: 6px;
-            margin-left: 15px;
+            padding: 6px 12px; /* L'ancienne valeur était 4px 8px */
+            border-radius: 8px; /* L'ancienne valeur était 6px */
             text-transform: uppercase;
             letter-spacing: 0.5px;
             color: #1e1e2f; 
@@ -235,7 +233,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 10px 20px;
+            padding: 10px 20px; /* Conserve le padding pour garder la taille du bouton */
             border-radius: 8px;
             font-weight: 600;
             margin-top: auto;
@@ -246,16 +244,15 @@
             pointer-events: none; /* Rendre inactif au clic */
             cursor: default;
             border: 2px solid var(--text-secondary);
-            opacity: 0.8;
+            opacity: 0.9; /* Légèrement plus opaque pour mieux voir le badge */
             box-shadow: none;
         }
 
         .status-placeholder .status-badge {
-            /* Mettre le badge en évidence à l'intérieur du placeholder */
-            margin: 0 0 0 10px; 
-            padding: 6px 12px; 
+            /* Le badge est maintenant le seul contenu, donc il est centré par défaut */
+            margin: 0; /* Retrait de la marge gauche inutile */
             color: #1e1e2f;
-            line-height: 1; /* S'assurer que le texte est bien centré */
+            line-height: 1; 
         }
         
         /* --- Media Queries pour la réactivité --- */
@@ -506,7 +503,6 @@
         /**
          * Fonction pour appliquer les badges de statut aux cartes
          * et désactiver le bouton de l'outil si un statut est défini.
-         * NOTE: Le badge à côté du titre a été retiré, seul le bouton est remplacé.
          */
         function updateToolStatusBadges() {
             const cards = document.querySelectorAll('.tools-grid .tool-card');
@@ -519,13 +515,14 @@
                 
                 if (statusInfo && statusInfo.status) {
                     
-                    // Désactiver le bouton et le remplacer par le message de statut
+                    // Désactiver le bouton et le remplacer par le message de statut (pastille seulement)
                     if (toolButton) {
                         const placeholder = document.createElement('div');
                         placeholder.className = 'status-placeholder';
+                        
+                        // Contenu HTML mis à jour : seulement le badge
                         placeholder.innerHTML = `
-                            OUtIL ${statusInfo.status.toUpperCase()} 
-                            <span class="status-badge" style="background-color: ${statusInfo.color};">${statusInfo.status}</span>
+                            <span class="status-badge" style="background-color: ${statusInfo.color};" title="${statusInfo.status.toUpperCase()}">${statusInfo.status}</span>
                         `;
 
                         // Remplacer l'élément
