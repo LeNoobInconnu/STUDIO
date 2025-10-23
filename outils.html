@@ -1,23 +1,26 @@
-
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Studio du Créateur - Tableau de Bord</title>
+    <title>LeNoobInconnu STUDIO - Accueil</title>
     
     <!-- Intégration de Font Awesome pour les icônes -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <!-- Intégration du CDN de Tailwind CSS pour les classes responsives -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
-        /* Variables CSS pour les couleurs du thème sombre */
+        /* Variables CSS pour les couleurs modernes */
         :root {
             --primary-color: #5b5ff5; /* Un bleu-violet moderne */
-            --background-dark: #1e1e2f; /* Fond très sombre */
-            --background-light: #2c2c40; /* Couleur des cartes/éléments */
-            --text-light: #f0f0f5; /* Texte clair */
-            --text-secondary: #a0a0b0; /* Texte secondaire */
+            --youtube-red: #ff0000; 
+            --background-dark: #1e1e2f; 
+            --background-light: #2c2c40; 
+            --text-light: #f0f0f5; 
+            --text-secondary: #a0a0b0; 
             --shadow-elevation: 0 10px 25px rgba(0, 0, 0, 0.25);
-            --font-stack: 'Inter', sans-serif;
+            --font-stack: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         /* Réinitialisation de base et corps */
@@ -31,8 +34,10 @@
             flex-direction: column;
         }
 
-        /* --- NAVIGATION BAR STYLES (Header) --- */
-        .header-bar {
+        /* ------------------------------------------- */
+        /* --- STYLES DE NAVIGATION (NAVBAR) --- */
+        /* ------------------------------------------- */
+        .navbar {
             background-color: var(--background-light);
             padding: 15px 30px;
             box-shadow: var(--shadow-elevation); 
@@ -42,6 +47,7 @@
             position: sticky;
             top: 0;
             z-index: 1000;
+            height: 70px;
         }
         
         .studio-title {
@@ -54,90 +60,55 @@
             align-items: center;
         }
 
-        /* Barre de recherche dans le header */
-        .search-container {
-            flex-grow: 1;
-            margin: 0 40px;
-            max-width: 600px;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 10px 15px;
-            border-radius: 8px;
-            border: 2px solid #3c3c54;
-            background-color: #1e1e2f;
-            color: var(--text-light);
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-
-        .search-input::placeholder {
-            color: var(--text-secondary);
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
-        
-        /* --- MENU DÉROULANT (Burger Icon/Mobile) --- */
-        .burger-menu {
+        .nav-links {
             display: flex;
-            flex-direction: column;
-            justify-content: space-around;
-            width: 30px;
-            height: 25px;
-            cursor: pointer;
-            z-index: 1001;
-        }
-
-        .burger-menu span {
-            display: block;
-            height: 3px;
-            background: var(--text-light);
-            border-radius: 10px;
-            transition: all 0.3s ease-in-out;
-        }
-
-        .burger-menu.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
-        .burger-menu.open span:nth-child(2) { opacity: 0; }
-        .burger-menu.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
-
-        .mobile-nav {
-            position: fixed;
-            top: 60px;
-            right: 0;
-            width: 250px;
-            height: calc(100% - 60px);
-            background-color: var(--background-dark);
-            box-shadow: var(--shadow-elevation);
-            transform: translateX(100%);
-            transition: transform 0.3s ease-in-out;
-            padding: 20px;
-            z-index: 999;
-            overflow-y: auto;
-        }
-
-        .mobile-nav.open {
-            transform: translateX(0);
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
         }
 
         .nav-item {
             color: var(--text-light);
             text-decoration: none;
-            padding: 12px 15px;
-            margin-bottom: 8px;
-            border-radius: 8px;
-            transition: background-color 0.3s;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: background-color 0.3s, color 0.3s, transform 0.1s;
             font-size: 1rem;
             font-weight: 500;
-            display: flex;
+            white-space: nowrap; 
+            display: flex; 
             align-items: center;
-            white-space: nowrap;
+        }
+
+        .nav-item i {
+            margin-right: 8px;
+            color: var(--primary-color); 
         }
         
-        /* --- MAIN CONTENT & TOOL CARDS --- */
+        .nav-item:hover {
+            background-color: var(--primary-color);
+            color: var(--background-dark);
+            transform: translateY(-2px); 
+            box-shadow: 0 5px 15px rgba(91, 95, 245, 0.4);
+        }
+        
+        .nav-item:hover i {
+            color: var(--background-dark); 
+        }
+
+        /* Style pour indiquer la page active */
+        .nav-item.active {
+            background-color: var(--primary-color);
+            color: var(--background-dark);
+            font-weight: 700;
+        }
+        .nav-item.active i {
+            color: var(--background-dark);
+        }
+        /* ------------------------------------------- */
+
+
+        /* --- MAIN CONTENT & TOOL CARDS (Styles conservés) --- */
 
         .main-content {
             flex-grow: 1;
@@ -196,12 +167,12 @@
         .card-polls { border-left-color: #2ecc71; }
         .card-revenue { border-left-color: #f1c40f; }
 
-        /* --- NOUVEAU: BADGE DE STATUT --- */
+        /* --- BADGE DE STATUT --- */
         .status-badge {
             font-size: 0.75rem;
             font-weight: 700;
-            padding: 6px 12px; /* L'ancienne valeur était 4px 8px */
-            border-radius: 8px; /* L'ancienne valeur était 6px */
+            padding: 6px 12px; 
+            border-radius: 8px; 
             text-transform: uppercase;
             letter-spacing: 0.5px;
             color: #1e1e2f; 
@@ -227,45 +198,75 @@
             transform: translateY(-1px);
         }
         
-        /* --- NOUVEAU: REMPLACEMENT DU BOUTON DESACTIVE --- */
+        /* --- REMPLACEMENT DU BOUTON DESACTIVE --- */
         .status-placeholder {
-            /* Simule la taille et la position du bouton */
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 10px 20px; /* Conserve le padding pour garder la taille du bouton */
+            padding: 10px 20px;
             border-radius: 8px;
             font-weight: 600;
             margin-top: auto;
-            
-            /* Style Inactif */
-            background-color: #3c3c54; /* Gris foncé, pour indiquer l'inactivité */
+            background-color: #3c3c54; 
             color: var(--text-light);
-            pointer-events: none; /* Rendre inactif au clic */
+            pointer-events: none;
             cursor: default;
             border: 2px solid var(--text-secondary);
-            opacity: 0.9; /* Légèrement plus opaque pour mieux voir le badge */
+            opacity: 0.9; 
             box-shadow: none;
         }
 
         .status-placeholder .status-badge {
-            /* Le badge est maintenant le seul contenu, donc il est centré par défaut */
-            margin: 0; /* Retrait de la marge gauche inutile */
+            margin: 0;
             color: #1e1e2f;
             line-height: 1; 
         }
         
+        /* Styles pour les notifications */
+        #message-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 10px;
+        }
+
+        .message-box {
+            background-color: var(--primary-color);
+            color: var(--background-dark);
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-elevation);
+            opacity: 0;
+            transition: opacity 0.4s ease-in-out;
+            max-width: 300px;
+            font-weight: 600;
+        }
+
+
         /* --- Media Queries pour la réactivité --- */
-        @media (max-width: 768px) {
-            .header-bar {
-                padding: 15px 20px;
-                justify-content: space-between;
+        @media (max-width: 1200px) {
+            .nav-links {
+                gap: 10px;
+                justify-content: center;
             }
-            .search-container {
-                display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                height: auto;
+                padding: 15px 10px;
+            }
+            .nav-links {
+                margin-top: 15px;
+                justify-content: center;
+                gap: 10px;
             }
             .studio-title {
-                font-size: 1.3rem;
+                margin-bottom: 5px;
             }
             .main-content {
                 padding: 20px;
@@ -275,57 +276,27 @@
 </head>
 <body onload="updateToolStatusBadges()">
 
-    <!-- BARRE DE NAVIGATION (Header) avec style sombre -->
-    <header class="header-bar">
+    <!-- BARRE DE NAVIGATION (MAJ AVEC LES LIENS ORIGINAUX) -->
+    <header class="navbar">
         
-        <!-- Logo et Nom du Hub (Remplacé par le logo LNI STUDIO) -->
+        <!-- Logo et Nom du Hub (Utilisation de l'image demandée) -->
          <a href="index.html" class="studio-title">
-        <img src="LogoLNI_STUDIO.png" alt="LeNoobInconnu STUDIO" height="40">
-        </a>
+         <img src="LogoLNI_STUDIO.png" alt="LeNoobInconnu STUDIO" height="40" onerror="this.onerror=null; this.src='https://placehold.co/150x40/5b5ff5/ffffff?text=STUDIO'">
+         </a>
 
-        <!-- BARRE DE RECHERCHE (Desktop Uniquement) -->
-        <div class="search-container hidden md:block">
-            <input type="text" id="search-input-desktop" placeholder="Rechercher des idées, des musiques, des mots-clés..." 
-                   class="search-input"
-                   oninput="handleSearch(this.value)"
-                   onkeydown="if(event.key === 'Enter') performSearch()">
-        </div>
-
-        <!-- Bouton Menu Mobile (Burger) -->
-        <div class="md:hidden">
-            <div class="burger-menu" id="burger-menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </div>
+        <!-- Liens de navigation simplifiés -->
+        <nav class="nav-links">
+            <!-- Accueil est la page active -->
+            <a href="index.html" class="nav-item active"><i class="fa-solid fa-house"></i> Accueil</a>
+            <a href="outils.html" class="nav-item" target="_blank"><i class="fa-solid fa-chart-simple"></i> Creator Studio</a>
+            <a href="https://discord.gg/PbntRm5sNy" class="nav-item" target="_blank"><i class="fa-brands fa-discord"></i> Discord</a>
+            <a href="serveur.html" class="nav-item"><i class="fa-solid fa-gamepad"></i> Serveur MC</a>
+            <a href="videos.html" class="nav-item"><i class="fa-solid fa-video"></i> Vidéos</a>
+        </nav>
 
     </header>
 
-    <!-- Menu Mobile/Déroulant -->
-    <nav id="mobile-nav" class="mobile-nav md:hidden">
-        <a href="#" class="nav-item active"><i class="fa-solid fa-gauge-high"></i> Tableau de Bord</a>
-        <a href="planificateur.html" class="nav-item"><i class="fa-solid fa-calendar-days"></i> Planificateur de Contenu</a>
-        <a href="idees.html" class="nav-item"><i class="fa-solid fa-lightbulb"></i> Idées de Contenu</a>
-        <a href="seo.html" class="nav-item"><i class="fa-solid fa-magnifying-glass-chart"></i> Outil SEO</a>
-        <a href="audio.html" class="nav-item"><i class="fa-solid fa-music"></i> Bibliothèque Audio</a>
-        <a href="sondages.html" class="nav-item"><i class="fa-solid fa-comments"></i> Gestionnaire d'Engagement</a>
-        <a href="revenus.html" class="nav-item"><i class="fa-solid fa-dollar-sign"></i> Suivi des Revenus</a>
-        <a href="branding.html" class="nav-item"><i class="fa-solid fa-palette"></i> Kit de Marque</a>
-        <a href="checklist.html" class="nav-item"><i class="fa-solid fa-list-check"></i> Liste de Lancement</a>
-        <a href="tutoriels.html" class="nav-item"><i class="fa-solid fa-book-open-reader"></i> Formation & Tutoriels</a>
-        <hr style="border-color: #3c3c54; margin: 15px 0;">
-        <!-- Barre de recherche pour le mobile -->
-        <div class="search-container block mt-4">
-            <input type="text" id="search-input-mobile" placeholder="Rechercher..." 
-                   class="search-input"
-                   oninput="handleSearch(this.value)"
-                   onkeydown="if(event.key === 'Enter') performSearch()">
-        </div>
-    </nav>
-
-
-    <!-- CONTENU PRINCIPAL -->
+    <!-- CONTENU PRINCIPAL (LA GRILLE DES OUTILS DU STUDIO) -->
     <main class="main-content">
         
         <!-- Section d'accueil -->
@@ -334,10 +305,10 @@
             <p>Cet espace est conçu pour vous aider à progresser. Choisissez un outil ci-dessous pour commencer à créer ou à analyser votre chaîne.</p>
         </section>
 
-        <!-- GRID DES OUTILS (Cartes de présentation) - Maintenant 8 outils -->
+        <!-- GRID DES OUTILS (Cartes de présentation) -->
         <section class="tools-grid">
             
-            <!-- NOUVEL OUTIL 1: Planificateur de Contenu -->
+            <!-- OUTIL: Planificateur de Contenu -->
             <div class="tool-card card-planner" data-tool-id="planificateur.html">
                 <div>
                     <h2><i class="fa-solid fa-calendar-days" style="color: #3498db; margin-right: 10px;"></i> Planificateur de Contenu</h2>
@@ -348,7 +319,7 @@
                 </a>
             </div>
 
-            <!-- Outil 1 (Ancien): Idées de Contenu Tendance -->
+            <!-- OUTIL: Idées de Contenu Tendance -->
             <div class="tool-card card-ideas" data-tool-id="idees.html">
                 <div>
                     <h2><i class="fa-solid fa-fire-flame-curved" style="color: #ff5e5e; margin-right: 10px;"></i> Idées Tendance</h2>
@@ -359,7 +330,7 @@
                 </a>
             </div>
 
-            <!-- Outil 3 (Ancien): Optimisation SEO (Mots-clés) -->
+            <!-- OUTIL: Optimisation SEO (Mots-clés) -->
             <div class="tool-card card-seo" data-tool-id="seo.html">
                 <div>
                     <h2><i class="fa-solid fa-magnifying-glass-chart" style="color: #48c9b0; margin-right: 10px;"></i> Outil SEO</h2>
@@ -370,7 +341,7 @@
                 </a>
             </div>
             
-            <!-- NOUVEL OUTIL 2: Bibliothèque Audio -->
+            <!-- OUTIL: Bibliothèque Audio -->
             <div class="tool-card card-audio" data-tool-id="audio.html">
                 <div>
                     <h2><i class="fa-solid fa-music" style="color: #9b59b6; margin-right: 10px;"></i> Bibliothèque Audio</h2>
@@ -381,7 +352,7 @@
                 </a>
             </div>
 
-            <!-- NOUVEL OUTIL 3: Gestionnaire d'Engagement -->
+            <!-- OUTIL: Gestionnaire d'Engagement -->
             <div class="tool-card card-polls" data-tool-id="sondages.html">
                 <div>
                     <h2><i class="fa-solid fa-comments" style="color: #2ecc71; margin-right: 10px;"></i> Gestionnaire d'Engagement</h2>
@@ -392,7 +363,7 @@
                 </a>
             </div>
 
-            <!-- NOUVEL OUTIL 4: Suivi des Revenus -->
+            <!-- OUTIL: Suivi des Revenus -->
             <div class="tool-card card-revenue" data-tool-id="revenus.html">
                 <div>
                     <h2><i class="fa-solid fa-dollar-sign" style="color: #f1c40f; margin-right: 10px;"></i> Suivi des Revenus</h2>
@@ -403,7 +374,7 @@
                 </a>
             </div>
 
-            <!-- Outil 2 (Ancien): Kit de Branding Rapide -->
+            <!-- OUTIL: Kit de Marque -->
             <div class="tool-card card-branding" data-tool-id="branding.html">
                 <div>
                     <h2><i class="fa-solid fa-palette" style="color: var(--primary-color); margin-right: 10px;"></i> Kit de Marque</h2>
@@ -414,7 +385,7 @@
                 </a>
             </div>
             
-            <!-- Outil 4 (Ancien): Check-list de Publication -->
+            <!-- OUTIL: Liste de Lancement -->
             <div class="tool-card card-tutorial" data-tool-id="checklist.html">
                 <div>
                     <h2><i class="fa-solid fa-list-check" style="color: #ff9f43; margin-right: 10px;"></i> Liste de Lancement</h2>
@@ -435,30 +406,18 @@
     <script>
         // ==========================================================
         // CONFIGURATION MANUELLE DES STATUTS DES OUTILS
-        // ----------------------------------------------------------
-        // Si un outil est listé ici, son bouton sera désactivé et 
-        // remplacé par le statut et la couleur spécifiés.
-        // Clé: le nom du fichier HTML de l'outil (ex: "planificateur.html")
-        // Valeurs: 
-        // - status: Le message à afficher ("En développement", "Maintenance", "Nouveau", etc.)
-        // - color: Le code hexadécimal de la couleur du badge
+        // (Conservée pour la grille du contenu principal)
         // ==========================================================
         const TOOL_STATUS = {
-            
-           
-             "planificateur.html": { status: "En développement", color: "#e74c3c" },
+             "planificateur.html": { status: "En développement", color: "#e74c3c" }, 
              "idees.html": { status: "En développement", color: "#e74c3c" },
              "seo.html": { status: "En développement", color: "#e74c3c" },
-             "audio.html": { status: "En développement", color: "#e74c3c" },// Rouge pour en cours
+             "audio.html": { status: "En développement", color: "#e74c3c" },
              "sondages.html": { status: "En développement", color: "#e74c3c" },
              "revenus.html": { status: "En développement", color: "#e74c3c" },
              "branding.html": { status: "En développement", color: "#e74c3c" },
              "checklist.html": { status: "En développement", color: "#e74c3c" },
              "tutoriels.html": { status: "En développement", color: "#e74c3c" },
-             "": { status: "En développement", color: "#e74c3c" },
-            "": { status: "Nouveau", color: "#2ecc71" },          // Vert pour nouveau
-            "": { status: "Beta", color: "#5b5ff5" },             // Bleu pour Beta
-            "": { status: "Maintenance", color: "#f39c12" },      // Orange pour maintenance
         };
         // ==========================================================
 
@@ -480,25 +439,6 @@
                     messageBox.remove();
                 });
             }, 3000);
-        }
-
-        /**
-         * FILTRAGE DES OUTILS EN TEMPS RÉEL
-         */
-        function handleSearch(query) {
-            const filter = query.toUpperCase().trim();
-            const cards = document.querySelectorAll('.tools-grid .tool-card');
-
-            cards.forEach(card => {
-                const titleText = card.querySelector('h2').textContent.toUpperCase();
-                const descriptionText = card.querySelector('p').textContent.toUpperCase();
-                
-                if (titleText.includes(filter) || descriptionText.includes(filter)) {
-                    card.style.display = 'flex';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
         }
 
         /**
@@ -532,41 +472,6 @@
                 }
             });
         }
-
-
-        // Fonction appelée lorsque l'utilisateur appuie sur Entrée (pour la notification)
-        function performSearch() {
-            const queryDesktop = document.getElementById('search-input-desktop')?.value.trim() || '';
-            const queryMobile = document.getElementById('search-input-mobile')?.value.trim() || '';
-            const query = queryDesktop || queryMobile;
-            
-            if (query) {
-                showNotification(`Recherche filtrée pour : "${query}".`);
-                closeMobileMenu();
-            } else {
-                showNotification("Veuillez entrer un terme de recherche.");
-            }
-        }
-        
-        // Logique pour le menu mobile (Burger Icon)
-        const burgerMenu = document.getElementById('burger-menu');
-        const mobileNav = document.getElementById('mobile-nav');
-
-        function closeMobileMenu() {
-            mobileNav.classList.remove('open');
-            burgerMenu.classList.remove('open');
-        }
-
-        burgerMenu.addEventListener('click', () => {
-            mobileNav.classList.toggle('open');
-            burgerMenu.classList.toggle('open');
-        });
-
-        document.addEventListener('click', (event) => {
-            if (!mobileNav.contains(event.target) && !burgerMenu.contains(event.target) && mobileNav.classList.contains('open')) {
-                 //closeMobileMenu();
-            }
-        });
         
     </script>
 
