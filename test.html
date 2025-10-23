@@ -1,1 +1,294 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compteur Partagé Multijoueur</title>
+    <!-- Chargement de Tailwind CSS pour un style moderne et responsive -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Importations des modules Firebase (uniquement les nécessaires) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, onSnapshot, setDoc, getDoc, runTransaction } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // --- VARIABLES GLOBALES FOURNIES PAR L'ENVIRONNEMENT ---
+        // Elles sont nécessaires pour la connexion à la base de données
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
+        let db;
+        let auth;
+        let userId = null;
+        let userName = '';
+
+        // Constantes du jeu
+        const TARGET_SCORE = 10;
+        const GAME_COLLECTION_PATH = `/artifacts/${appId}/public/data/multiplayer_push_game`;
+        const GAME_DOC_ID = 'global_counter';
+        
+        // Référence au document Firestore
+        let gameDocRef = null;
+
+        // Fonction pour initialiser Firebase et l'authentification
+        async function setupFirebase() {
+            try {
+                if (Object.keys(firebaseConfig).length === 0) {
+                    console.error("Firebase config is missing. Cannot initialize Firestore.");
+                    document.getElementById('status-message').textContent = "Erreur: Configuration Firebase manquante.";
+                    return;
+                }
+                
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                
+                // Connexion de l'utilisateur avec le token fourni ou anonymement
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+                
+                userId = auth.currentUser.uid;
+                userName = 'Joueur ' + userId.substring(0, 4); // Nom d'utilisateur simple
+                
+                document.getElementById('user-info').textContent = `Votre ID: ${userName} (${userId.substring(0, 8)}...)`;
+
+                gameDocRef = doc(db, GAME_COLLECTION_PATH, GAME_DOC_ID);
+
+                await initializeGame();
+                setupRealtimeListener();
+
+            } catch (error) {
+                console.error("Erreur lors de l'initialisation de Firebase ou de l'authentification:", error);
+                document.getElementById('status-message').textContent = "Erreur de connexion : " + error.message;
+            }
+        }
+
+        // Fonction pour initialiser le document de jeu s'il n'existe pas
+        async function initializeGame() {
+            try {
+                const docSnap = await getDoc(gameDocRef);
+                if (!docSnap.exists()) {
+                    await setDoc(gameDocRef, {
+                        count: 0,
+                        lastClickerId: null,
+                        lastClickerName: null,
+                        target: TARGET_SCORE,
+                        status: 'PLAYING',
+                        winnerName: null
+                    });
+                    console.log("Document de jeu initialisé.");
+                }
+            } catch (e) {
+                console.error("Erreur lors de l'initialisation du jeu:", e);
+            }
+        }
+
+        // Fonction pour écouter les changements en temps réel
+        function setupRealtimeListener() {
+            if (!gameDocRef) return;
+
+            onSnapshot(gameDocRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const gameState = docSnap.data();
+                    renderGame(gameState);
+                } else {
+                    // Si le document a été supprimé, réinitialiser
+                    initializeGame();
+                }
+            }, (error) => {
+                console.error("Erreur d'écoute en temps réel:", error);
+            });
+        }
+
+        // Fonction pour mettre à jour l'interface utilisateur
+        function renderGame(state) {
+            const countDisplay = document.getElementById('count-display');
+            const statusMessage = document.getElementById('status-message');
+            const clickButton = document.getElementById('click-button');
+            const lastClicker = document.getElementById('last-clicker');
+            const resetButton = document.getElementById('reset-button');
+
+            // Mettre à jour le compteur
+            countDisplay.textContent = state.count;
+
+            // Mettre à jour le dernier cliqueur
+            if (state.lastClickerName) {
+                lastClicker.textContent = `Dernier à cliquer : ${state.lastClickerName}`;
+            } else {
+                lastClicker.textContent = `Soyez le premier à cliquer !`;
+            }
+
+            // Gérer l'état du jeu
+            if (state.status === 'PLAYING') {
+                clickButton.disabled = false;
+                clickButton.textContent = 'POUSSER LE COMPTEUR !';
+                statusMessage.textContent = `Course vers le score de ${state.target} !`;
+                resetButton.classList.add('hidden');
+            } else if (state.status === 'FINISHED') {
+                clickButton.disabled = true;
+                clickButton.textContent = 'JEU TERMINÉ';
+                statusMessage.textContent = `FÉLICITATIONS ! Le vainqueur est : ${state.winnerName} !`;
+                resetButton.classList.remove('hidden');
+            }
+
+            // Style de la barre de progression
+            const progress = (state.count / state.target) * 100;
+            const progressBar = document.getElementById('progress-bar');
+            progressBar.style.width = `${Math.min(100, progress)}%`;
+        }
+
+        // Logique de clic (Transaction pour l'atomicité)
+        async function handleGameClick() {
+            if (!userId || !gameDocRef) return;
+            document.getElementById('click-button').disabled = true;
+
+            try {
+                await runTransaction(db, async (transaction) => {
+                    const docSnap = await transaction.get(gameDocRef);
+                    if (!docSnap.exists()) {
+                        throw "Document does not exist!";
+                    }
+
+                    const currentState = docSnap.data();
+                    let newCount = currentState.count + 1;
+                    let newStatus = currentState.status;
+                    let winnerName = currentState.winnerName;
+
+                    if (currentState.status === 'PLAYING') {
+                        if (newCount >= currentState.target) {
+                            newCount = currentState.target;
+                            newStatus = 'FINISHED';
+                            winnerName = userName; // L'utilisateur actuel est le gagnant
+                        }
+
+                        // Mettre à jour le document
+                        transaction.update(gameDocRef, {
+                            count: newCount,
+                            lastClickerId: userId,
+                            lastClickerName: userName,
+                            status: newStatus,
+                            winnerName: winnerName
+                        });
+                    }
+                });
+                // Le bouton est réactivé dans renderGame() après l'update Firestore
+                
+            } catch (e) {
+                console.error("Erreur de transaction (concurrence ou autre):", e);
+                // En cas d'erreur, réactiver le bouton
+                document.getElementById('click-button').disabled = false; 
+            }
+        }
+
+        // Fonction pour réinitialiser le jeu
+        async function resetGame() {
+            if (!gameDocRef) return;
+            try {
+                await setDoc(gameDocRef, {
+                    count: 0,
+                    lastClickerId: null,
+                    lastClickerName: null,
+                    target: TARGET_SCORE,
+                    status: 'PLAYING',
+                    winnerName: null
+                });
+                console.log("Jeu réinitialisé.");
+            } catch (e) {
+                console.error("Erreur lors de la réinitialisation du jeu:", e);
+            }
+        }
+
+        // Attacher l'événement de clic au bouton
+        window.handleGameClick = handleGameClick;
+        window.resetGame = resetGame;
+
+        // Démarrer l'application au chargement de la fenêtre
+        window.onload = setupFirebase;
+
+    </script>
+    <style>
+        /* Styles personnalisés pour le jeu */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+        .game-card {
+            max-width: 480px;
+            width: 100%;
+            background-color: white;
+            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .bubble-button {
+            transition: all 0.1s ease-in-out;
+            box-shadow: 0 4px 0 0 #1e40af; /* Shadow for the "push" effect */
+            transform: translateY(0);
+        }
+        .bubble-button:active {
+            box-shadow: 0 1px 0 0 #1e40af;
+            transform: translateY(3px);
+        }
+        .bubble-button:disabled {
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-card p-6 rounded-xl border border-gray-200">
+    <h1 class="text-3xl font-extrabold text-gray-900 mb-2 text-center">
+        🏁 Compteur Partagé Multijoueur
+    </h1>
+    <p id="user-info" class="text-xs text-gray-500 mb-6 text-center">
+        Initialisation de l'utilisateur...
+    </p>
+
+    <!-- Affichage du Compteur -->
+    <div class="text-center mb-6">
+        <p class="text-sm font-semibold text-gray-600 mb-1">Score Actuel / Cible</p>
+        <div class="text-7xl font-black text-indigo-600 leading-none" id="count-display">0</div>
+        <p class="text-lg font-medium text-gray-400">/ 10</p>
+    </div>
+
+    <!-- Barre de Progression -->
+    <div class="w-full bg-gray-200 rounded-full h-2.5 mb-6">
+        <div id="progress-bar" class="bg-indigo-500 h-2.5 rounded-full transition-all duration-500 ease-out" style="width: 0%"></div>
+    </div>
+
+    <!-- Message d'État -->
+    <div class="mb-6 p-4 rounded-lg text-center font-medium" role="alert">
+        <p class="text-indigo-700" id="status-message">Connexion au jeu...</p>
+        <p class="text-sm text-gray-500 mt-2" id="last-clicker"></p>
+    </div>
+
+    <!-- Bouton de Clic -->
+    <button
+        id="click-button"
+        onclick="handleGameClick()"
+        class="bubble-button w-full px-6 py-4 text-white text-xl font-bold rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400"
+        disabled
+    >
+        Chargement...
+    </button>
+    
+    <!-- Bouton de Réinitialisation (caché par défaut) -->
+    <button
+        id="reset-button"
+        onclick="resetGame()"
+        class="hidden w-full mt-4 px-4 py-2 text-sm font-semibold rounded-lg text-gray-600 border border-gray-300 hover:bg-gray-100 transition duration-150"
+    >
+        Réinitialiser le Jeu
+    </button>
+</div>
+
+</body>
+</html>
