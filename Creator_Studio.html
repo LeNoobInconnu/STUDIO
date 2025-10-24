@@ -72,46 +72,739 @@
 
     <script>
         // **********************************************
-        // 1. DÉFINITION DES DONNÉES DES OUTILS
+        // 1. DÉFINITION DES DONNÉES DES OUTILS (LISTE PERSONNALISABLE)
         // **********************************************
 
-        // Cet array contiendra les données pour les 100 outils.
-        let toolsData = [];
+        // MODIFIEZ CETTE LISTE DIRECTEMENT pour personnaliser chaque outil.
+        // Chaque outil doit avoir les propriétés suivantes :
+        // - id: un numéro unique
+        // - title: le titre de l'outil (Personnalisable)
+        // - description: la description de l'outil (Personnalisable)
+        // - link: le lien vers l'outil
+        // - status: "available" (disponible) ou "maintenance" (Personnalisable)
 
-        // --- SECTION À MODIFIER PAR L'UTILISATEUR ---
-        // Ici, vous pouvez personnaliser les outils et définir leur statut.
+        let toolsData = [
+            // --- OUTIL 1 : Personnalisé et Disponible ---
+            {
+                id: 1,
+                title: "Outil de Planification Projet",
+                description: "Organisez vos tâches et suivez l'avancement de vos projets personnels ou scolaires facilement. Idéal pour les travaux de groupe !",
+                link: "#planification-projet", 
+                status: "available", 
+            },
+            // --- OUTIL 2 : Personnalisé et EN MAINTENANCE ---
+            {
+                id: 2,
+                title: "Calculateur de Notes Alpha",
+                description: "Cet outil pratique vous aide à simuler vos moyennes et à évaluer vos objectifs. Il sera bientôt de retour avec de nouvelles options !",
+                link: "#simulateur-notes", 
+                status: "maintenance", 
+            },
+            // --- OUTIL 3 : Personnalisé et Disponible ---
+            {
+                id: 3,
+                title: "Bibliothèque de Ressources Vidéos",
+                description: "Accédez à une collection organisée de tutoriels et de liens éducatifs pour vous aider à apprendre de nouvelles choses.",
+                link: "#ressources-videos", 
+                status: "available", 
+            },
+            // --- OUTIL 4 : Personnalisé et Disponible ---
+            {
+                id: 4,
+                title: "Générateur d'Idées Créatives",
+                description: "Besoin d'inspiration pour une histoire, un dessin ou une présentation ? Laissez cet outil vous donner un coup de pouce !",
+                link: "#generateur-idees", 
+                status: "available", 
+            },
+            // --- OUTIL 5 : Personnalisé et EN MAINTENANCE ---
+            {
+                id: 5,
+                title: "Convertisseur d'Unités",
+                description: "Le convertisseur universel pour passer facilement des mètres aux pieds, des Celsius aux Fahrenheit, et plus encore. (Mise à jour en cours)",
+                link: "#convertisseur", 
+                status: "maintenance", 
+            },
+            {
+    id: 6,
+    title: "Outil Générique N°6 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°6. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-6",
+    status: "available",
+},
+{
+    id: 7,
+    title: "Outil Générique N°7 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°7. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-7",
+    status: "maintenance",
+},
+{
+    id: 8,
+    title: "Outil Générique N°8 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°8. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-8",
+    status: "available",
+},
+{
+    id: 9,
+    title: "Outil Générique N°9 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°9. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-9",
+    status: "available",
+},
+{
+    id: 10,
+    title: "Outil Générique N°10 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°10. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-10",
+    status: "available",
+},
+{
+    id: 11,
+    title: "Outil Générique N°11 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°11. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-11",
+    status: "available",
+},
+{
+    id: 12,
+    title: "Outil Générique N°12 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°12. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-12",
+    status: "maintenance",
+},
+{
+    id: 13,
+    title: "Outil Générique N°13 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°13. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-13",
+    status: "available",
+},
+{
+    id: 14,
+    title: "Outil Générique N°14 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°14. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-14",
+    status: "available",
+},
+{
+    id: 15,
+    title: "Outil Générique N°15 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°15. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-15",
+    status: "available",
+},
+{
+    id: 16,
+    title: "Outil Générique N°16 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°16. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-16",
+    status: "available",
+},
+{
+    id: 17,
+    title: "Outil Générique N°17 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°17. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-17",
+    status: "maintenance",
+},
+{
+    id: 18,
+    title: "Outil Générique N°18 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°18. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-18",
+    status: "available",
+},
+{
+    id: 19,
+    title: "Outil Générique N°19 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°19. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-19",
+    status: "available",
+},
+{
+    id: 20,
+    title: "Outil Générique N°20 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°20. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-20",
+    status: "available",
+},
+            {
+    id: 21,
+    title: "Outil Générique N°21 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°21. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-21",
+    status: "available",
+},
+{
+    id: 22,
+    title: "Outil Générique N°22 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°22. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-22",
+    status: "available",
+},
+{
+    id: 23,
+    title: "Outil Générique N°23 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°23. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-23",
+    status: "available",
+},
+{
+    id: 24,
+    title: "Outil Générique N°24 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°24. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-24",
+    status: "available",
+},
+{
+    id: 25,
+    title: "Outil Générique N°25 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°25. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-25",
+    status: "available",
+},
+{
+    id: 26,
+    title: "Outil Générique N°26 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°26. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-26",
+    status: "available",
+},
+{
+    id: 27,
+    title: "Outil Générique N°27 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°27. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-27",
+    status: "maintenance",
+},
+{
+    id: 28,
+    title: "Outil Générique N°28 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°28. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-28",
+    status: "available",
+},
+{
+    id: 29,
+    title: "Outil Générique N°29 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°29. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-29",
+    status: "available",
+},
+{
+    id: 30,
+    title: "Outil Générique N°30 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°30. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-30",
+    status: "available",
+},
+{
+    id: 31,
+    title: "Outil Générique N°31 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°31. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-31",
+    status: "available",
+},
+{
+    id: 32,
+    title: "Outil Générique N°32 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°32. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-32",
+    status: "available",
+},
+{
+    id: 33,
+    title: "Outil Générique N°33 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°33. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-33",
+    status: "maintenance",
+},
+{
+    id: 34,
+    title: "Outil Générique N°34 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°34. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-34",
+    status: "available",
+},
+{
+    id: 35,
+    title: "Outil Générique N°35 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°35. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-35",
+    status: "available",
+},
+{
+    id: 36,
+    title: "Outil Générique N°36 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°36. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-36",
+    status: "available",
+},
+{
+    id: 37,
+    title: "Outil Générique N°37 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°37. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-37",
+    status: "maintenance",
+},
+{
+    id: 38,
+    title: "Outil Générique N°38 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°38. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-38",
+    status: "available",
+},
+{
+    id: 39,
+    title: "Outil Générique N°39 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°39. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-39",
+    status: "available",
+},
+{
+    id: 40,
+    title: "Outil Générique N°40 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°40. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-40",
+    status: "available",
+},
+{
+    id: 41,
+    title: "Outil Générique N°41 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°41. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-41",
+    status: "available",
+},
+{
+    id: 42,
+    title: "Outil Générique N°42 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°42. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-42",
+    status: "available",
+},
+{
+    id: 43,
+    title: "Outil Générique N°43 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°43. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-43",
+    status: "maintenance",
+},
+{
+    id: 44,
+    title: "Outil Générique N°44 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°44. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-44",
+    status: "available",
+},
+{
+    id: 45,
+    title: "Outil Générique N°45 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°45. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-45",
+    status: "available",
+},
+{
+    id: 46,
+    title: "Outil Générique N°46 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°46. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-46",
+    status: "available",
+},
+{
+    id: 47,
+    title: "Outil Générique N°47 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°47. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-47",
+    status: "maintenance",
+},
+{
+    id: 48,
+    title: "Outil Générique N°48 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°48. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-48",
+    status: "available",
+    {
+    id: 49,
+    title: "Outil Générique N°49 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°49. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-49",
+    status: "available",
+},
+{
+    id: 50,
+    title: "Outil Générique N°50 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°50. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-50",
+    status: "available",
+},
+{
+    id: 51,
+    title: "Outil Générique N°51 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°51. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-51",
+    status: "available",
+},
+{
+    id: 52,
+    title: "Outil Générique N°52 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°52. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-52",
+    status: "available",
+},
+{
+    id: 53,
+    title: "Outil Générique N°53 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°53. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-53",
+    status: "available",
+},
+{
+    id: 54,
+    title: "Outil Générique N°54 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°54. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-54",
+    status: "available",
+},
+{
+    id: 55,
+    title: "Outil Générique N°55 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°55. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-55",
+    status: "maintenance",
+},
+{
+    id: 56,
+    title: "Outil Générique N°56 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°56. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-56",
+    status: "available",
+},
+{
+    id: 57,
+    title: "Outil Générique N°57 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°57. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-57",
+    status: "available",
+},
+{
+    id: 58,
+    title: "Outil Générique N°58 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°58. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-58",
+    status: "available",
+},
+{
+    id: 59,
+    title: "Outil Générique N°59 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°59. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-59",
+    status: "available",
+},
+{
+    id: 60,
+    title: "Outil Générique N°60 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°60. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-60",
+    status: "available",
+},
+{
+    id: 61,
+    title: "Outil Générique N°61 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°61. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-61",
+    status: "available",
+},
+{
+    id: 62,
+    title: "Outil Générique N°62 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°62. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-62",
+    status: "available",
+},
+{
+    id: 63,
+    title: "Outil Générique N°63 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°63. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-63",
+    status: "maintenance",
+},
+{
+    id: 64,
+    title: "Outil Générique N°64 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°64. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-64",
+    status: "available",
+},
+{
+    id: 65,
+    title: "Outil Générique N°65 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°65. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-65",
+    status: "available",
+},
+{
+    id: 66,
+    title: "Outil Générique N°66 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°66. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-66",
+    status: "available",
+},
+{
+    id: 67,
+    title: "Outil Générique N°67 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°67. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-67",
+    status: "maintenance",
+},
+{
+    id: 68,
+    title: "Outil Générique N°68 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°68. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-68",
+    status: "available",
+},
+{
+    id: 69,
+    title: "Outil Générique N°69 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°69. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-69",
+    status: "available",
+},
+{
+    id: 70,
+    title: "Outil Générique N°70 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°70. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-70",
+    status: "available",
+    {
+    id: 71,
+    title: "Outil Générique N°71 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°71. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-71",
+    status: "available",
+},
+{
+    id: 72,
+    title: "Outil Générique N°72 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°72. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-72",
+    status: "available",
+},
+{
+    id: 73,
+    title: "Outil Générique N°73 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°73. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-73",
+    status: "available",
+},
+{
+    id: 74,
+    title: "Outil Générique N°74 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°74. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-74",
+    status: "available",
+},
+{
+    id: 75,
+    title: "Outil Générique N°75 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°75. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-75",
+    status: "maintenance",
+},
+{
+    id: 76,
+    title: "Outil Générique N°76 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°76. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-76",
+    status: "available",
+},
+{
+    id: 77,
+    title: "Outil Générique N°77 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°77. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-77",
+    status: "available",
+},
+{
+    id: 78,
+    title: "Outil Générique N°78 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°78. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-78",
+    status: "available",
+},
+{
+    id: 79,
+    title: "Outil Générique N°79 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°79. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-79",
+    status: "available",
+},
+{
+    id: 80,
+    title: "Outil Générique N°80 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°80. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-80",
+    status: "available",
+},
+{
+    id: 81,
+    title: "Outil Générique N°81 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°81. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-81",
+    status: "maintenance",
+},
+{
+    id: 82,
+    title: "Outil Générique N°82 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°82. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-82",
+    status: "available",
+},
+{
+    id: 83,
+    title: "Outil Générique N°83 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°83. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-83",
+    status: "available",
+},
+{
+    id: 84,
+    title: "Outil Générique N°84 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°84. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-84",
+    status: "available",
+},
+{
+    id: 85,
+    title: "Outil Générique N°85 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°85. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-85",
+    status: "available",
+},
+{
+    id: 86,
+    title: "Outil Générique N°86 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°86. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-86",
+    status: "maintenance",
+},
+{
+    id: 87,
+    title: "Outil Générique N°87 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°87. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-87",
+    status: "available",
+},
+{
+    id: 88,
+    title: "Outil Générique N°88 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°88. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-88",
+    status: "available",
+},
+{
+    id: 89,
+    title: "Outil Générique N°89 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°89. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-89",
+    status: "available",
+},
+{
+    id: 90,
+    title: "Outil Générique N°90 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°90. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-90",
+    status: "available",
+},
+{
+    id: 91,
+    title: "Outil Générique N°91 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°91. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-91",
+    status: "maintenance",
+},
+{
+    id: 92,
+    title: "Outil Générique N°92 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°92. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-92",
+    status: "available",
+},
+{
+    id: 93,
+    title: "Outil Générique N°93 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°93. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-93",
+    status: "available",
+},
+{
+    id: 94,
+    title: "Outil Générique N°94 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°94. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-94",
+    status: "available",
+},
+{
+    id: 95,
+    title: "Outil Générique N°95 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°95. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-95",
+    status: "available",
+},
+{
+    id: 96,
+    title: "Outil Générique N°96 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°96. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-96",
+    status: "maintenance",
+},
+{
+    id: 97,
+    title: "Outil Générique N°97 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°97. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-97",
+    status: "available",
+},
+{
+    id: 98,
+    title: "Outil Générique N°98 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°98. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-98",
+    status: "available",
+},
+{
+    id: 99,
+    title: "Outil Générique N°99 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°99. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-99",
+    status: "available",
+    {
+    id: 100,
+    title: "Outil Générique N°100 (À Personnaliser)",
+    description: "Ceci est la description de l'outil N°100. Veuillez la remplacer par votre texte unique et vérifier le statut.",
+    link: "#outil-100",
+    status: "available",
+}
 
-        // Génération de 100 outils par défaut (vous pouvez modifier cette boucle)
-        for (let i = 1; i <= 100; i++) {
-            let status;
-            
-            // Exemple de modification manuelle:
-            if (i === 1) {
-                // Outil 1: EN MAINTENANCE pour démonstration.
-                status = "maintenance"; 
-            } else if (i === 50) {
-                 // Outil 50: EN MAINTENANCE
-                status = "maintenance"; 
-            } else {
-                // Tous les autres sont disponibles par défaut.
-                status = "available"; 
-            }
-            
+
+
+           
+        ];
+        
+        // Ajout des outils génériques de 6 à 100. Modifiez-les ci-dessous pour les personnaliser.
+        for (let i = 6; i <= 100; i++) {
             toolsData.push({
                 id: i,
-                title: `Outil de Traitement Avancé N°${i}`,
-                description: `Ce puissant outil N°${i} est conçu pour optimiser les flux de travail et augmenter la productivité de 30%. C'est l'outil indispensable de notre catalogue.`,
-                link: `#outil-${i}`, // Remplacez ceci par le lien réel de l'outil
-                status: status,      // 'available' ou 'maintenance'
+                title: `Outil Générique N°${i} (À Personnaliser)`,
+                description: `Ceci est la description de l'outil N°${i}. Veuillez la remplacer par votre texte unique et vérifier le statut.`,
+                link: `#outil-${i}`,
+                status: (i % 7 === 0) ? "maintenance" : "available", // Met en maintenance les outils dont l'ID est un multiple de 7 pour la démo
             });
         }
         
-        // Exemple de modification pour un outil spécifique (Outil N°10)
-        // Vous pouvez chercher l'outil par son index (index 9 = Outil N°10) et changer son statut
-        // toolsData[9].status = 'maintenance';
-        
         // **********************************************
-        // 2. FONCTIONS DE RENDU ET DE FILTRAGE
+        // 2. FONCTIONS DE RENDU ET DE FILTRAGE (Pas de changement ici)
         // **********************************************
 
         const toolsContainer = document.getElementById('tools-container');
