@@ -1,893 +1,530 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <link rel="icon" type="image/png" href="favicon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tableau de Bord des Outils</title>
-    <!-- Chargement de Tailwind CSS pour un style moderne et réactif -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>LeNoobInconnu STUDIO - Outils YouTube</title>
+    
+    <!-- Intégration de Font Awesome pour les icônes -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
     <style>
-        /* Configuration de la police Inter et thème sombre par défaut */
+        .navbar {
+            height: 70px; /* ou la hauteur que tu veux */
+        }
+        /* CSS INTERNE (Style Moderne) */
+        
+        /* Variables CSS pour les couleurs modernes */
+        :root {
+            --primary-color: #5b5ff5; /* Un bleu-violet moderne */
+            --youtube-red: #ff0000;
+            --background-dark: #1e1e2f; /* Fond très sombre */
+            --background-light: #2c2c40; /* Couleur des cartes/éléments */
+            --text-light: #f0f0f5; /* Texte clair */
+            --text-secondary: #a0a0b0; /* Texte secondaire */
+            --shadow-elevation: 0 10px 25px rgba(0, 0, 0, 0.25);
+            --font-stack: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --status-available: #5aa667; /* Vert pour disponible */
+            --status-development: #f5a742; /* Orange pour développement */
+            --status-maintenance: #e74c3c; /* Rouge pour maintenance */
+        }
+        
+        /* Réinitialisation de base */
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #1f2937; /* bg-gray-800 */
-            color: #f3f4f6; /* text-gray-100 */
+            margin: 0;
+            font-family: var(--font-stack);
+            background-color: var(--background-dark);
+            color: var(--text-light);
+            min-height: 100vh;
         }
-        /* Style personnalisé pour les cartes */
+
+        /* --- NAVIGATION BAR STYLES --- */
+
+        .navbar {
+            background-color: var(--background-light);
+            padding: 15px 30px;
+            box-shadow: var(--shadow-elevation); 
+            display: flex;
+            justify-content: space-between; 
+            align-items: center;
+        }
+        
+        .studio-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            letter-spacing: 1px;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 25px; 
+        }
+
+        .nav-item {
+            color: var(--text-light);
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: background-color 0.3s, color 0.3s, transform 0.1s;
+            font-size: 1rem;
+            font-weight: 500;
+            white-space: nowrap; 
+            display: flex; 
+            align-items: center;
+        }
+
+        .nav-item i {
+            margin-right: 8px;
+            color: var(--primary-color); 
+        }
+        
+        .nav-item:hover {
+            background-color: var(--primary-color);
+            color: var(--background-dark);
+            transform: translateY(-2px); 
+            box-shadow: 0 5px 15px rgba(91, 95, 245, 0.4);
+        }
+        
+        .nav-item:hover i {
+            color: var(--background-dark); 
+        }
+        
+        .nav-item.active {
+            background-color: var(--primary-color);
+            color: var(--background-dark);
+            font-weight: 700;
+        }
+        .nav-item.active i {
+            color: var(--background-dark);
+        }
+
+        /* --- CONTENT STYLES --- */
+        
+        .content {
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 50px;
+        }
+        
+        h1 {
+            color: var(--text-light);
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+        }
+
+        /* Section d'introduction */
+        .intro-card {
+            background-color: var(--background-light);
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: var(--shadow-elevation);
+            max-width: 900px;
+            width: 100%;
+            border: 1px solid rgba(91, 95, 245, 0.2);
+        }
+
+        .intro-card h2 {
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .intro-card p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Grille d'outils */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        /* Carte d'outil */
         .tool-card {
-            transition: transform 0.2s, box-shadow 0.2s;
+            background-color: var(--background-light);
+            border-radius: 15px;
+            box-shadow: var(--shadow-elevation);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(91, 95, 245, 0.1);
+            position: relative;
+            overflow: hidden;
         }
+
         .tool-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.35);
         }
-        .scroll-to-top {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 100;
+
+        .tool-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .tool-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--text-light);
+        }
+
+        .tool-description {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        /* Badge de statut */
+        .status-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-available {
+            background-color: var(--status-available);
+            color: var(--background-dark);
+        }
+
+        .status-development {
+            background-color: var(--status-development);
+            color: var(--background-dark);
+        }
+
+        .status-maintenance {
+            background-color: var(--status-maintenance);
+            color: var(--text-light);
+        }
+
+        /* Bouton d'action */
+        .tool-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.3s;
+            cursor: pointer;
+            border: none;
+            margin-top: auto;
+        }
+
+        .tool-button i {
+            margin-right: 8px;
+        }
+
+        .tool-button.available {
+            background-color: var(--status-available);
+            color: var(--background-dark);
+            box-shadow: 0 5px 15px rgba(90, 166, 103, 0.4);
+        }
+
+        .tool-button.available:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(90, 166, 103, 0.6);
+        }
+
+        .tool-button.development {
+            background-color: var(--status-development);
+            color: var(--background-dark);
+            box-shadow: 0 5px 15px rgba(245, 167, 66, 0.4);
+        }
+
+        .tool-button.development:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(245, 167, 66, 0.6);
+        }
+
+        .tool-button.maintenance {
+            background-color: var(--status-maintenance);
+            color: var(--text-light);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+        }
+
+        .tool-button.maintenance:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(231, 76, 60, 0.6);
+        }
+
+        /* Section d'information */
+        .info-card {
+            background-color: var(--background-light);
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: var(--shadow-elevation);
+            max-width: 900px;
+            width: 100%;
+            border: 1px solid rgba(91, 95, 245, 0.2);
+        }
+
+        .info-card h2 {
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .info-card p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+
+        .status-legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-color {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+        }
+
+        .status-available-color {
+            background-color: var(--status-available);
+        }
+
+        .status-development-color {
+            background-color: var(--status-development);
+        }
+
+        .status-maintenance-color {
+            background-color: var(--status-maintenance);
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+            .navbar {
+                flex-direction: column;
+                padding: 15px 10px;
+            }
+            .nav-links {
+                margin-top: 15px;
+                gap: 10px;
+                flex-wrap: wrap; 
+                justify-content: center;
+            }
+            .studio-title {
+                font-size: 1.3rem;
+            }
+            .status-legend {
+                flex-direction: column;
+                align-items: center;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- Conteneur Principal -->
-    <div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+    <!-- Bande de navigation -->
+    <header class="navbar">
+        <img src="LogoLNI_STUDIO.png" alt="LeNoobInconnu STUDIO" height="60">
+        </a>
 
-        <!-- En-tête et Barre de Recherche -->
-        <header class="mb-8 pt-4">
-            <h1 class="text-4xl font-extrabold text-white mb-2">Catalogue de 100 Outils</h1>
-            <p class="text-gray-400 mb-6">Recherchez et accédez rapidement à tous vos outils centralisés.</p>
+        <nav class="nav-links">
+            <a href="index.html" class="nav-item"><i class="fa-solid fa-house"></i> Accueil</a>
+            <a href="outils.html" class="nav-item active"><i class="fa-solid fa-chart-simple"></i> Creator Studio</a>
+            <a href="https://discord.gg/PbntRm5sNy" class="nav-item" target="_blank"><i class="fa-brands fa-discord"></i> Discord</a>
+            <a href="serveur.html" class="nav-item"><i class="fa-solid fa-gamepad"></i> Serveur MC</a> 
+            <a href="videos.html" class="nav-item"><i class="fa-solid fa-video"></i> Vidéos</a>
+        </nav>
+    </header>
 
-            <div class="relative">
-                <input type="text" id="search-input" onkeyup="filterTools()"
-                       placeholder="Rechercher un outil par titre ou description..."
-                       class="w-full p-4 pl-12 text-gray-900 bg-white border border-gray-600 rounded-lg shadow-lg focus:ring-blue-500 focus:border-blue-500">
-                <!-- Icone de recherche (SVG inline pour l'esthétique) -->
-                <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-            </div>
-        </header>
-
-        <!-- Grille des Outils -->
-        <div id="tools-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            <!-- Les cartes d'outils seront insérées ici par JavaScript -->
-        </div>
-
-        <!-- Message d'absence de résultats (masqué par défaut) -->
-        <div id="no-results" class="hidden text-center mt-12 p-10 bg-gray-700/50 rounded-xl">
-            <p class="text-xl font-semibold text-gray-400">
-                Désolé, aucun outil ne correspond à votre recherche. 😔
+    <!-- Contenu Principal de la page Outils -->
+    <main class="content">
+        <h1>Creator Studio - Outils YouTube</h1>
+        <p class="subtitle">
+            Une collection d'outils gratuits pour aider les YouTubeurs débutants
+        </p>
+        
+        <!-- Section d'introduction -->
+        <section class="intro-card">
+            <h2>Boostez votre chaîne YouTube</h2>
+            <p>
+                Découvrez notre sélection d'outils spécialement conçus pour les créateurs de contenu débutants. 
+                Que vous ayez besoin d'optimiser vos titres, de générer des miniatures attrayantes ou d'analyser 
+                vos performances, nous avons ce qu'il vous faut. Tous ces outils sont gratuits et faciles à utiliser.
             </p>
-            <p class="text-gray-500 mt-2">Veuillez essayer un autre terme.</p>
+        </section>
+
+        <!-- Grille d'outils -->
+        <div class="tools-grid">
+            
+            <!-- Outil 1 -->
+            <div class="tool-card">
+                <span class="status-badge status-available">Disponible</span>
+                <div class="tool-icon">
+                    <i class="fa-solid fa-chart-line"></i>
+                </div>
+                <h3 class="tool-title">Analyseur de Mots-Clés</h3>
+                <p class="tool-description">
+                    Trouvez les meilleurs mots-clés pour vos vidéos et augmentez votre visibilité 
+                    dans les résultats de recherche YouTube.
+                </p>
+                <a href="#" class="tool-button available">
+                    <i class="fa-solid fa-play"></i> Utiliser l'outil
+                </a>
+            </div>
+
+            <!-- Outil 2 -->
+            <div class="tool-card">
+                <span class="status-badge status-available">Disponible</span>
+                <div class="tool-icon">
+                    <i class="fa-solid fa-image"></i>
+                </div>
+                <h3 class="tool-title">Générateur de Miniatures</h3>
+                <p class="tool-description">
+                    Créez des miniatures accrocheuses et professionnelles pour vos vidéos 
+                    avec notre outil de conception facile à utiliser.
+                </p>
+                <a href="#" class="tool-button available">
+                    <i class="fa-solid fa-play"></i> Utiliser l'outil
+                </a>
+            </div>
+
+            <!-- Outil 3 -->
+            <div class="tool-card">
+                <span class="status-badge status-development">En développement</span>
+                <div class="tool-icon">
+                    <i class="fa-solid fa-heading"></i>
+                </div>
+                <h3 class="tool-title">Optimisateur de Titres</h3>
+                <p class="tool-description">
+                    Testez et optimisez vos titres de vidéos pour maximiser le taux de clic 
+                    et attirer plus de spectateurs.
+                </p>
+                <a href="#" class="tool-button development">
+                    <i class="fa-solid fa-clock"></i> Bientôt disponible
+                </a>
+            </div>
+
+            <!-- Outil 4 -->
+            <div class="tool-card">
+                <span class="status-badge status-available">Disponible</span>
+                <div class="tool-icon">
+                    <i class="fa-solid fa-comment-dots"></i>
+                </div>
+                <h3 class="tool-title">Générateur de Descriptions</h3>
+                <p class="tool-description">
+                    Créez automatiquement des descriptions optimisées pour vos vidéos 
+                    avec des mots-clés pertinents et des appels à l'action.
+                </p>
+                <a href="#" class="tool-button available">
+                    <i class="fa-solid fa-play"></i> Utiliser l'outil
+                </a>
+            </div>
+
+            <!-- Outil 5 -->
+            <div class="tool-card">
+                <span class="status-badge status-maintenance">Maintenance</span>
+                <div class="tool-icon">
+                    <i class="fa-solid fa-calendar"></i>
+                </div>
+                <h3 class="tool-title">Planificateur de Contenu</h3>
+                <p class="tool-description">
+                    Organisez votre calendrier de contenu et planifiez vos publications 
+                    pour maintenir une présence régulière sur votre chaîne.
+                </p>
+                <a href="#" class="tool-button maintenance">
+                    <i class="fa-solid fa-tools"></i> Temporairement indisponible
+                </a>
+            </div>
+
+            <!-- Outil 6 -->
+            <div class="tool-card">
+                <span class="status-badge status-development">En développement</span>
+                <div class="tool-icon">
+                    <i class="fa-solid fa-chart-pie"></i>
+                </div>
+                <h3 class="tool-title">Analyseur d'Audience</h3>
+                <p class="tool-description">
+                    Comprenez votre public avec des analyses détaillées sur les données 
+                    démographiques et les habitudes de visionnage.
+                </p>
+                <a href="#" class="tool-button development">
+                    <i class="fa-solid fa-clock"></i> Bientôt disponible
+                </a>
+            </div>
+
         </div>
-    </div>
 
-    <!-- Bouton Retour en Haut -->
-    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})"
-            class="scroll-to-top p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg transition-colors duration-200"
-            aria-label="Retour en haut">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
-    </button>
-
-
-    <script>
-        // **********************************************
-        // 1. DÉFINITION DES DONNÉES DES OUTILS (LISTE PERSONNALISABLE)
-        // **********************************************
-
-        // MODIFIEZ CETTE LISTE DIRECTEMENT pour personnaliser chaque outil.
-        // Chaque outil doit avoir les propriétés suivantes :
-        // - id: un numéro unique
-        // - title: le titre de l'outil (Personnalisable)
-        // - description: la description de l'outil (Personnalisable)
-        // - link: le lien vers l'outil
-        // - status: "available" (disponible) ou "maintenance" (Personnalisable)
-
-        let toolsData = [
-            // --- OUTIL 1 : Personnalisé et Disponible ---
-            {
-                id: 1,
-                title: "Outil de Planification Projet",
-                description: "Organisez vos tâches et suivez l'avancement de vos projets personnels ou scolaires facilement. Idéal pour les travaux de groupe !",
-                link: "#planification-projet", 
-                status: "available", 
-            },
-            // --- OUTIL 2 : Personnalisé et EN MAINTENANCE ---
-            {
-                id: 2,
-                title: "Calculateur de Notes Alpha",
-                description: "Cet outil pratique vous aide à simuler vos moyennes et à évaluer vos objectifs. Il sera bientôt de retour avec de nouvelles options !",
-                link: "#simulateur-notes", 
-                status: "maintenance", 
-            },
-            // --- OUTIL 3 : Personnalisé et Disponible ---
-            {
-                id: 3,
-                title: "Bibliothèque de Ressources Vidéos",
-                description: "Accédez à une collection organisée de tutoriels et de liens éducatifs pour vous aider à apprendre de nouvelles choses.",
-                link: "#ressources-videos", 
-                status: "available", 
-            },
-            // --- OUTIL 4 : Personnalisé et Disponible ---
-            {
-                id: 4,
-                title: "Générateur d'Idées Créatives",
-                description: "Besoin d'inspiration pour une histoire, un dessin ou une présentation ? Laissez cet outil vous donner un coup de pouce !",
-                link: "#generateur-idees", 
-                status: "available", 
-            },
-            // --- OUTIL 5 : Personnalisé et EN MAINTENANCE ---
-            {
-                id: 5,
-                title: "Convertisseur d'Unités",
-                description: "Le convertisseur universel pour passer facilement des mètres aux pieds, des Celsius aux Fahrenheit, et plus encore. (Mise à jour en cours)",
-                link: "#convertisseur", 
-                status: "maintenance", 
-            },
-            {
-    id: 6,
-    title: "Outil Générique N°6 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°6. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-6",
-    status: "available",
-},
-{
-    id: 7,
-    title: "Outil Générique N°7 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°7. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-7",
-    status: "maintenance",
-},
-{
-    id: 8,
-    title: "Outil Générique N°8 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°8. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-8",
-    status: "available",
-},
-{
-    id: 9,
-    title: "Outil Générique N°9 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°9. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-9",
-    status: "available",
-},
-{
-    id: 10,
-    title: "Outil Générique N°10 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°10. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-10",
-    status: "available",
-},
-{
-    id: 11,
-    title: "Outil Générique N°11 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°11. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-11",
-    status: "available",
-},
-{
-    id: 12,
-    title: "Outil Générique N°12 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°12. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-12",
-    status: "maintenance",
-},
-{
-    id: 13,
-    title: "Outil Générique N°13 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°13. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-13",
-    status: "available",
-},
-{
-    id: 14,
-    title: "Outil Générique N°14 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°14. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-14",
-    status: "available",
-},
-{
-    id: 15,
-    title: "Outil Générique N°15 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°15. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-15",
-    status: "available",
-},
-{
-    id: 16,
-    title: "Outil Générique N°16 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°16. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-16",
-    status: "available",
-},
-{
-    id: 17,
-    title: "Outil Générique N°17 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°17. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-17",
-    status: "maintenance",
-},
-{
-    id: 18,
-    title: "Outil Générique N°18 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°18. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-18",
-    status: "available",
-},
-{
-    id: 19,
-    title: "Outil Générique N°19 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°19. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-19",
-    status: "available",
-},
-{
-    id: 20,
-    title: "Outil Générique N°20 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°20. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-20",
-    status: "available",
-},
-            {
-    id: 21,
-    title: "Outil Générique N°21 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°21. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-21",
-    status: "available",
-},
-{
-    id: 22,
-    title: "Outil Générique N°22 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°22. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-22",
-    status: "available",
-},
-{
-    id: 23,
-    title: "Outil Générique N°23 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°23. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-23",
-    status: "available",
-},
-{
-    id: 24,
-    title: "Outil Générique N°24 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°24. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-24",
-    status: "available",
-},
-{
-    id: 25,
-    title: "Outil Générique N°25 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°25. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-25",
-    status: "available",
-},
-{
-    id: 26,
-    title: "Outil Générique N°26 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°26. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-26",
-    status: "available",
-},
-{
-    id: 27,
-    title: "Outil Générique N°27 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°27. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-27",
-    status: "maintenance",
-},
-{
-    id: 28,
-    title: "Outil Générique N°28 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°28. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-28",
-    status: "available",
-},
-{
-    id: 29,
-    title: "Outil Générique N°29 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°29. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-29",
-    status: "available",
-},
-{
-    id: 30,
-    title: "Outil Générique N°30 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°30. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-30",
-    status: "available",
-},
-{
-    id: 31,
-    title: "Outil Générique N°31 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°31. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-31",
-    status: "available",
-},
-{
-    id: 32,
-    title: "Outil Générique N°32 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°32. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-32",
-    status: "available",
-},
-{
-    id: 33,
-    title: "Outil Générique N°33 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°33. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-33",
-    status: "maintenance",
-},
-{
-    id: 34,
-    title: "Outil Générique N°34 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°34. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-34",
-    status: "available",
-},
-{
-    id: 35,
-    title: "Outil Générique N°35 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°35. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-35",
-    status: "available",
-},
-{
-    id: 36,
-    title: "Outil Générique N°36 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°36. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-36",
-    status: "available",
-},
-{
-    id: 37,
-    title: "Outil Générique N°37 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°37. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-37",
-    status: "maintenance",
-},
-{
-    id: 38,
-    title: "Outil Générique N°38 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°38. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-38",
-    status: "available",
-},
-{
-    id: 39,
-    title: "Outil Générique N°39 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°39. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-39",
-    status: "available",
-},
-{
-    id: 40,
-    title: "Outil Générique N°40 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°40. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-40",
-    status: "available",
-},
-{
-    id: 41,
-    title: "Outil Générique N°41 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°41. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-41",
-    status: "available",
-},
-{
-    id: 42,
-    title: "Outil Générique N°42 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°42. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-42",
-    status: "available",
-},
-{
-    id: 43,
-    title: "Outil Générique N°43 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°43. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-43",
-    status: "maintenance",
-},
-{
-    id: 44,
-    title: "Outil Générique N°44 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°44. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-44",
-    status: "available",
-},
-{
-    id: 45,
-    title: "Outil Générique N°45 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°45. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-45",
-    status: "available",
-},
-{
-    id: 46,
-    title: "Outil Générique N°46 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°46. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-46",
-    status: "available",
-},
-{
-    id: 47,
-    title: "Outil Générique N°47 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°47. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-47",
-    status: "maintenance",
-},
-{
-    id: 48,
-    title: "Outil Générique N°48 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°48. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-48",
-    status: "available",
-    {
-    id: 49,
-    title: "Outil Générique N°49 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°49. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-49",
-    status: "available",
-},
-{
-    id: 50,
-    title: "Outil Générique N°50 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°50. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-50",
-    status: "available",
-},
-{
-    id: 51,
-    title: "Outil Générique N°51 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°51. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-51",
-    status: "available",
-},
-{
-    id: 52,
-    title: "Outil Générique N°52 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°52. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-52",
-    status: "available",
-},
-{
-    id: 53,
-    title: "Outil Générique N°53 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°53. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-53",
-    status: "available",
-},
-{
-    id: 54,
-    title: "Outil Générique N°54 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°54. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-54",
-    status: "maintenance",
-},
-{
-    id: 55,
-    title: "Outil Générique N°55 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°55. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-55",
-    status: "maintenance",
-},
-{
-    id: 56,
-    title: "Outil Générique N°56 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°56. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-56",
-    status: "available",
-},
-{
-    id: 57,
-    title: "Outil Générique N°57 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°57. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-57",
-    status: "available",
-},
-{
-    id: 58,
-    title: "Outil Générique N°58 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°58. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-58",
-    status: "available",
-},
-{
-    id: 59,
-    title: "Outil Générique N°59 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°59. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-59",
-    status: "available",
-},
-{
-    id: 60,
-    title: "Outil Générique N°60 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°60. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-60",
-    status: "available",
-},
-{
-    id: 61,
-    title: "Outil Générique N°61 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°61. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-61",
-    status: "available",
-},
-{
-    id: 62,
-    title: "Outil Générique N°62 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°62. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-62",
-    status: "available",
-},
-{
-    id: 63,
-    title: "Outil Générique N°63 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°63. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-63",
-    status: "maintenance",
-},
-{
-    id: 64,
-    title: "Outil Générique N°64 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°64. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-64",
-    status: "available",
-},
-{
-    id: 65,
-    title: "Outil Générique N°65 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°65. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-65",
-    status: "available",
-},
-{
-    id: 66,
-    title: "Outil Générique N°66 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°66. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-66",
-    status: "available",
-},
-{
-    id: 67,
-    title: "Outil Générique N°67 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°67. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-67",
-    status: "maintenance",
-},
-{
-    id: 68,
-    title: "Outil Générique N°68 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°68. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-68",
-    status: "available",
-},
-{
-    id: 69,
-    title: "Outil Générique N°69 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°69. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-69",
-    status: "available",
-},
-{
-    id: 70,
-    title: "Outil Générique N°70 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°70. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-70",
-    status: "available",
-    {
-    id: 71,
-    title: "Outil Générique N°71 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°71. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-71",
-    status: "available",
-},
-{
-    id: 72,
-    title: "Outil Générique N°72 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°72. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-72",
-    status: "available",
-},
-{
-    id: 73,
-    title: "Outil Générique N°73 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°73. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-73",
-    status: "available",
-},
-{
-    id: 74,
-    title: "Outil Générique N°74 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°74. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-74",
-    status: "available",
-},
-{
-    id: 75,
-    title: "Outil Générique N°75 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°75. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-75",
-    status: "maintenance",
-},
-{
-    id: 76,
-    title: "Outil Générique N°76 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°76. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-76",
-    status: "available",
-},
-{
-    id: 77,
-    title: "Outil Générique N°77 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°77. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-77",
-    status: "available",
-},
-{
-    id: 78,
-    title: "Outil Générique N°78 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°78. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-78",
-    status: "available",
-},
-{
-    id: 79,
-    title: "Outil Générique N°79 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°79. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-79",
-    status: "available",
-},
-{
-    id: 80,
-    title: "Outil Générique N°80 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°80. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-80",
-    status: "available",
-},
-{
-    id: 81,
-    title: "Outil Générique N°81 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°81. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-81",
-    status: "maintenance",
-},
-{
-    id: 82,
-    title: "Outil Générique N°82 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°82. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-82",
-    status: "available",
-},
-{
-    id: 83,
-    title: "Outil Générique N°83 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°83. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-83",
-    status: "available",
-},
-{
-    id: 84,
-    title: "Outil Générique N°84 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°84. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-84",
-    status: "available",
-},
-{
-    id: 85,
-    title: "Outil Générique N°85 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°85. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-85",
-    status: "available",
-},
-{
-    id: 86,
-    title: "Outil Générique N°86 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°86. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-86",
-    status: "maintenance",
-},
-{
-    id: 87,
-    title: "Outil Générique N°87 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°87. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-87",
-    status: "available",
-},
-{
-    id: 88,
-    title: "Outil Générique N°88 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°88. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-88",
-    status: "available",
-},
-{
-    id: 89,
-    title: "Outil Générique N°89 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°89. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-89",
-    status: "available",
-},
-{
-    id: 90,
-    title: "Outil Générique N°90 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°90. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-90",
-    status: "available",
-},
-{
-    id: 91,
-    title: "Outil Générique N°91 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°91. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-91",
-    status: "maintenance",
-},
-{
-    id: 92,
-    title: "Outil Générique N°92 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°92. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-92",
-    status: "available",
-},
-{
-    id: 93,
-    title: "Outil Générique N°93 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°93. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-93",
-    status: "available",
-},
-{
-    id: 94,
-    title: "Outil Générique N°94 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°94. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-94",
-    status: "available",
-},
-{
-    id: 95,
-    title: "Outil Générique N°95 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°95. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-95",
-    status: "available",
-},
-{
-    id: 96,
-    title: "Outil Générique N°96 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°96. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-96",
-    status: "maintenance",
-},
-{
-    id: 97,
-    title: "Outil Générique N°97 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°97. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-97",
-    status: "available",
-},
-{
-    id: 98,
-    title: "Outil Générique N°98 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°98. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-98",
-    status: "available",
-},
-{
-    id: 99,
-    title: "Outil Générique N°99 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°99. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-99",
-    status: "available",
-    {
-    id: 100,
-    title: "Outil Générique N°100 (À Personnaliser)",
-    description: "Ceci est la description de l'outil N°100. Veuillez la remplacer par votre texte unique et vérifier le statut.",
-    link: "#outil-100",
-    status: "available",
-}
-
-
-
-           
-        ];
-        
-        // Ajout des outils génériques de 6 à 100. Modifiez-les ci-dessous pour les personnaliser.
-        for (let i = 6; i <= 100; i++) {
-            toolsData.push({
-                id: i,
-                title: `Outil Générique N°${i} (À Personnaliser)`,
-                description: `Ceci est la description de l'outil N°${i}. Veuillez la remplacer par votre texte unique et vérifier le statut.`,
-                link: `#outil-${i}`,
-                status: (i % 7 === 0) ? "maintenance" : "available", // Met en maintenance les outils dont l'ID est un multiple de 7 pour la démo
-            });
-        }
-        
-        // **********************************************
-        // 2. FONCTIONS DE RENDU ET DE FILTRAGE (Pas de changement ici)
-        // **********************************************
-
-        const toolsContainer = document.getElementById('tools-container');
-        const noResultsMessage = document.getElementById('no-results');
-
-        /**
-         * Génère et affiche les cartes d'outils dans le conteneur.
-         * @param {Array} filteredTools - La liste des outils à afficher.
-         */
-        function renderTools(filteredTools) {
-            toolsContainer.innerHTML = ''; // Nettoyer le conteneur
-
-            if (filteredTools.length === 0) {
-                noResultsMessage.classList.remove('hidden');
-                return;
-            } else {
-                noResultsMessage.classList.add('hidden');
-            }
-
-            filteredTools.forEach(tool => {
-                const isMaintenance = tool.status === 'maintenance';
-
-                // Déterminer les classes de style pour le badge et le bouton
-                const badgeColor = isMaintenance ? 'bg-yellow-500 text-yellow-900' : 'bg-green-500 text-green-900';
-                const buttonColor = isMaintenance ? 'bg-gray-500 hover:bg-gray-600 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700';
-                const buttonText = isMaintenance ? 'En Maintenance' : 'Accéder à l\'outil';
-
-                const cardHtml = `
-                    <div class="tool-card p-6 bg-gray-700 rounded-xl shadow-xl flex flex-col justify-between border border-gray-600">
-                        <!-- En-tête du Cube -->
-                        <div class="mb-4">
-                            <!-- Titre -->
-                            <h2 class="text-xl font-bold mb-2 text-white truncate">${tool.title}</h2>
-                            <!-- Badge de Statut -->
-                            <span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full ${badgeColor}">
-                                ${isMaintenance ? 'Maintenance' : 'Disponible'}
-                            </span>
-                        </div>
-                        
-                        <!-- Description -->
-                        <p class="text-gray-300 mb-4 flex-grow line-clamp-3">${tool.description}</p>
-                        
-                        <!-- Bouton d'Action -->
-                        <a href="${tool.link}" 
-                           class="mt-auto text-center py-2 px-4 rounded-lg font-semibold transition-colors duration-200 shadow-md ${buttonColor} ${isMaintenance ? 'pointer-events-none opacity-75' : ''}"
-                           ${isMaintenance ? 'aria-disabled="true"' : ''}>
-                           ${buttonText}
-                        </a>
-                        
-                        <!-- ID de l'outil pour la référence -->
-                        <p class="text-xs text-gray-500 mt-2 text-right">ID: ${tool.id}</p>
-                    </div>
-                `;
-
-                toolsContainer.insertAdjacentHTML('beforeend', cardHtml);
-            });
-        }
-
-        /**
-         * Filtre les outils en fonction de l'entrée de la barre de recherche.
-         */
-        function filterTools() {
-            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+        <!-- Section d'information -->
+        <section class="info-card">
+            <h2>À propos de nos outils</h2>
+            <p>
+                Tous nos outils sont développés avec soin pour répondre aux besoins spécifiques des YouTubeurs débutants. 
+                Nous mettons régulièrement à jour nos fonctionnalités et ajoutons de nouveaux outils en fonction de vos retours.
+            </p>
             
-            const filtered = toolsData.filter(tool => 
-                // Vérifier si le terme de recherche est dans le titre ou la description
-                tool.title.toLowerCase().includes(searchTerm) ||
-                tool.description.toLowerCase().includes(searchTerm)
-            );
+            <div class="status-legend">
+                <div class="status-item">
+                    <div class="status-color status-available-color"></div>
+                    <span>Disponible - L'outil est fonctionnel et prêt à l'emploi</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-color status-development-color"></div>
+                    <span>En développement - L'outil sera bientôt disponible</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-color status-maintenance-color"></div>
+                    <span>Maintenance - L'outil est temporairement indisponible</span>
+                </div>
+            </div>
             
-            renderTools(filtered);
-        }
+            <a href="https://discord.gg/PbntRm5sNy" class="tool-button available" target="_blank" 
+               style="margin-top: 30px;">
+                <i class="fa-brands fa-discord"></i> Donnez votre avis sur Discord
+            </a>
+        </section>
 
-        // **********************************************
-        // 3. INITIALISATION
-        // **********************************************
-        
-        // Afficher tous les outils au chargement de la page
-        window.onload = () => {
-            renderTools(toolsData);
-        };
-        
-    </script>
+    </main>
 
 </body>
 </html>
