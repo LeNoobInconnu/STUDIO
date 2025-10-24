@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord des Outils</title>
+    <!-- Chargement de Tailwind CSS pour un style moderne et réactif -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Configuration de la police Inter et thème sombre par défaut */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1f2937; /* bg-gray-800 */
+            color: #f3f4f6; /* text-gray-100 */
+        }
+        /* Style personnalisé pour les cartes */
+        .tool-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
+        }
+        .scroll-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Conteneur Principal -->
+    <div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+
+        <!-- En-tête et Barre de Recherche -->
+        <header class="mb-8 pt-4">
+            <h1 class="text-4xl font-extrabold text-white mb-2">Catalogue de 100 Outils</h1>
+            <p class="text-gray-400 mb-6">Recherchez et accédez rapidement à tous vos outils centralisés.</p>
+
+            <div class="relative">
+                <input type="text" id="search-input" onkeyup="filterTools()"
+                       placeholder="Rechercher un outil par titre ou description..."
+                       class="w-full p-4 pl-12 text-gray-900 bg-white border border-gray-600 rounded-lg shadow-lg focus:ring-blue-500 focus:border-blue-500">
+                <!-- Icone de recherche (SVG inline pour l'esthétique) -->
+                <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </div>
+        </header>
+
+        <!-- Grille des Outils -->
+        <div id="tools-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- Les cartes d'outils seront insérées ici par JavaScript -->
+        </div>
+
+        <!-- Message d'absence de résultats (masqué par défaut) -->
+        <div id="no-results" class="hidden text-center mt-12 p-10 bg-gray-700/50 rounded-xl">
+            <p class="text-xl font-semibold text-gray-400">
+                Désolé, aucun outil ne correspond à votre recherche. 😔
+            </p>
+            <p class="text-gray-500 mt-2">Veuillez essayer un autre terme.</p>
+        </div>
+    </div>
+
+    <!-- Bouton Retour en Haut -->
+    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})"
+            class="scroll-to-top p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg transition-colors duration-200"
+            aria-label="Retour en haut">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+    </button>
+
+
+    <script>
+        // **********************************************
+        // 1. DÉFINITION DES DONNÉES DES OUTILS
+        // **********************************************
+
+        // Cet array contiendra les données pour les 100 outils.
+        let toolsData = [];
+
+        // --- SECTION À MODIFIER PAR L'UTILISATEUR ---
+        // Ici, vous pouvez personnaliser les outils et définir leur statut.
+
+        // Génération de 100 outils par défaut (vous pouvez modifier cette boucle)
+        for (let i = 1; i <= 100; i++) {
+            let status;
+            
+            // Exemple de modification manuelle:
+            if (i === 1) {
+                // Outil 1: EN MAINTENANCE pour démonstration.
+                status = "maintenance"; 
+            } else if (i === 50) {
+                 // Outil 50: EN MAINTENANCE
+                status = "maintenance"; 
+            } else {
+                // Tous les autres sont disponibles par défaut.
+                status = "available"; 
+            }
+            
+            toolsData.push({
+                id: i,
+                title: `Outil de Traitement Avancé N°${i}`,
+                description: `Ce puissant outil N°${i} est conçu pour optimiser les flux de travail et augmenter la productivité de 30%. C'est l'outil indispensable de notre catalogue.`,
+                link: `#outil-${i}`, // Remplacez ceci par le lien réel de l'outil
+                status: status,      // 'available' ou 'maintenance'
+            });
+        }
+        
+        // Exemple de modification pour un outil spécifique (Outil N°10)
+        // Vous pouvez chercher l'outil par son index (index 9 = Outil N°10) et changer son statut
+        // toolsData[9].status = 'maintenance';
+        
+        // **********************************************
+        // 2. FONCTIONS DE RENDU ET DE FILTRAGE
+        // **********************************************
+
+        const toolsContainer = document.getElementById('tools-container');
+        const noResultsMessage = document.getElementById('no-results');
+
+        /**
+         * Génère et affiche les cartes d'outils dans le conteneur.
+         * @param {Array} filteredTools - La liste des outils à afficher.
+         */
+        function renderTools(filteredTools) {
+            toolsContainer.innerHTML = ''; // Nettoyer le conteneur
+
+            if (filteredTools.length === 0) {
+                noResultsMessage.classList.remove('hidden');
+                return;
+            } else {
+                noResultsMessage.classList.add('hidden');
+            }
+
+            filteredTools.forEach(tool => {
+                const isMaintenance = tool.status === 'maintenance';
+
+                // Déterminer les classes de style pour le badge et le bouton
+                const badgeColor = isMaintenance ? 'bg-yellow-500 text-yellow-900' : 'bg-green-500 text-green-900';
+                const buttonColor = isMaintenance ? 'bg-gray-500 hover:bg-gray-600 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700';
+                const buttonText = isMaintenance ? 'En Maintenance' : 'Accéder à l\'outil';
+
+                const cardHtml = `
+                    <div class="tool-card p-6 bg-gray-700 rounded-xl shadow-xl flex flex-col justify-between border border-gray-600">
+                        <!-- En-tête du Cube -->
+                        <div class="mb-4">
+                            <!-- Titre -->
+                            <h2 class="text-xl font-bold mb-2 text-white truncate">${tool.title}</h2>
+                            <!-- Badge de Statut -->
+                            <span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full ${badgeColor}">
+                                ${isMaintenance ? 'Maintenance' : 'Disponible'}
+                            </span>
+                        </div>
+                        
+                        <!-- Description -->
+                        <p class="text-gray-300 mb-4 flex-grow line-clamp-3">${tool.description}</p>
+                        
+                        <!-- Bouton d'Action -->
+                        <a href="${tool.link}" 
+                           class="mt-auto text-center py-2 px-4 rounded-lg font-semibold transition-colors duration-200 shadow-md ${buttonColor} ${isMaintenance ? 'pointer-events-none opacity-75' : ''}"
+                           ${isMaintenance ? 'aria-disabled="true"' : ''}>
+                           ${buttonText}
+                        </a>
+                        
+                        <!-- ID de l'outil pour la référence -->
+                        <p class="text-xs text-gray-500 mt-2 text-right">ID: ${tool.id}</p>
+                    </div>
+                `;
+
+                toolsContainer.insertAdjacentHTML('beforeend', cardHtml);
+            });
+        }
+
+        /**
+         * Filtre les outils en fonction de l'entrée de la barre de recherche.
+         */
+        function filterTools() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            
+            const filtered = toolsData.filter(tool => 
+                // Vérifier si le terme de recherche est dans le titre ou la description
+                tool.title.toLowerCase().includes(searchTerm) ||
+                tool.description.toLowerCase().includes(searchTerm)
+            );
+            
+            renderTools(filtered);
+        }
+
+        // **********************************************
+        // 3. INITIALISATION
+        // **********************************************
+        
+        // Afficher tous les outils au chargement de la page
+        window.onload = () => {
+            renderTools(toolsData);
+        };
+        
+    </script>
+
+</body>
+</html>
