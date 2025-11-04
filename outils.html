@@ -1,13 +1,340 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Redirection</title>
-  <script>
-    window.location.replace("Creator_Studio.html");
-  </script>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeNoobInconnu STUDIO</title>
+    
+    <!-- Intégration de Font Awesome pour les icônes -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        /* CSS INTERNE (Style Moderne) */
+        
+        /* Variables CSS pour les couleurs modernes */
+        :root {
+            --primary-color: #5b5ff5; /* Un bleu-violet moderne */
+            --youtube-red: #ff0000;
+            --background-dark: #1e1e2f; /* Fond très sombre */
+            --background-light: #2c2c40; /* Couleur des cartes/éléments */
+            --text-light: #f0f0f5; /* Texte clair */
+            --text-secondary: #a0a0b0; /* Texte secondaire */
+            --shadow-elevation: 0 10px 25px rgba(0, 0, 0, 0.25);
+            --font-stack: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --countdown-color: #ffffff; /* Couleur pour le compte à rebours (orange vif) */
+        }
+        
+        /* Réinitialisation de base */
+        body {
+            margin: 0;
+            font-family: var(--font-stack);
+            background-color: var(--background-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+        }
+
+        /* --- NAVIGATION BAR STYLES (Conservé) --- */
+
+        .navbar {
+            background-color: var(--background-light);
+            padding: 15px 30px;
+            box-shadow: var(--shadow-elevation); 
+            display: flex;
+            justify-content: space-between; 
+            align-items: center;
+            height: 70px;
+        }
+        
+        .studio-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            letter-spacing: 1px;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 25px; 
+        }
+
+        .nav-item {
+            color: var(--text-light);
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: background-color 0.3s, color 0.3s, transform 0.1s;
+            font-size: 1rem;
+            font-weight: 500;
+            white-space: nowrap; 
+            display: flex; 
+            align-items: center;
+        }
+
+        .nav-item i {
+            margin-right: 8px;
+            color: var(--primary-color); 
+        }
+        
+        .nav-item:hover {
+            background-color: var(--primary-color);
+            color: var(--background-dark);
+            transform: translateY(-2px); 
+            box-shadow: 0 5px 15px rgba(91, 95, 245, 0.4);
+        }
+        
+        .nav-item:hover i {
+            color: var(--background-dark); 
+        }
+        
+        .nav-item.active {
+            background-color: var(--primary-color);
+            color: var(--background-dark);
+            font-weight: 700;
+        }
+        .nav-item.active i {
+            color: var(--background-dark);
+        }
+
+        /* --- CONTENT STYLES (Conservé) --- */
+        
+        .content {
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 50px; 
+        }
+        
+        h1 {
+            color: var(--text-light);
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+        
+        .hero-section {
+            background-color: var(--background-light);
+            padding: 50px 30px;
+            border-radius: 15px;
+            box-shadow: var(--shadow-elevation);
+            max-width: 900px;
+            width: 100%;
+            border: 1px solid rgba(91, 95, 245, 0.2);
+        }
+
+        /* --- NOUVEAUX STYLES COMPTE À REBOURS --- */
+        
+        .countdown-title {
+            color: var(--countdown-color);
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 30px;
+            animation: pulse 1.5s infinite alternate;
+        }
+
+        @keyframes pulse {
+            from { text-shadow: 0 0 5px var(--countdown-color); }
+            to { text-shadow: 0 0 20px var(--countdown-color), 0 0 10px rgba(247, 160, 72, 0.5); }
+        }
+
+        .countdown-timer {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .time-unit {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 100px; /* Pour l'alignement */
+        }
+
+        .digit {
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--text-light);
+            background-color: #383850;
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin-bottom: 5px;
+            min-width: 70px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+            line-height: 1;
+        }
+
+        .label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        /* Style pour les messages après la redirection */
+        .redirect-message {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            padding: 20px;
+        }
+
+
+        /* --- MOBILE ADJUSTMENTS (Conservé) --- */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            .countdown-title {
+                font-size: 1.8rem;
+            }
+            .hero-section {
+                padding: 30px 15px;
+            }
+            .navbar {
+                flex-direction: column;
+                padding: 15px 10px;
+                height: auto;
+            }
+            .nav-links {
+                margin-top: 15px;
+                gap: 10px;
+                flex-wrap: wrap; 
+                justify-content: center;
+            }
+            .studio-title {
+                font-size: 1.3rem;
+            }
+            .digit {
+                font-size: 2.5rem;
+                padding: 5px 10px;
+            }
+            .time-unit {
+                min-width: 70px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <!-- Optionnel : contenu temporaire -->
+
+    <!-- Bande de navigation (Conservé) -->
+    <header class="navbar">
+
+        <a href="index.html" class="studio-title">
+            <img src="LogoLNI_STUDIO.png" alt="LeNoobInconnu STUDIO" height="60" onerror="this.onerror=null; this.src='https://placehold.co/200x60/1e1e2f/5b5ff5?text=LNI%20STUDIO';">
+        </a>
+
+        <nav class="nav-links">
+            <a href="index.html" class="nav-item"><i class="fa-solid fa-house"></i> Accueil</a>
+            <a href="outils.html" class="nav-item active"><i class="fa-solid fa-chart-simple"></i>Creator Studio</a>
+            <a href="https://discord.gg/PbntRm5sNy" class="nav-item" target="_blank"><i class="fa-brands fa-discord"></i> Discord</a>
+            <a href="serveur.html" class="nav-item"><i class="fa-solid fa-gamepad"></i> Serveur MC</a> 
+            <a href="videos.html" class="nav-item"><i class="fa-solid fa-video"></i> Vidéos</a>
+        </nav>
+
+    </header>
+
+    <!-- Contenu Principal de la page d'Accueil -->
+    <main class="content">
+        
+        <!-- SECTION COMPTE À REBOURS ET REDIRECTION (MODIFIÉ) -->
+        <section class="hero-section" id="countdown-section">
+            <h2 class="countdown-title">Ouverture du Creator Studio dans :</h2>
+            
+            <div class="countdown-timer" id="countdown-timer">
+                <!-- Les unités de temps seront insérées ici par JavaScript -->
+                <div class="time-unit">
+                    <span class="digit" id="days">00</span>
+                    <span class="label">Jours</span>
+                </div>
+                <div class="time-unit">
+                    <span class="digit" id="hours">00</span>
+                    <span class="label">Heures</span>
+                </div>
+                <div class="time-unit">
+                    <span class="digit" id="minutes">00</span>
+                    <span class="label">Minutes</span>
+                </div>
+                <div class="time-unit">
+                    <span class="digit" id="seconds">00</span>
+                    <span class="label">Secondes</span>
+                </div>
+            </div>
+
+            <p class="subtitle" id="countdown-message" style="margin-top: 30px;">
+                 Rendez-vous le 1er janvier 2026 !
+            </p>
+        </section>
+
+    </main>
+
+    <script>
+        // --- LOGIQUE DU COMPTE À REBOURS ET DE LA REDIRECTION ---
+        
+        // 1. Définir la date cible (1er janvier 2026, 00:00:00)
+        // NOTE: Utiliser UTC pour éviter les problèmes de fuseau horaire, ou spécifier le fuseau horaire (ici, on utilise 00:00:00 heure locale du visiteur).
+        const targetDate = new Date("Jan 1, 2026 00:00:00").getTime();
+        const redirectUrl = "Creator_Studio.html";
+        
+        // Références aux éléments HTML
+        const daysElement = document.getElementById('days');
+        const hoursElement = document.getElementById('hours');
+        const minutesElement = document.getElementById('minutes');
+        const secondsElement = document.getElementById('seconds');
+        const countdownSection = document.getElementById('countdown-section');
+
+        // Fonction pour formater les nombres avec deux chiffres (ex: 05 au lieu de 5)
+        const formatNumber = (num) => String(num).padStart(2, '0');
+
+        function updateCountdown() {
+            // Obtenir la date et l'heure actuelles
+            const now = new Date().getTime();
+
+            // Calculer la différence entre la date cible et la date actuelle (en millisecondes)
+            const distance = targetDate - now;
+
+            // VÉRIFICATION : Si le compte à rebours est terminé
+            if (distance < 0) {
+                // Arrêter la mise à jour
+                clearInterval(countdownInterval); 
+                
+                // Mettre à jour l'affichage avec un message de succès
+                countdownSection.innerHTML = `
+                    <h2 class="countdown-title">Le Creator Studio est OUVERT !</h2>
+                    <p class="redirect-message">
+                        Redirection vers la page Studio dans quelques secondes...
+                    </p>
+                    <i class="fa-solid fa-circle-notch fa-spin fa-2xl" style="color: var(--primary-color);"></i>
+                `;
+
+                // Redirection après un court délai (2 secondes) pour que l'utilisateur voie le message
+                setTimeout(() => {
+                    window.location.replace(redirectUrl);
+                }, 2000); // 2000 ms = 2 secondes
+
+                return; // Sortir de la fonction pour ne pas exécuter le reste
+            }
+
+            // Calcul des unités de temps
+            const _days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const _hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const _minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const _seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Mettre à jour les éléments HTML
+            daysElement.textContent = formatNumber(_days);
+            hoursElement.textContent = formatNumber(_hours);
+            minutesElement.textContent = formatNumber(_minutes);
+            secondsElement.textContent = formatNumber(_seconds);
+        }
+
+        // 2. Exécuter la fonction immédiatement pour éviter un délai d'une seconde au chargement
+        updateCountdown();
+
+        // 3. Mettre à jour la fonction toutes les secondes (1000 ms)
+        const countdownInterval = setInterval(updateCountdown, 1000);
+
+    </script>
 </body>
 </html>
