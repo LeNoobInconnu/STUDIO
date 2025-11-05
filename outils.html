@@ -16,6 +16,7 @@
         /* Variables CSS pour les couleurs modernes */
         :root {
             --primary-color: #5b5ff5; /* Un bleu-violet moderne */
+            --success-color: #38C2A0; /* Couleur verte de succès pour la fin du timer */
             --youtube-red: #ff0000;
             --background-dark: #1e1e2f; /* Fond très sombre */
             --background-light: #2c2c40; /* Couleur des cartes/éléments */
@@ -23,7 +24,7 @@
             --text-secondary: #a0a0b0; /* Texte secondaire */
             --shadow-elevation: 0 10px 25px rgba(0, 0, 0, 0.25);
             --font-stack: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            --countdown-color: #ffffff; /* Couleur pour le compte à rebours (orange vif) */
+            --countdown-color: #ffffff; /* Couleur pour le compte à rebours */
         }
         
         /* Réinitialisation de base */
@@ -125,7 +126,7 @@
             border: 1px solid rgba(91, 95, 245, 0.2);
         }
 
-        /* --- NOUVEAUX STYLES COMPTE À REBOURS --- */
+        /* --- STYLES COMPTE À REBOURS --- */
         
         .countdown-title {
             color: var(--countdown-color);
@@ -137,7 +138,7 @@
 
         @keyframes pulse {
             from { text-shadow: 0 0 5px var(--countdown-color); }
-            to { text-shadow: 0 0 20px var(--countdown-color), 0 0 10px rgba(247, 160, 72, 0.5); }
+            to { text-shadow: 0 0 20px var(--countdown-color), 0 0 10px rgba(91, 95, 245, 0.5); }
         }
 
         .countdown-timer {
@@ -151,7 +152,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-width: 100px; /* Pour l'alignement */
+            min-width: 100px; 
         }
 
         .digit {
@@ -173,11 +174,102 @@
             text-transform: uppercase;
         }
 
+        /* --- STYLES DE FIN ET ANIMATION --- */
+
+        .final-message-container {
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .final-message {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--success-color); /* Vert pour le succès */
+            text-shadow: 0 0 10px rgba(56, 194, 160, 0.5);
+            animation: arrival-pop 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* Animation de rebond */
+            display: flex;
+            align-items: center;
+        }
+
+        .final-message i {
+            margin-right: 10px;
+            font-size: 2.2rem;
+            color: var(--primary-color);
+            animation: bounce 2s infinite; /* Animation de l'icône */
+        }
+
+        @keyframes arrival-pop {
+            0% { transform: scale(0.5) translateY(20px); opacity: 0; }
+            80% { transform: scale(1.1) translateY(-5px); opacity: 1; }
+            100% { transform: scale(1.0) translateY(0); }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-10px);}
+            60% {transform: translateY(-5px);}
+        }
+
         /* Style pour les messages après la redirection */
         .redirect-message {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            padding: 10px;
+        }
+
+        /* --- NOUVEAUX STYLES FUTURS OUTILS --- */
+
+        .tools-section-title {
             color: var(--primary-color);
-            padding: 20px;
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 40px;
+            text-shadow: 0 0 10px rgba(91, 95, 245, 0.5);
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .tool-card {
+            background-color: var(--background-dark);
+            border: 2px solid var(--background-light);
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+        
+        /* Animation subtile pour les cartes */
+        .tool-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3), 0 0 15px rgba(91, 95, 245, 0.6);
+        }
+
+        .tool-icon {
+            font-size: 3.5rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        .tool-card h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+
+        .tool-card p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
         }
 
 
@@ -187,6 +279,12 @@
                 font-size: 2.2rem;
             }
             .countdown-title {
+                font-size: 1.8rem;
+            }
+            .final-message {
+                font-size: 1.4rem;
+            }
+            .final-message i {
                 font-size: 1.8rem;
             }
             .hero-section {
@@ -213,6 +311,9 @@
             .time-unit {
                 min-width: 70px;
             }
+            .tools-section-title {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
@@ -238,7 +339,7 @@
     <!-- Contenu Principal de la page d'Accueil -->
     <main class="content">
         
-        <!-- SECTION COMPTE À REBOURS ET REDIRECTION (MODIFIÉ) -->
+        <!-- SECTION COMPTE À REBOURS ET REDIRECTION -->
         <section class="hero-section" id="countdown-section">
             <h2 class="countdown-title">Ouverture du Creator Studio dans :</h2>
             
@@ -263,8 +364,41 @@
             </div>
 
             <p class="subtitle" id="countdown-message" style="margin-top: 30px;">
-                 Rendez-vous le 1er janvier 2026 !
+                Rendez-vous le 1er janvier 2026 !
             </p>
+        </section>
+
+        <!-- NOUVELLE SECTION : FUTURS OUTILS DU CREATOR STUDIO -->
+        <section class="hero-section">
+            <h2 class="tools-section-title">Aperçu des Futurs Outils</h2>
+            <p class="subtitle" style="color: var(--text-light);">
+                Voici un aperçu des fonctionnalités puissantes qui seront disponibles dès l'ouverture du Studio.
+            </p>
+            
+            <div class="tools-grid">
+                
+                <!-- Carte Outil 1: Générateur d'Idées -->
+                <div class="tool-card">
+                    <i class="fa-solid fa-lightbulb tool-icon"></i>
+                    <h3>Générateur d'Idées</h3>
+                    <p>Débloquez votre créativité avec des suggestions d'idées de contenu uniques et tendances, optimisées pour votre audience.</p>
+                </div>
+
+                <!-- Carte Outil 2: Analyseur de Vidéos -->
+                <div class="tool-card">
+                    <i class="fa-solid fa-chart-line tool-icon"></i>
+                    <h3>Analyseur de Vidéos</h3>
+                    <p>Obtenez des statistiques détaillées et des conseils pour améliorer la performance de vos vidéos après leur publication.</p>
+                </div>
+
+                <!-- Carte Outil 3: Planificateur de Contenu -->
+                <div class="tool-card">
+                    <i class="fa-solid fa-calendar-check tool-icon"></i>
+                    <h3>Planificateur de Contenu</h3>
+                    <p>Organisez votre calendrier de publication et suivez l'avancement de vos projets en un seul endroit.</p>
+                </div>
+                
+            </div>
         </section>
 
     </main>
@@ -273,7 +407,6 @@
         // --- LOGIQUE DU COMPTE À REBOURS ET DE LA REDIRECTION ---
         
         // 1. Définir la date cible (1er janvier 2026, 00:00:00)
-        // NOTE: Utiliser UTC pour éviter les problèmes de fuseau horaire, ou spécifier le fuseau horaire (ici, on utilise 00:00:00 heure locale du visiteur).
         const targetDate = new Date("Jan 1, 2026 00:00:00").getTime();
         const redirectUrl = "Creator_Studio.html";
         
@@ -299,13 +432,19 @@
                 // Arrêter la mise à jour
                 clearInterval(countdownInterval); 
                 
-                // Mettre à jour l'affichage avec un message de succès
+                // --- AJOUT DE L'ANIMATION ET DU MESSAGE DE FIN ---
                 countdownSection.innerHTML = `
-                    <h2 class="countdown-title">Le Creator Studio est OUVERT !</h2>
-                    <p class="redirect-message">
-                        Redirection vers la page Studio dans quelques secondes...
-                    </p>
-                    <i class="fa-solid fa-circle-notch fa-spin fa-2xl" style="color: var(--primary-color);"></i>
+                    <div class="final-message-container">
+                        <p class="final-message">
+                            <i class="fa-solid fa-trophy"></i>
+                            Tous arrivés à la fin du compte à rebours !
+                        </p>
+                        <h2 class="countdown-title" style="margin-top: 20px; animation: none;">Le Creator Studio est OUVERT !</h2>
+                        <p class="redirect-message" style="margin-top: 15px;">
+                            Redirection vers la page Studio dans quelques secondes...
+                        </p>
+                        <i class="fa-solid fa-circle-notch fa-spin fa-2xl" style="color: var(--primary-color); margin-top: 20px;"></i>
+                    </div>
                 `;
 
                 // Redirection après un court délai (2 secondes) pour que l'utilisateur voie le message
