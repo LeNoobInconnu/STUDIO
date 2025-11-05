@@ -11,52 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
     <style>
-        /* 1. Assurez-vous que l'overflow est caché pour éviter les barres de défilement */
-    body {
-        overflow: hidden;
-    }
-
-    /* 2. Conteneur de la neige : il couvre toute la page et est au-dessus du contenu */
-    #snow-container {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none; /* Permet de cliquer sur les éléments derrière la neige */
-        z-index: 1000; 
-    }
-
-    /* 3. Style de base d'un flocon de neige */
-    .snowflake {
-        position: absolute;
-        color: #FFF; /* Couleur blanche */
-        font-size: 14px;
-        text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-        content: "❅"; /* Le caractère du flocon (modifiez-le pour un autre style) */
-        opacity: 0.8;
-        will-change: transform;
-    }
-
-    /* 4. Définition des animations de chute */
-    @keyframes fall-small {
-        0% { transform: translate(0, 0); opacity: 0.8; }
-        100% { transform: translate(var(--end-x), 100vh); opacity: 0.5; }
-    }
-
-    @keyframes fall-medium {
-        0% { transform: translate(0, 0); opacity: 0.9; }
-        100% { transform: translate(var(--end-x), 100vh); opacity: 0.7; }
-    }
-
-    @keyframes fall-large {
-        0% { transform: translate(0, 0); opacity: 1; }
-        100% { transform: translate(var(--end-x), 100vh); opacity: 0.8; }
-    }
-        .navbar {
-    height: 70px; /* ou la hauteur que tu veux */
-  }
-        /* CSS INTERNE (Style Moderne) */
+        /* CSS GLOBAL DU SITE */
         
         /* Variables CSS pour les couleurs modernes */
         :root {
@@ -77,11 +32,55 @@
             background-color: var(--background-dark);
             color: var(--text-light);
             min-height: 100vh;
+            /* L'OVERFLOW EST MIS EN HIDDEN ICI pour la neige */
+            overflow: hidden; 
+        }
+        
+        /* --- STYLES DE LA NEIGE --- */
+
+        /* Conteneur de la neige : il couvre toute la page et est au-dessus du contenu */
+        #snow-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Permet de cliquer sur les éléments derrière la neige */
+            z-index: 1000; 
+        }
+
+        /* Style de base d'un flocon de neige */
+        .snowflake {
+            position: absolute;
+            color: #FFF; /* Couleur blanche */
+            font-size: 14px;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+            /* Utilisation d'un caractère simple pour le flocon (vous pouvez mettre "❄️" si vous voulez un emoji) */
+            content: "❅"; 
+            opacity: 0.8;
+            will-change: transform;
+        }
+
+        /* Définition des animations de chute */
+        @keyframes fall-small {
+            0% { transform: translate(0, 0); opacity: 0.8; }
+            100% { transform: translate(var(--end-x), 100vh); opacity: 0.5; }
+        }
+
+        @keyframes fall-medium {
+            0% { transform: translate(0, 0); opacity: 0.9; }
+            100% { transform: translate(var(--end-x), 100vh); opacity: 0.7; }
+        }
+
+        @keyframes fall-large {
+            0% { transform: translate(0, 0); opacity: 1; }
+            100% { transform: translate(var(--end-x), 100vh); opacity: 0.8; }
         }
 
         /* --- NAVIGATION BAR STYLES --- */
 
         .navbar {
+            height: 70px; 
             background-color: var(--background-light);
             padding: 15px 30px;
             box-shadow: var(--shadow-elevation); 
@@ -313,26 +312,26 @@
 </head>
 <body>
 
-    <!-- Bande de navigation (Ajout du lien Serveur MC) -->
+    <!-- 🌟 CONTENEUR DE LA NEIGE : Il doit être le premier élément après le body 🌟 -->
+    <div id="snow-container"></div>
+    <!-- FIN DU CONTENEUR DE LA NEIGE -->
 
-</html>
+    <!-- Bande de navigation (Ajout du lien Serveur MC) -->
     <header class="navbar">
 
-    <a href="index.html" class="studio-title">
-        <img src="LogoLNI_STUDIO.png" alt="LeNoobInconnu STUDIO" height="60">
-    </a>
+        <a href="index.html" class="studio-title">
+            <img src="LogoLNI_STUDIO.png" alt="LeNoobInconnu STUDIO" height="60">
+        </a>
 
-    <nav class="nav-links">
-        <a href="index.html" class="nav-item active"><i class="fa-solid fa-house"></i> Accueil</a>
-        <a href="outils.html" class="nav-item"><i class="fa-solid fa-chart-simple"></i>Creator Studio</a>
-        <a href="https://discord.gg/PbntRm5sNy" class="nav-item" target="_blank"><i class="fa-brands fa-discord"></i> Discord</a>
-        <a href="serveur.html" class="nav-item"><i class="fa-solid fa-gamepad"></i> Serveur MC</a> 
-        <a href="videos.html" class="nav-item"><i class="fa-solid fa-video"></i> Vidéos</a>
-    </nav>
+        <nav class="nav-links">
+            <a href="index.html" class="nav-item active"><i class="fa-solid fa-house"></i> Accueil</a>
+            <a href="outils.html" class="nav-item"><i class="fa-solid fa-chart-simple"></i>Creator Studio</a>
+            <a href="https://discord.gg/PbntRm5sNy" class="nav-item" target="_blank"><i class="fa-brands fa-discord"></i> Discord</a>
+            <a href="serveur.html" class="nav-item"><i class="fa-solid fa-gamepad"></i> Serveur MC</a> 
+            <a href="videos.html" class="nav-item"><i class="fa-solid fa-video"></i> Vidéos</a>
+        </nav>
 
-</header>
-
-
+    </header>
 
     <!-- Contenu Principal de la page d'Accueil -->
     <main class="content">
@@ -396,5 +395,73 @@
 
     </main>
 
+    <!-- 💡 CODE JAVASCRIPT DE LA NEIGE : Placé juste avant la fermeture du body 💡 -->
+    <script>
+        // Fonction pour générer l'effet de neige
+        function createSnowfall() {
+            // Constantes
+            const SNOWFLAKE_COUNT = 150; // Nombre de flocons (ajustez ce nombre pour plus ou moins de neige)
+            const container = document.getElementById('snow-container');
+
+            if (!container) return; // Sortir si le conteneur n'est pas trouvé
+
+            for (let i = 0; i < SNOWFLAKE_COUNT; i++) {
+                const snowflake = document.createElement('div');
+                snowflake.classList.add('snowflake');
+                snowflake.innerHTML = '❅'; // Le caractère du flocon
+
+                // Création des propriétés aléatoires pour un effet naturel
+                const startX = Math.random() * 100;
+                const startY = Math.random() * -100;
+                const size = 8 + Math.random() * 8; // Taille entre 8px et 16px
+                const duration = 10 + Math.random() * 15; // 10s à 25s
+                const delay = Math.random() * 20; // 0s à 20s
+                const endXOffset = (Math.random() - 0.5) * 20;
+
+                snowflake.style.left = startX + 'vw';
+                snowflake.style.top = startY + 'vh';
+                snowflake.style.fontSize = size + 'px';
+                snowflake.style.animationDuration = duration + 's';
+                snowflake.style.animationDelay = delay + 's';
+                snowflake.style.setProperty('--end-x', `${endXOffset}vw`);
+
+                // Choix de l'animation en fonction de la taille
+                let animationName = 'fall-medium';
+                if (size < 12) {
+                    animationName = 'fall-small';
+                } else if (size > 14) {
+                    animationName = 'fall-large';
+                }
+
+                // Application de l'animation
+                snowflake.style.animationName = animationName;
+                snowflake.style.animationTimingFunction = 'linear';
+                snowflake.style.animationIterationCount = 'infinite';
+
+                container.appendChild(snowflake);
+            }
+        }
+
+
+        // LOGIQUE DE VÉRIFICATION DE LA DATE
+        function checkDateAndStartSnow() {
+            const today = new Date();
+            const month = today.getMonth(); // 11 est Décembre (0=Janvier, 11=Décembre)
+            const day = today.getDate(); // Jour du mois (1 à 31)
+
+            // Activation du 1er au 31 décembre
+            const isDecember = (month === 11);
+            const isFirstToThirtyFirst = (day >= 1 && day <= 31);
+
+            if (isDecember && isFirstToThirtyFirst) {
+                // Si la date est bonne, on lance l'effet de neige
+                createSnowfall();
+            }
+        }
+
+        // Lance la vérification au chargement de la page
+        window.addEventListener('load', checkDateAndStartSnow);
+    </script>
+    <!-- FIN DU CODE JAVASCRIPT DE LA NEIGE -->
 </body>
 </html>
