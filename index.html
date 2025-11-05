@@ -11,6 +11,48 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
     <style>
+        /* 1. Assurez-vous que l'overflow est caché pour éviter les barres de défilement */
+    body {
+        overflow: hidden;
+    }
+
+    /* 2. Conteneur de la neige : il couvre toute la page et est au-dessus du contenu */
+    #snow-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none; /* Permet de cliquer sur les éléments derrière la neige */
+        z-index: 1000; 
+    }
+
+    /* 3. Style de base d'un flocon de neige */
+    .snowflake {
+        position: absolute;
+        color: #FFF; /* Couleur blanche */
+        font-size: 14px;
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        content: "❅"; /* Le caractère du flocon (modifiez-le pour un autre style) */
+        opacity: 0.8;
+        will-change: transform;
+    }
+
+    /* 4. Définition des animations de chute */
+    @keyframes fall-small {
+        0% { transform: translate(0, 0); opacity: 0.8; }
+        100% { transform: translate(var(--end-x), 100vh); opacity: 0.5; }
+    }
+
+    @keyframes fall-medium {
+        0% { transform: translate(0, 0); opacity: 0.9; }
+        100% { transform: translate(var(--end-x), 100vh); opacity: 0.7; }
+    }
+
+    @keyframes fall-large {
+        0% { transform: translate(0, 0); opacity: 1; }
+        100% { transform: translate(var(--end-x), 100vh); opacity: 0.8; }
+    }
         .navbar {
     height: 70px; /* ou la hauteur que tu veux */
   }
