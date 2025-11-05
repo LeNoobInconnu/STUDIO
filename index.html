@@ -32,8 +32,7 @@
             background-color: var(--background-dark);
             color: var(--text-light);
             min-height: 100vh;
-            /* L'OVERFLOW EST MIS EN HIDDEN ICI pour la neige */
-            overflow: hidden; 
+            /* CORRECTION: 'overflow: hidden;' a été retiré ici pour restaurer le défilement */ 
         }
         
         /* --- STYLES DE LA NEIGE --- */
@@ -55,7 +54,6 @@
             color: #FFF; /* Couleur blanche */
             font-size: 14px;
             text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-            /* Utilisation d'un caractère simple pour le flocon (vous pouvez mettre "❄️" si vous voulez un emoji) */
             content: "❅"; 
             opacity: 0.8;
             will-change: transform;
@@ -312,7 +310,7 @@
 </head>
 <body>
 
-    <!-- 🌟 CONTENEUR DE LA NEIGE : Il doit être le premier élément après le body 🌟 -->
+    <!-- 🌟 CONTENEUR DE LA NEIGE : positionné au-dessus de tout et sans interaction 🌟 -->
     <div id="snow-container"></div>
     <!-- FIN DU CONTENEUR DE LA NEIGE -->
 
@@ -337,7 +335,7 @@
     <main class="content">
         <h1>Bienvenue sur le site LeNoobInconnu STUDIO</h1>
         
-    <!-- 1. Section Réseaux Sociaux (MAINTENANT EN PREMIER) -->
+    <!-- 1. Section Réseaux Sociaux -->
         <section class="social-section">
             <h2>Suivez-nous sur les Réseaux Sociaux</h2>
             <p style="color: var(--text-secondary);">
@@ -366,7 +364,7 @@
             </p>
         </section>
 
-        <!-- 2. Section Collaboration (MAINTENANT EN DEUXIÈME) -->
+        <!-- 2. Section Collaboration -->
         <section class="collaboration-section">
             <h2>Envie de Collaborer ?</h2>
             <p style="color: var(--text-light); font-weight: 500;">
@@ -378,7 +376,7 @@
             </a>
         </section>
         
-        <!-- 3. Section Annonce / Montage Vidéo (MAINTENANT EN DERNIER) -->
+        <!-- 3. Section Annonce / Montage Vidéo -->
         <section class="hero-section">
             <h1>Besoin d'aide ?</h1>
             <p>
