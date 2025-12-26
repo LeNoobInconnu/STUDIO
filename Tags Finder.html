@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Tags Finder - Expert Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { 
+            background-color: #0f172a; 
+            color: #f8fafc; 
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            overflow-x: hidden;
+        }
+        .preview-container-bg {
+            position: fixed;
+            inset: 0;
+            background-image: radial-gradient(#334155 1px, transparent 1px);
+            background-size: 20px 20px;
+            z-index: -1;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .tag-pill {
+            transition: all 0.2s;
+        }
+        .tag-pill:hover {
+            transform: translateY(-2px);
+            background-color: #ef4444;
+            color: white;
+        }
+        .category-btn {
+            transition: all 0.2s;
+        }
+        .category-btn.active {
+            background-color: #ef4444;
+            border-color: #ef4444;
+            color: white;
+        }
+    </style>
+</head>
+<body class="p-4">
+
+    <div class="preview-container-bg"></div>
+
+    <!-- Bouton Retour -->
+    <a href="Creator_Studio.html" class="fixed top-4 right-4 z-50 flex items-center space-x-2 bg-slate-800 hover:bg-red-900/40 border border-slate-700 hover:border-red-500 text-slate-300 hover:text-white px-4 py-2 rounded-xl transition-all shadow-lg group">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:-translate-x-1 transition-transform">
+            <path d="m15 18-6-6 6-6"/>
+        </svg>
+        <span class="font-semibold text-sm">Quitter</span>
+    </a>
+
+    <main class="w-full max-w-4xl">
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center p-3 bg-red-600 rounded-2xl mb-4 shadow-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="white">
+                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                </svg>
+            </div>
+            <h1 class="text-3xl sm:text-4xl font-bold mb-2 text-white">Tags Finder Pro</h1>
+            <p class="text-slate-400 mb-6">Générateur optimisé avec filtres de catégories.</p>
+            
+            <!-- Message d'avertissement -->
+            <div class="max-w-2xl mx-auto bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 flex items-center space-x-3 text-left">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                <p class="text-xs sm:text-sm text-amber-200/80">
+                    <span class="font-bold text-amber-400">Note :</span> Comme ce générateur utilise des combinaisons automatiques, certains résultats peuvent parfois manquer de sens ou de logique. Faites le tri avant de copier !
+                </p>
+            </div>
+        </div>
+
+        <div class="glass-card p-6 rounded-3xl shadow-2xl border border-slate-700/50">
+            <!-- Barre de recherche -->
+            <div class="flex flex-col sm:flex-row gap-4 mb-6">
+                <input 
+                    type="text" 
+                    id="topicInput" 
+                    placeholder="Sujet (ex: jardinage pomme de terre)" 
+                    class="flex-grow bg-slate-900/50 border border-slate-700 text-white px-6 py-4 rounded-2xl focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-all"
+                >
+                <button 
+                    onclick="generateTags()" 
+                    class="bg-red-600 hover:bg-red-500 text-white font-bold px-8 py-4 rounded-2xl transition-all shadow-lg active:scale-95"
+                >
+                    Générer
+                </button>
+            </div>
+
+            <!-- Boutons de catégories -->
+            <div class="mb-8">
+                <p class="text-xs font-bold text-slate-500 uppercase mb-3 tracking-widest">Type de vidéo</p>
+                <div class="flex flex-wrap gap-2" id="categoryContainer">
+                    <button onclick="setCategory('gaming', this)" class="category-btn px-4 py-2 rounded-xl border border-slate-700 bg-slate-800/50 text-sm hover:border-slate-50">🎮 Gaming</button>
+                    <button onclick="setCategory('tuto', this)" class="category-btn px-4 py-2 rounded-xl border border-slate-700 bg-slate-800/50 text-sm hover:border-slate-50">📚 Tuto</button>
+                    <button onclick="setCategory('vlog', this)" class="category-btn px-4 py-2 rounded-xl border border-slate-700 bg-slate-800/50 text-sm hover:border-slate-50">🎥 Vlog</button>
+                    <button onclick="setCategory('shorts', this)" class="category-btn px-4 py-2 rounded-xl border border-slate-700 bg-slate-800/50 text-sm hover:border-slate-50">📱 Shorts</button>
+                    <button onclick="setCategory('humour', this)" class="category-btn px-4 py-2 rounded-xl border border-slate-700 bg-slate-800/50 text-sm hover:border-slate-50">😂 Humour</button>
+                    <button onclick="setCategory('musique', this)" class="category-btn px-4 py-2 rounded-xl border border-slate-700 bg-slate-800/50 text-sm hover:border-slate-50">🎵 Musique</button>
+                    <button onclick="setCategory('high-tech', this)" class="category-btn px-4 py-2 rounded-xl border border-slate-700 bg-slate-800/50 text-sm hover:border-slate-50">💻 Tech</button>
+                    <button onclick="setCategory('cuisine', this)" class="category-btn px-4 py-2 rounded-xl border border-slate-700 bg-slate-800/50 text-sm hover:border-slate-50">🍳 Cuisine</button>
+                    <button onclick="setCategory('sport', this)" class="category-btn px-4 py-2 rounded-xl border border-slate-700 bg-slate-800/50 text-sm hover:border-slate-50">⚽ Sport</button>
+                    <button onclick="setCategory('annonce', this)" class="category-btn px-4 py-2 rounded-xl border border-slate-700 bg-slate-800/50 text-sm hover:border-slate-50">📣 Annonce</button>
+                </div>
+            </div>
+
+            <!-- Zone de résultats -->
+            <div id="results" class="hidden border-t border-slate-800 pt-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-semibold text-slate-300">Résultats optimisés</h3>
+                    <div class="flex gap-2">
+                        <button onclick="toggleHashtags()" id="hashBtn" class="text-xs bg-slate-800 px-3 py-2 rounded-lg border border-slate-700">Mode #Hashtag</button>
+                        <button onclick="copyAllTags()" class="text-xs bg-red-600 hover:bg-red-500 px-3 py-2 rounded-lg font-bold">Copier tout</button>
+                    </div>
+                </div>
+                
+                <div id="tagsList" class="flex flex-wrap gap-2 mb-4"></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let currentTags = [];
+        let showHashtags = false;
+        let selectedCategory = '';
+
+        const catDatabase = {
+            "gaming": ["gaming fr", "gameplay fr", "jeux vidéo", "lets play", "nouveauté", "découverte", "gaming 2024", "pro player"],
+            "tuto": ["tuto fr", "tutoriel", "apprendre", "comment faire", "guide complet", "astuces", "conseils", "débutant"],
+            "vlog": ["vlog fr", "daily vlog", "ma vie", "storytime", "découverte", "voyage", "lifestyle", "france"],
+            "shorts": ["shorts fr", "youtube shorts", "viral", "tendance", "vidéo courte", "reels", "incroyable"],
+            "humour": ["humour", "drôle", "rire", "blague", "divertissement", "prank", "sketch", "fun"],
+            "musique": ["musique", "cover", "chanson", "instrumental", "clip", "audio", "remix", "beat"],
+            "high-tech": ["tech fr", "test", "avis", "unboxing", "setup", "informatique", "smartphone", "nouveauté tech"],
+            "cuisine": ["recette", "fait maison", "apprendre à cuisiner", "plat", "délicieux", "manger", "chef", "food fr"],
+            "sport": ["sport", "entraînement", "musculation", "fitness", "match", "compétition", "performance", "santé"],
+            "annonce": ["annonce importante", "nouvelle vidéo", "projet", "surprise", "informations", "update", "chaîne youtube"]
+        };
+
+        const universalSuffixes = ["fr", "2024", "live", "tendance", "populaire"];
+
+        function setCategory(cat, btn) {
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+            if (selectedCategory === cat) {
+                selectedCategory = '';
+            } else {
+                selectedCategory = cat;
+                btn.classList.add('active');
+            }
+            if (document.getElementById('topicInput').value.trim()) generateTags();
+        }
+
+        function generateTags() {
+            const input = document.getElementById('topicInput').value.trim().toLowerCase();
+            if (!input) return;
+
+            let generated = [];
+            
+            const words = input.split(/\s+/).filter(w => w.length > 2);
+            words.forEach(word => {
+                generated.push(word);
+                generated.push(`${word} fr`);
+                generated.push(`${word} 2024`);
+            });
+
+            generated.push(input);
+            universalSuffixes.forEach(s => generated.push(`${input} ${s}`));
+
+            if (selectedCategory && catDatabase[selectedCategory]) {
+                generated = [...generated, ...catDatabase[selectedCategory]];
+                generated.push(`${input} ${selectedCategory}`);
+            }
+
+            currentTags = [...new Set(generated)].map(t => t.toLowerCase());
+            
+            renderTags();
+            document.getElementById('results').classList.remove('hidden');
+        }
+
+        function renderTags() {
+            const tagsList = document.getElementById('tagsList');
+            tagsList.innerHTML = '';
+
+            currentTags.forEach(tag => {
+                const displayTag = showHashtags ? `#${tag.replace(/\s+/g, '')}` : tag;
+                const span = document.createElement('div');
+                span.className = "tag-pill bg-slate-800 border border-slate-700 text-slate-300 px-3 py-1.5 rounded-full text-sm font-medium cursor-pointer";
+                span.textContent = displayTag;
+                span.onclick = () => copyText(displayTag, span);
+                tagsList.appendChild(span);
+            });
+        }
+
+        function toggleHashtags() {
+            showHashtags = !showHashtags;
+            document.getElementById('hashBtn').classList.toggle('bg-blue-600');
+            renderTags();
+        }
+
+        function copyText(text, element) {
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+
+            const original = element.textContent;
+            element.textContent = "Copié !";
+            element.classList.add('bg-green-600', 'text-white');
+            setTimeout(() => {
+                element.textContent = original;
+                element.classList.remove('bg-green-600', 'text-white');
+            }, 800);
+        }
+
+        function copyAllTags() {
+            const separator = showHashtags ? " " : ", ";
+            const final = currentTags.map(t => showHashtags ? `#${t.replace(/\s+/g, '')}` : t).join(separator);
+            
+            const el = document.createElement('textarea');
+            el.value = final;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            
+            const btn = document.querySelector('button[onclick="copyAllTags()"]');
+            btn.textContent = "Copié avec succès !";
+            setTimeout(() => btn.textContent = "Copier tout", 2000);
+        }
+
+        document.getElementById('topicInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') generateTags();
+        });
+    </script>
+</body>
+</html>
