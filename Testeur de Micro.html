@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studio - Testeur de Micro Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { 
+            background-color: #0f172a; 
+            color: #f8fafc; 
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+        .preview-container-bg {
+            position: fixed;
+            inset: 0;
+            background-image: radial-gradient(#334155 1px, transparent 1px);
+            background-size: 20px 20px;
+            z-index: -1;
+        }
+        .glass {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .vu-meter-gradient {
+            background: linear-gradient(to right, #22c55e 0%, #22c55e 60%, #eab308 80%, #ef4444 100%);
+        }
+        .frequency-bar {
+            transition: height 0.1s ease-out, background-color 0.3s;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="preview-container-bg"></div>
+
+    <a href="Creator_Studio.html" class="fixed top-4 right-4 z-50 flex items-center space-x-2 bg-slate-800 hover:bg-red-900/40 border border-slate-700 hover:border-red-500 text-slate-300 hover:text-white px-6 py-3 rounded-xl transition-all shadow-lg group">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:-translate-x-1 transition-transform">
+            <path d="m15 18-6-6 6-6"/>
+        </svg>
+        <span class="font-semibold">Quitter vers le Studio</span>
+    </a>
+
+    <div class="max-w-5xl w-full z-10 space-y-6">
+        <div class="text-center md:text-left space-y-2">
+            <h1 class="text-3xl md:text-4xl font-black text-white flex items-center justify-center md:justify-start gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+                ANALYSEUR DE TIMBRE
+            </h1>
+            <p class="text-slate-400 font-medium tracking-wide">Testez l'équilibre de votre voix (Graves vs Aigus).</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Contrôles (4 colonnes) -->
+            <div class="lg:col-span-4 space-y-6">
+                <div class="glass p-6 rounded-3xl shadow-2xl">
+                    <button id="toggleBtn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-blue-500/20 active:scale-95 flex items-center justify-center gap-2">
+                        <span id="btnLabel">Démarrer l'Analyse</span>
+                    </button>
+                    
+                    <div class="mt-8 space-y-4">
+                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">Volume d'entrée</label>
+                        <div class="relative h-4 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
+                            <div id="vuBar" class="h-full vu-meter-gradient transition-all duration-75" style="width: 0%"></div>
+                        </div>
+                        <div id="dbDisplay" class="text-right font-mono text-xs text-blue-400 font-bold">-Inf dB</div>
+                    </div>
+                </div>
+
+                <!-- Verdict de l'équilibre -->
+                <div class="glass p-6 rounded-3xl border-l-4 border-l-blue-500">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">Diagnostic Tonal</label>
+                    <div id="toneVerdict" class="text-xl font-bold mt-2 text-white">En attente...</div>
+                    <p id="toneAdvice" class="mt-2 text-sm text-slate-400 leading-relaxed italic">Lancez le test et parlez normalement.</p>
+                </div>
+            </div>
+
+            <!-- Graphiques (8 colonnes) -->
+            <div class="lg:col-span-8 space-y-6">
+                <div class="glass p-6 rounded-3xl">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-4 block">Balance des Fréquences</label>
+                    
+                    <div class="flex items-end justify-around h-48 gap-4 px-4">
+                        <!-- Graves -->
+                        <div class="flex flex-col items-center flex-1 h-full justify-end">
+                            <div id="barBass" class="frequency-bar w-full bg-blue-500/40 border-t-2 border-blue-400 rounded-t-lg" style="height: 0%"></div>
+                            <span class="text-[10px] font-bold mt-2 text-slate-500">GRAVES</span>
+                        </div>
+                        <!-- Médiums -->
+                        <div class="flex flex-col items-center flex-1 h-full justify-end">
+                            <div id="barMid" class="frequency-bar w-full bg-emerald-500/40 border-t-2 border-emerald-400 rounded-t-lg" style="height: 0%"></div>
+                            <span class="text-[10px] font-bold mt-2 text-slate-500">MÉDIUMS</span>
+                        </div>
+                        <!-- Aigus -->
+                        <div class="flex flex-col items-center flex-1 h-full justify-end">
+                            <div id="barHigh" class="frequency-bar w-full bg-purple-500/40 border-t-2 border-purple-400 rounded-t-lg" style="height: 0%"></div>
+                            <span class="text-[10px] font-bold mt-2 text-slate-500">AIGUS</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass p-6 rounded-3xl relative overflow-hidden">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-4 block">Analyse de Souffle (Hiss)</label>
+                    <div class="flex items-center justify-between">
+                        <div id="hissStatus" class="text-2xl font-black text-slate-400 tracking-tight">---</div>
+                        <div id="qualityScore" class="text-4xl font-black text-blue-500">--%</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const toggleBtn = document.getElementById('toggleBtn');
+        const btnLabel = document.getElementById('btnLabel');
+        const vuBar = document.getElementById('vuBar');
+        const dbDisplay = document.getElementById('dbDisplay');
+        const toneVerdict = document.getElementById('toneVerdict');
+        const toneAdvice = document.getElementById('toneAdvice');
+        const hissStatus = document.getElementById('hissStatus');
+        const qualityScore = document.getElementById('qualityScore');
+        
+        const barBass = document.getElementById('barBass');
+        const barMid = document.getElementById('barMid');
+        const barHigh = document.getElementById('barHigh');
+
+        let audioCtx, analyser, dataArray, source, animationId;
+        let isRunning = false;
+
+        toggleBtn.addEventListener('click', async () => {
+            if (isRunning) stopAnalysis();
+            else await startAnalysis();
+        });
+
+        async function startAnalysis() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                source = audioCtx.createMediaStreamSource(stream);
+                analyser = audioCtx.createAnalyser();
+                analyser.fftSize = 1024;
+                source.connect(analyser);
+
+                dataArray = new Uint8Array(analyser.frequencyBinCount);
+                isRunning = true;
+                btnLabel.innerText = "Arrêter le Test";
+                toggleBtn.classList.replace('bg-blue-600', 'bg-slate-700');
+
+                render();
+            } catch (err) {
+                alert("Erreur d'accès au micro.");
+            }
+        }
+
+        function stopAnalysis() {
+            isRunning = false;
+            cancelAnimationFrame(animationId);
+            if (audioCtx) audioCtx.close();
+            btnLabel.innerText = "Démarrer l'Analyse";
+            toggleBtn.classList.replace('bg-slate-700', 'bg-blue-600');
+            vuBar.style.width = "0%";
+        }
+
+        function render() {
+            if (!isRunning) return;
+            animationId = requestAnimationFrame(render);
+            analyser.getByteFrequencyData(dataArray);
+
+            // 1. Calcul du volume général
+            let sum = 0;
+            for(let i=0; i<dataArray.length; i++) sum += dataArray[i];
+            let avg = sum / dataArray.length;
+            let db = Math.round(20 * Math.log10((avg||1) / 255));
+            vuBar.style.width = Math.max(0, (db + 60) * 1.6) + "%";
+            dbDisplay.innerText = db + " dB";
+
+            // 2. Découpage des zones fréquentielles
+            // Graves (Basses): ~20Hz à 250Hz
+            // Médiums: 250Hz à 4000Hz
+            // Aigus: 4000Hz+
+            const binSize = audioCtx.sampleRate / analyser.fftSize;
+            
+            let bass = 0, mid = 0, high = 0;
+            let countB = 0, countM = 0, countH = 0;
+
+            for(let i=0; i<dataArray.length; i++) {
+                let freq = i * binSize;
+                if(freq < 300) { bass += dataArray[i]; countB++; }
+                else if(freq < 3500) { mid += dataArray[i]; countM++; }
+                else { high += dataArray[i]; countH++; }
+            }
+
+            let avgBass = (bass / countB) || 0;
+            let avgMid = (mid / countM) || 0;
+            let avgHigh = (high / countH) || 0;
+
+            // Mise à jour visuelle des barres
+            barBass.style.height = (avgBass / 2) + "%";
+            barMid.style.height = (avgMid / 2) + "%";
+            barHigh.style.height = (avgHigh / 2) + "%";
+
+            // 3. Logique de Diagnostic (si on parle assez fort)
+            if (avg > 15) {
+                analyzeTone(avgBass, avgMid, avgHigh);
+            }
+
+            // 4. Détection de Souffle (Hiss)
+            let hissVal = avgHigh;
+            if (avg < 5) { // Si c'est le silence
+                if (hissVal < 10) hissStatus.innerText = "Silencieux ✨";
+                else if (hissVal < 30) hissStatus.innerText = "Souffle léger 💨";
+                else hissStatus.innerText = "Bruit critique ⚠️";
+            }
+        }
+
+        function analyzeTone(b, m, h) {
+            // Comparaison des niveaux
+            if (b > m * 1.5) {
+                toneVerdict.innerText = "Trop Grave / Sourds";
+                toneVerdict.className = "text-xl font-bold mt-2 text-blue-400";
+                toneAdvice.innerText = "Votre voix manque de clarté. Éloignez-vous un peu du micro ou activez un filtre 'Low Cut'.";
+            } else if (h > m * 1.3) {
+                toneVerdict.innerText = "Trop Aigu / Sifflant";
+                toneVerdict.className = "text-xl font-bold mt-2 text-purple-400";
+                toneAdvice.innerText = "Le son est trop perçant. Évitez de parler directement face à la capsule ou utilisez un filtre anti-pop.";
+            } else if (m > 10) {
+                toneVerdict.innerText = "Équilibre Parfait";
+                toneVerdict.className = "text-xl font-bold mt-2 text-green-400";
+                toneAdvice.innerText = "Excellent ! Votre timbre est bien balancé entre chaleur et clarté.";
+            }
+            
+            // Score simplifié
+            let score = 100 - (Math.abs(b - m) * 0.5) - (Math.abs(h - m) * 0.8);
+            qualityScore.innerText = Math.max(0, Math.min(100, Math.round(score))) + "%";
+        }
+    </script>
+</body>
+</html>
