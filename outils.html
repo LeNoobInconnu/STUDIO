@@ -4,30 +4,22 @@
     <link rel="icon" type="image/png" href="favicon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LeNoobInconnu STUDIO</title>
+    <title>LeNoobInconnu STUDIO - Creator Drive</title>
     
-    <!-- Intégration de Font Awesome pour les icônes -->
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
     <style>
-        /* CSS INTERNE (Style Moderne) */
-        
-        /* Variables CSS pour les couleurs modernes */
         :root {
-            --primary-color: #5b5ff5; /* Un bleu-violet moderne */
-            --success-color: #38C2A0; /* Couleur verte de succès pour la fin du timer */
-            --youtube-red: #ff0000;
-            --background-dark: #1e1e2f; /* Fond très sombre */
-            --background-light: #2c2c40; /* Couleur des cartes/éléments */
-            --text-light: #f0f0f5; /* Texte clair */
-            --text-secondary: #a0a0b0; /* Texte secondaire */
+            --primary-color: #5b5ff5;
+            --background-dark: #1e1e2f;
+            --background-light: #2c2c40;
+            --text-light: #f0f0f5;
+            --text-secondary: #a0a0b0;
             --shadow-elevation: 0 10px 25px rgba(0, 0, 0, 0.25);
             --font-stack: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            --countdown-color: #ffffff; /* Couleur pour le compte à rebours */
+            --card-bg: #383850;
         }
-        
-        /* Réinitialisation de base */
+
         body {
             margin: 0;
             font-family: var(--font-stack);
@@ -36,40 +28,30 @@
             min-height: 100vh;
         }
 
-        /* --- NAVIGATION BAR STYLES (Conservé) --- */
-
+        /* --- NAVIGATION BAR --- */
         .navbar {
             background-color: var(--background-light);
-            padding: 15px 30px;
+            padding: 0 30px;
             box-shadow: var(--shadow-elevation); 
             display: flex;
             justify-content: space-between; 
             align-items: center;
             height: 70px;
         }
-        
-        .studio-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            letter-spacing: 1px;
-            text-decoration: none;
-        }
-        
+
         .nav-links {
             display: flex;
-            gap: 25px; 
+            gap: 20px; 
         }
 
         .nav-item {
             color: var(--text-light);
             text-decoration: none;
-            padding: 8px 12px;
+            padding: 8px 15px;
             border-radius: 6px;
-            transition: background-color 0.3s, color 0.3s, transform 0.1s;
-            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
             font-weight: 500;
-            white-space: nowrap; 
             display: flex; 
             align-items: center;
         }
@@ -78,402 +60,399 @@
             margin-right: 8px;
             color: var(--primary-color); 
         }
-        
-        .nav-item:hover {
+
+        .nav-item:hover, .nav-item.active {
             background-color: var(--primary-color);
             color: var(--background-dark);
-            transform: translateY(-2px); 
-            box-shadow: 0 5px 15px rgba(91, 95, 245, 0.4);
+            transform: translateY(-2px);
         }
-        
-        .nav-item:hover i {
-            color: var(--background-dark); 
-        }
-        
-        .nav-item.active {
-            background-color: var(--primary-color);
-            color: var(--background-dark);
-            font-weight: 700;
-        }
-        .nav-item.active i {
+
+        .nav-item:hover i, .nav-item.active i {
             color: var(--background-dark);
         }
 
-        /* --- CONTENT STYLES (Conservé) --- */
-        
+        /* --- HEADER --- */
         .content {
             padding: 40px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
             text-align: center;
-            gap: 50px; 
         }
-        
+
         h1 {
-            color: var(--text-light);
             font-size: 3rem;
             margin-bottom: 10px;
         }
-        
-        .hero-section {
-            background-color: var(--background-light);
-            padding: 50px 30px;
-            border-radius: 15px;
-            box-shadow: var(--shadow-elevation);
-            max-width: 900px;
-            width: 100%;
-            border: 1px solid rgba(91, 95, 245, 0.2);
-        }
 
-        /* --- STYLES COMPTE À REBOURS --- */
-        
-        .countdown-title {
-            color: var(--countdown-color);
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin-bottom: 30px;
-            animation: pulse 1.5s infinite alternate;
-        }
-
-        @keyframes pulse {
-            from { text-shadow: 0 0 5px var(--countdown-color); }
-            to { text-shadow: 0 0 20px var(--countdown-color), 0 0 10px rgba(91, 95, 245, 0.5); }
-        }
-
-        .countdown-timer {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
-        .time-unit {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-width: 100px; 
-        }
-
-        .digit {
-            font-size: 4rem;
-            font-weight: 900;
-            color: var(--text-light);
-            background-color: #383850;
-            padding: 10px 15px;
-            border-radius: 10px;
-            margin-bottom: 5px;
-            min-width: 70px;
-            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
-            line-height: 1;
-        }
-
-        .label {
-            font-size: 0.9rem;
+        .subtitle {
             color: var(--text-secondary);
-            text-transform: uppercase;
-        }
-
-        /* --- STYLES DE FIN ET ANIMATION --- */
-
-        .final-message-container {
-            padding: 30px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .final-message {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--success-color); /* Vert pour le succès */
-            text-shadow: 0 0 10px rgba(56, 194, 160, 0.5);
-            animation: arrival-pop 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* Animation de rebond */
-            display: flex;
-            align-items: center;
-        }
-
-        .final-message i {
-            margin-right: 10px;
-            font-size: 2.2rem;
-            color: var(--primary-color);
-            animation: bounce 2s infinite; /* Animation de l'icône */
-        }
-
-        @keyframes arrival-pop {
-            0% { transform: scale(0.5) translateY(20px); opacity: 0; }
-            80% { transform: scale(1.1) translateY(-5px); opacity: 1; }
-            100% { transform: scale(1.0) translateY(0); }
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
-            40% {transform: translateY(-10px);}
-            60% {transform: translateY(-5px);}
-        }
-
-        /* Style pour les messages après la redirection */
-        .redirect-message {
             font-size: 1.2rem;
-            color: var(--text-secondary);
-            padding: 10px;
-        }
-
-        /* --- NOUVEAUX STYLES FUTURS OUTILS --- */
-
-        .tools-section-title {
-            color: var(--primary-color);
-            font-size: 2rem;
-            font-weight: 800;
             margin-bottom: 40px;
-            text-shadow: 0 0 10px rgba(91, 95, 245, 0.5);
         }
 
+        /* --- BARRE DE RECHERCHE & FILTRES --- */
+        .search-section {
+            background-color: var(--background-light);
+            padding: 25px;
+            border-radius: 15px;
+            display: flex;
+            gap: 20px;
+            margin-bottom: 50px;
+            border: 1px solid rgba(91, 95, 245, 0.2);
+            box-shadow: var(--shadow-elevation);
+        }
+
+        .search-container {
+            flex: 3;
+            position: relative;
+        }
+
+        .search-container i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-color);
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border-radius: 8px;
+            border: 1px solid #444;
+            background: var(--background-dark);
+            color: white;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .filter-container {
+            flex: 1;
+        }
+
+        .filter-select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #444;
+            background: var(--background-dark);
+            color: white;
+            cursor: pointer;
+            outline: none;
+        }
+
+        /* --- GRILLE D'OUTILS --- */
         .tools-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 25px;
-            width: 100%;
-            margin-top: 20px;
         }
 
         .tool-card {
-            background-color: var(--background-dark);
-            border: 2px solid var(--background-light);
-            padding: 30px;
-            border-radius: 10px;
-            text-align: center;
-            transition: transform 0.3s, box-shadow 0.3s;
-            cursor: pointer;
-        }
-        
-        /* Animation subtile pour les cartes */
-        .tool-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3), 0 0 15px rgba(91, 95, 245, 0.6);
+            background-color: var(--background-light);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: left;
+            border: 1px solid rgba(91, 95, 245, 0.1);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
-        .tool-icon {
-            font-size: 3.5rem;
-            color: var(--primary-color);
+        .tool-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--primary-color);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .tool-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
             margin-bottom: 15px;
         }
-        
+
+        .cat-tag {
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            background: rgba(91, 95, 245, 0.1);
+            padding: 3px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
         .tool-card h3 {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: var(--text-light);
-            margin-bottom: 10px;
+            margin: 0 0 10px 0;
+            font-size: 1.25rem;
+            color: #fff;
         }
 
         .tool-card p {
-            font-size: 0.9rem;
             color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            min-height: 45px;
         }
 
+        .btn-order {
+            background-color: var(--primary-color);
+            color: var(--background-dark);
+            text-decoration: none;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: 0.3s;
+            font-size: 0.9rem;
+        }
 
-        /* --- MOBILE ADJUSTMENTS (Conservé) --- */
+        .btn-order:hover {
+            filter: brightness(1.2);
+        }
+
         @media (max-width: 768px) {
-            h1 {
-                font-size: 2.2rem;
-            }
-            .countdown-title {
-                font-size: 1.8rem;
-            }
-            .final-message {
-                font-size: 1.4rem;
-            }
-            .final-message i {
-                font-size: 1.8rem;
-            }
-            .hero-section {
-                padding: 30px 15px;
-            }
-            .navbar {
-                flex-direction: column;
-                padding: 15px 10px;
-                height: auto;
-            }
-            .nav-links {
-                margin-top: 15px;
-                gap: 10px;
-                flex-wrap: wrap; 
-                justify-content: center;
-            }
-            .studio-title {
-                font-size: 1.3rem;
-            }
-            .digit {
-                font-size: 2.5rem;
-                padding: 5px 10px;
-            }
-            .time-unit {
-                min-width: 70px;
-            }
-            .tools-section-title {
-                font-size: 1.5rem;
-            }
+            .navbar { flex-direction: column; height: auto; padding: 20px; }
+            .nav-links { margin-top: 15px; flex-wrap: wrap; justify-content: center; }
+            .search-section { flex-direction: column; }
+            h1 { font-size: 2.2rem; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Bande de navigation (Conservé) -->
     <header class="navbar">
-
-        <a href="index.html" class="studio-title">
-            <img src="LogoLNI_STUDIO.png" alt="LeNoobInconnu STUDIO" height="60" onerror="this.onerror=null; this.src='https://placehold.co/200x60/1e1e2f/5b5ff5?text=LNI%20STUDIO';">
-        </a>
-
+        <div class="logo">
+            <img src="LogoLNI_STUDIO.png" alt="LeNoobInconnu STUDIO" height="55" onerror="this.style.display='none'">
+        </div>
+        
         <nav class="nav-links">
             <a href="index.html" class="nav-item"><i class="fa-solid fa-house"></i> Accueil</a>
-            <a href="outils.html" class="nav-item active"><i class="fa-solid fa-chart-simple"></i>Creator Studio</a>
+            <a href="outils.html" class="nav-item active"><i class="fa-solid fa-chart-simple"></i> Creator Studio</a>
             <a href="https://discord.gg/PbntRm5sNy" class="nav-item" target="_blank"><i class="fa-brands fa-discord"></i> Discord</a>
             <a href="serveur.html" class="nav-item"><i class="fa-solid fa-gamepad"></i> Serveur MC</a> 
             <a href="videos.html" class="nav-item"><i class="fa-solid fa-video"></i> Vidéos</a>
         </nav>
-
     </header>
 
-    <!-- Contenu Principal de la page d'Accueil -->
     <main class="content">
-        
-        <!-- SECTION COMPTE À REBOURS ET REDIRECTION -->
-        <section class="hero-section" id="countdown-section">
-            <h2 class="countdown-title">Ouverture du Creator Studio dans :</h2>
+        <h1>Creator Drive</h1>
+        <p class="subtitle">Le catalogue complet des outils pour créateurs de contenu.</p>
+
+        <!-- Filtres & Recherche -->
+        <div class="search-section">
+            <div class="search-container">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="toolSearch" class="search-bar" placeholder="Rechercher un outil..." onkeyup="filterTools()">
+            </div>
+            <div class="filter-container">
+                <select id="toolFilter" class="filter-select" onchange="filterTools()">
+                    <option value="all">Toutes les catégories</option>
+                    <option value="audio">Audio & Son</option>
+                    <option value="video">Vidéo & Caméra</option>
+                    <option value="design">Design & Visuels</option>
+                    <option value="seo">Analyse & SEO</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="tools-grid" id="toolsGrid">
             
-            <div class="countdown-timer" id="countdown-timer">
-                <!-- Les unités de temps seront insérées ici par JavaScript -->
-                <div class="time-unit">
-                    <span class="digit" id="days">00</span>
-                    <span class="label">Jours</span>
+            <!-- AUDIO (4 outils) -->
+            <div class="tool-card" data-category="audio">
+                <div class="tool-header">
+                    <span class="cat-tag">Audio</span>
+                    <i class="fa-solid fa-microphone-lines" style="color: var(--primary-color)"></i>
                 </div>
-                <div class="time-unit">
-                    <span class="digit" id="hours">00</span>
-                    <span class="label">Heures</span>
-                </div>
-                <div class="time-unit">
-                    <span class="digit" id="minutes">00</span>
-                    <span class="label">Minutes</span>
-                </div>
-                <div class="time-unit">
-                    <span class="digit" id="seconds">00</span>
-                    <span class="label">Secondes</span>
-                </div>
+                <h3>Testeur de Micro</h3>
+                <p>Analyse de la qualité sonore et détection de souffle en temps réel.</p>
+                <a href="#" class="btn-order"><i class="fa-solid fa-play"></i> Lancer</a>
             </div>
 
-            <p class="subtitle" id="countdown-message" style="margin-top: 30px;">
-                Rendez-vous le 1er janvier 2026 !
-            </p>
-        </section>
-
-        <!-- NOUVELLE SECTION : FUTURS OUTILS DU CREATOR STUDIO -->
-        <section class="hero-section">
-            <h2 class="tools-section-title">Aperçu des Futurs Outils</h2>
-            <p class="subtitle" style="color: var(--text-light);">
-                Voici un aperçu des fonctionnalités puissantes qui seront disponibles dès l'ouverture du Studio.
-            </p>
-            
-            <div class="tools-grid">
-                
-                <!-- Carte Outil 1: Générateur d'Idées -->
-                <div class="tool-card">
-                    <i class="fa-solid fa-lightbulb tool-icon"></i>
-                    <h3>Générateur d'Idées</h3>
-                    <p>Débloquez votre créativité avec des suggestions d'idées de contenu uniques et tendances, optimisées pour votre audience.</p>
+            <div class="tool-card" data-category="audio">
+                <div class="tool-header">
+                    <span class="cat-tag">Audio</span>
+                    <i class="fa-solid fa-sliders" style="color: var(--primary-color)"></i>
                 </div>
-
-                <!-- Carte Outil 2: Analyseur de Vidéos -->
-                <div class="tool-card">
-                    <i class="fa-solid fa-chart-line tool-icon"></i>
-                    <h3>Analyseur de Vidéos</h3>
-                    <p>Obtenez des statistiques détaillées et des conseils pour améliorer la performance de vos vidéos après leur publication.</p>
-                </div>
-
-                <!-- Carte Outil 3: Planificateur de Contenu -->
-                <div class="tool-card">
-                    <i class="fa-solid fa-calendar-check tool-icon"></i>
-                    <h3>Planificateur de Contenu</h3>
-                    <p>Organisez votre calendrier de publication et suivez l'avancement de vos projets en un seul endroit.</p>
-                </div>
-                
+                <h3>Gain Monitor</h3>
+                <p>Calculez le niveau de gain idéal pour éviter la saturation.</p>
+                <a href="#" class="btn-order"><i class="fa-solid fa-wave-square"></i> Tester</a>
             </div>
-        </section>
 
+            <div class="tool-card" data-category="audio">
+                <div class="tool-header">
+                    <span class="cat-tag">Audio</span>
+                    <i class="fa-solid fa-music" style="color: var(--primary-color)"></i>
+                </div>
+                <h3>Test Débit Binaire</h3>
+                <p>Vérifiez si votre bitrate audio est suffisant pour une qualité studio.</p>
+                <a href="#" class="btn-order"><i class="fa-solid fa-headphones"></i> Vérifier</a>
+            </div>
+
+            <div class="tool-card" data-category="audio">
+                <div class="tool-header">
+                    <span class="cat-tag">Audio</span>
+                    <i class="fa-solid fa-wind" style="color: var(--primary-color)"></i>
+                </div>
+                <h3>Bruit Blanc</h3>
+                <p>Générateur de fréquences pour calibrer vos filtres anti-bruit.</p>
+                <a href="#" class="btn-order"><i class="fa-solid fa-volume-high"></i> Générer</a>
+            </div>
+
+            <!-- VIDEO (4 outils) -->
+            <div class="tool-card" data-category="video">
+                <div class="tool-header">
+                    <span class="cat-tag">Vidéo</span>
+                    <i class="fa-solid fa-camera-rotate" style="color: var(--primary-color)"></i>
+                </div>
+                <h3>Checklist Cadre</h3>
+                <p>Vérifiez vos points de focus et l'éclairage avant de filmer.</p>
+                <a href="#" class="btn-order"><i class="fa-solid fa-list-check"></i> Ouvrir</a>
+            </div>
+
+            <div class="tool-card" data-category="video">
+                <div class="tool-header">
+                    <span class="cat-tag">Vidéo</span>
+                    <i class="fa-solid fa-film" style="color: var(--primary-color)"></i>
+                </div>
+                <h3>Ratio Converter</h3>
+                <p>Calculez les dimensions pour passer du 16:9 au format Short (9:16).</p>
+                <a href="#" class="btn-order"><i class="fa-solid fa-crop"></i> Calculer</a>
+            </div>
+
+            <div class="tool-card" data-category="video">
+                <div class="tool-header">
+                    <span class="cat-tag">Vidéo</span>
+                    <i class="fa-solid fa-stopwatch" style="color: var(--primary-color)"></i>
+                </div>
+                <h3>Latence Caméra</h3>
+                <p>Mesurez le décalage entre votre action et le retour image.</p>
+                <a href="#" class="btn-order"><i class="fa-solid fa-clock"></i> Mesurer</a>
+            </div>
+
+            <div class="tool-card" data-category="video">
+                <div class="tool-header">
+                    <span class="cat-tag">Vidéo</span>
+                    <i class="fa-solid fa-expand" style="color: var(--primary-color)"></i>
+                </div>
+                <h3>Résolution Check</h3>
+                <p>Vérifiez si votre fichier vidéo respecte les standards 4K ou 1080p.</p>
+                <a href="#" class="btn-order"><i class="fa-solid fa-file-video"></i> Analyser</a>
+            </div>
+
+            <!-- DESIGN (4 outils) -->
+            <div class="tool-card" data-category="design">
+                <div class="tool-header">
+                    <span class="cat-tag">Design</span>
+                    <i class="fa-solid fa-palette" style="color: var(--primary-color)"></i>
+                </div>
+                <h3>Miniature Check</h3>
+                <p>Testez la lisibilité de vos miniatures sur l'interface mobile.</p>
+                <a href="#" class="btn-order"><i class="fa-solid fa-eye"></i> Aperçu</a>
+            </div>
+
+            <div class="tool-card" data-category="design">
+                <div class="tool-header">
+                    <span class="cat-tag">Design</span>
+                    <i class="fa-solid fa-dropper" style="color: var(--primary-color)"></i>
+                </div>
+                <h3>Color Palette</h3>
+                <p>Extrayez les couleurs principales d'une image pour vos visuels.</p>
+                <a href="#" class="btn-order"><i class="fa-solid fa-paint-roller"></i> Extraire</a>
+            </div>
+
+            <div class="tool-card" data-category="design">
+                <div class="tool-header">
+                    <span class="cat-tag">Design</span>
+                    <i class="fa-solid fa-layer-group" style="color: var(--primary-color)"></i>
+                </div>
+                <h3>Overlay Maker</h3>
+                <p>Créez des bordures simples pour votre webcam ou vos alertes.</p>
+                <a href="#" class="btn-order"><i class="fa-solid fa-pencil"></i> Créer</a>
+            </div>
+
+            <div class="tool-card" data-category="design">
+                <div class="tool-header">
+                    <span class="cat-tag">Design</span>
+                    <i class="fa-solid fa-font" style="color: var(--primary-color)"></i>
+                </div>
+                <h3>Font Tester</h3>
+                <p>Comparez plusieurs polices pour vos titres et sous-titres.</p>
+                <a href="#" class="btn-order"><i class="fa-solid fa-keyboard"></i> Essayer</a>
+            </div>
+
+            <!-- ANALYSE (4 outils) -->
+            <div class="tool-card" data-category="seo">
+                <div class="tool-header">
+                    <span class="cat-tag">Analyse</span>
+                    <i class="fa-solid fa-chart-line" style="color: var(--primary-color)"></i>
+                </div>
+                <h3>Test de Titre</h3>
+                <p>Analysez l'impact et la longueur de vos titres YouTube.</p>
+                <a href="#" class="btn-order"><i class="fa-solid fa-magnifying-glass-chart"></i> Analyser</a>
+            </div>
+
+            <div class="tool-card" data-category="seo">
+                <div class="tool-header">
+                    <span class="cat-tag">Analyse</span>
+                    <i class="fa-solid fa-hashtag" style="color: var(--primary-color)"></i>
+                </div>
+                <h3>Tags Finder</h3>
+                <p>Générez les tags les plus performants pour votre sujet.</p>
+                <a href="#" class="btn-order"><i class="fa-solid fa-tags"></i> Générer</a>
+            </div>
+
+            <div class="tool-card" data-category="seo">
+                <div class="tool-header">
+                    <span class="cat-tag">Analyse</span>
+                    <i class="fa-solid fa-heart" style="color: var(--primary-color)"></i>
+                </div>
+                <h3>Engagement Calc</h3>
+                <p>Calculez votre taux d'engagement moyen par vidéo.</p>
+                <a href="#" class="btn-order"><i class="fa-solid fa-calculator"></i> Calculer</a>
+            </div>
+
+            <div class="tool-card" data-category="seo">
+                <div class="tool-header">
+                    <span class="cat-tag">Analyse</span>
+                    <i class="fa-solid fa-copyright" style="color: var(--primary-color)"></i>
+                </div>
+                <h3>Copyright Check</h3>
+                <p>Vérifiez si une musique est libre de droits pour vos vidéos.</p>
+                <a href="#" class="btn-order"><i class="fa-solid fa-shield"></i> Vérifier</a>
+            </div>
+
+        </div>
     </main>
 
     <script>
-        // --- LOGIQUE DU COMPTE À REBOURS ET DE LA REDIRECTION ---
-        
-        // 1. Définir la date cible (1er janvier 2026, 00:00:00)
-        const targetDate = new Date("Jan 1, 2026 00:00:00").getTime();
-        const redirectUrl = "Creator_Studio.html";
-        
-        // Références aux éléments HTML
-        const daysElement = document.getElementById('days');
-        const hoursElement = document.getElementById('hours');
-        const minutesElement = document.getElementById('minutes');
-        const secondsElement = document.getElementById('seconds');
-        const countdownSection = document.getElementById('countdown-section');
+        function filterTools() {
+            const search = document.getElementById('toolSearch').value.toLowerCase();
+            const category = document.getElementById('toolFilter').value;
+            const cards = document.querySelectorAll('.tool-card');
 
-        // Fonction pour formater les nombres avec deux chiffres (ex: 05 au lieu de 5)
-        const formatNumber = (num) => String(num).padStart(2, '0');
+            cards.forEach(card => {
+                const title = card.querySelector('h3').innerText.toLowerCase();
+                const desc = card.querySelector('p').innerText.toLowerCase();
+                const cardCat = card.getAttribute('data-category');
 
-        function updateCountdown() {
-            // Obtenir la date et l'heure actuelles
-            const now = new Date().getTime();
+                const matchesSearch = title.includes(search) || desc.includes(search);
+                const matchesCategory = (category === 'all' || cardCat === category);
 
-            // Calculer la différence entre la date cible et la date actuelle (en millisecondes)
-            const distance = targetDate - now;
-
-            // VÉRIFICATION : Si le compte à rebours est terminé
-            if (distance < 0) {
-                // Arrêter la mise à jour
-                clearInterval(countdownInterval); 
-                
-                // --- AJOUT DE L'ANIMATION ET DU MESSAGE DE FIN ---
-                countdownSection.innerHTML = `
-                    <div class="final-message-container">
-                        <p class="final-message">
-                            <i class="fa-solid fa-trophy"></i>
-                            Tous arrivés à la fin du compte à rebours !
-                        </p>
-                        <h2 class="countdown-title" style="margin-top: 20px; animation: none;">Le Creator Studio est OUVERT !</h2>
-                        <p class="redirect-message" style="margin-top: 15px;">
-                            Redirection vers la page Studio dans quelques secondes...
-                        </p>
-                        <i class="fa-solid fa-circle-notch fa-spin fa-2xl" style="color: var(--primary-color); margin-top: 20px;"></i>
-                    </div>
-                `;
-
-                // Redirection après un court délai (2 secondes) pour que l'utilisateur voie le message
-                setTimeout(() => {
-                    window.location.replace(redirectUrl);
-                }, 2000); // 2000 ms = 2 secondes
-
-                return; // Sortir de la fonction pour ne pas exécuter le reste
-            }
-
-            // Calcul des unités de temps
-            const _days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const _hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const _minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const _seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            // Mettre à jour les éléments HTML
-            daysElement.textContent = formatNumber(_days);
-            hoursElement.textContent = formatNumber(_hours);
-            minutesElement.textContent = formatNumber(_minutes);
-            secondsElement.textContent = formatNumber(_seconds);
+                if (matchesSearch && matchesCategory) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
         }
-
-        // 2. Exécuter la fonction immédiatement pour éviter un délai d'une seconde au chargement
-        updateCountdown();
-
-        // 3. Mettre à jour la fonction toutes les secondes (1000 ms)
-        const countdownInterval = setInterval(updateCountdown, 1000);
-
     </script>
+
 </body>
 </html>
