@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Engagement Calc - YouTube Studio Tool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { 
+            background-color: #0f172a; 
+            color: #f8fafc; 
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+        /* Style du fond quadrillé */
+        .preview-container-bg {
+            position: fixed;
+            inset: 0;
+            background-image: radial-gradient(#334155 1px, transparent 1px);
+            background-size: 20px 20px;
+            z-index: -1;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(71, 85, 105, 0.5);
+            border-radius: 24px;
+        }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    </style>
+</head>
+<body class="p-4">
+
+    <!-- Fond stylisé -->
+    <div class="preview-container-bg"></div>
+
+    <!-- Bouton Retour / Quitter -->
+    <a href="Creator_Studio.html" class="fixed top-4 right-4 z-50 flex items-center space-x-2 bg-slate-800/80 hover:bg-red-900/40 border border-slate-700 hover:border-red-500 text-slate-300 hover:text-white px-6 py-3 rounded-xl transition-all shadow-lg group">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:-translate-x-1 transition-transform">
+            <path d="m15 18-6-6 6-6"/>
+        </svg>
+        <span class="font-semibold">Studio</span>
+    </a>
+
+    <!-- Main Tool Container -->
+    <div class="w-full max-w-2xl glass-card p-8 shadow-2xl">
+        <div class="text-center mb-10">
+            <div class="inline-flex items-center justify-center p-3 bg-red-500/10 rounded-2xl mb-4 border border-red-500/20">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/>
+                </svg>
+            </div>
+            <h1 class="text-3xl font-bold text-white tracking-tight">Engagement Calc</h1>
+            <p class="text-slate-400 mt-2">Mesurez la performance réelle de vos vidéos</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Inputs -->
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-400 mb-1.5 ml-1">Vues totales</label>
+                    <input type="number" id="views" placeholder="ex: 1200" class="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500 transition-all text-white font-medium">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-400 mb-1.5 ml-1">Likes</label>
+                    <input type="number" id="likes" placeholder="ex: 85" class="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500 transition-all text-white font-medium">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-400 mb-1.5 ml-1">Commentaires</label>
+                    <input type="number" id="comments" placeholder="ex: 12" class="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500 transition-all text-white font-medium">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-400 mb-1.5 ml-1">Partages</label>
+                    <input type="number" id="shares" placeholder="ex: 5" class="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500 transition-all text-white font-medium">
+                </div>
+            </div>
+
+            <!-- Display Results -->
+            <div class="flex flex-col items-center justify-center p-6 bg-slate-900/40 rounded-3xl border border-slate-800">
+                <div class="text-slate-400 text-sm font-semibold uppercase tracking-wider mb-2">Taux d'Engagement</div>
+                <div id="result-percent" class="text-6xl font-black text-white mb-2">0.0%</div>
+                <div id="result-status" class="px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-slate-800 text-slate-500">Saisissez vos données</div>
+                
+                <div class="mt-8 w-full space-y-3">
+                    <div class="flex justify-between text-xs">
+                        <span class="text-slate-500">Moyenne YT : ~2-4%</span>
+                        <span id="diff-label" class="text-slate-400"></span>
+                    </div>
+                    <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                        <div id="progress-bar" class="h-full bg-red-500 w-0 transition-all duration-700 ease-out"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tip -->
+        <div class="mt-8 p-4 bg-blue-500/5 border border-blue-500/20 rounded-xl flex items-start space-x-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+            </svg>
+            <p class="text-xs text-blue-200/70 leading-relaxed">
+                <span class="font-bold text-blue-400 text-sm block mb-0.5">Le saviez-vous ?</span>
+                L'engagement est calculé comme suit : <span class="text-slate-300 font-mono">((Likes + Comm + Partages) / Vues) × 100</span>. Un taux supérieur à 5% est considéré comme excellent !
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const inputs = ['views', 'likes', 'comments', 'shares'];
+        const elements = {
+            views: document.getElementById('views'),
+            likes: document.getElementById('likes'),
+            comments: document.getElementById('comments'),
+            shares: document.getElementById('shares'),
+            result: document.getElementById('result-percent'),
+            status: document.getElementById('result-status'),
+            progress: document.getElementById('progress-bar'),
+            diff: document.getElementById('diff-label')
+        };
+
+        function calculate() {
+            const v = parseFloat(elements.views.value) || 0;
+            const l = parseFloat(elements.likes.value) || 0;
+            const c = parseFloat(elements.comments.value) || 0;
+            const s = parseFloat(elements.shares.value) || 0;
+
+            if (v > 0) {
+                const engagement = ((l + c + s) / v) * 100;
+                const rounded = engagement.toFixed(1);
+                
+                // Animation du chiffre
+                elements.result.innerText = rounded + '%';
+                
+                // Mise à jour de la barre et du statut
+                let statusText = "";
+                let statusColor = "";
+                let bgColor = "";
+                let barWidth = Math.min(engagement * 10, 100);
+
+                if (engagement < 2) {
+                    statusText = "À améliorer";
+                    statusColor = "text-slate-400";
+                    bgColor = "bg-slate-800";
+                } else if (engagement < 5) {
+                    statusText = "Correct";
+                    statusColor = "text-blue-400";
+                    bgColor = "bg-blue-500/20";
+                } else if (engagement < 10) {
+                    statusText = "Excellent";
+                    statusColor = "text-green-400";
+                    bgColor = "bg-green-500/20";
+                } else {
+                    statusText = "Viral !";
+                    statusColor = "text-yellow-400";
+                    bgColor = "bg-yellow-500/20 text-yellow-500 border border-yellow-500/30";
+                }
+
+                elements.status.innerText = statusText;
+                elements.status.className = `px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest ${statusColor} ${bgColor}`;
+                elements.progress.style.width = barWidth + '%';
+                
+                // Changer la couleur de la barre de progression
+                if (engagement >= 5) elements.progress.className = "h-full bg-green-500 transition-all duration-700";
+                else if (engagement >= 2) elements.progress.className = "h-full bg-blue-500 transition-all duration-700";
+                else elements.progress.className = "h-full bg-red-500 transition-all duration-700";
+
+            } else {
+                elements.result.innerText = '0.0%';
+                elements.status.innerText = "Saisissez vos données";
+                elements.status.className = "px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-slate-800 text-slate-500";
+                elements.progress.style.width = '0%';
+            }
+        }
+
+        inputs.forEach(id => {
+            document.getElementById(id).addEventListener('input', calculate);
+        });
+    </script>
+</body>
+</html>
