@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Créateur d'Overlay </title>
+    <title>Créateur d'Overlay Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #0f172a; color: #f8fafc; }
@@ -39,11 +39,17 @@
         .svg-icon { width: 32px; height: 32px; fill: currentColor; display: block; }
     </style>
 </head>
-<body class="min-h-screen p-4 md:p-8">
+<body class="min-h-screen p-4 md:p-8 relative">
+    <!-- Bouton Quitter -->
+    <a href="Creator_Studio.html" class="fixed top-4 right-4 z-50 flex items-center space-x-2 bg-slate-800 hover:bg-red-900/40 border border-slate-700 hover:border-red-500 text-slate-300 hover:text-white px-4 py-2 rounded-xl transition-all shadow-lg group">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:-translate-x-1 transition-transform"><path d="m15 18-6-6 6-6"/></svg>
+        <span class="font-medium">Quitter vers le Studio</span>
+    </a>
+
     <div class="max-w-6xl mx-auto">
         <header class="mb-8 text-center">
             <h1 class="text-3xl font-bold mb-2 text-indigo-400">Créateur d'Overlay Pro</h1>
-            <p class="text-slate-400">Logos officiels Snapchat et Kick indisponible</p>
+            <p class="text-slate-400">Générez vos bannières animées avec logos officiels</p>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -181,10 +187,10 @@
 
             const totalDuration = inT + waitT + outT + repeatT;
 
-            // Minute helper
+            // Aide pour les minutes
             document.getElementById('minuteHelper').innerText = repeatT >= 60 ? (repeatT / 60).toFixed(1) + " min" : "En secondes";
 
-            // Mise à jour Aperçu
+            // Mise à jour de l'aperçu
             const iconContainer = document.getElementById('iconContainer');
             iconContainer.innerHTML = officialLogos[logoKey] || '';
             document.getElementById('previewText').innerText = text;
@@ -192,7 +198,7 @@
             overlay.style.backgroundColor = bg;
             overlay.style.borderRadius = frame;
 
-            // Pourcentages pour la boucle infinie
+            // Calcul des pourcentages pour la boucle infinie CSS
             const pInEnd = (inT / totalDuration) * 100;
             const pWaitEnd = ((inT + waitT) / totalDuration) * 100;
             const pOutEnd = ((inT + waitT + outT) / totalDuration) * 100;
@@ -277,6 +283,7 @@
         document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', update));
         document.getElementById('btnTest').addEventListener('click', runTest);
         
+        // Initialisation
         update();
     </script>
 </body>
