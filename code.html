@@ -1,0 +1,178 @@
+
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studio - Éditeur d'Overlay</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { 
+            background-color: #0f172a; 
+            color: #f8fafc; 
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* Fond quadrillé pour l'interface de l'éditeur uniquement */
+        .preview-container-bg {
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(#334155 1px, transparent 1px);
+            background-size: 20px 20px;
+            z-index: 0;
+        }
+
+        /* Layout */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 450px 1fr;
+            flex-grow: 1;
+            z-index: 10;
+            overflow: hidden;
+        }
+
+        /* Éditeur */
+        #code-editor {
+            background-color: #1e293b;
+            color: #cbd5e1;
+            font-family: 'Fira Code', 'Cascadia Code', monospace;
+            resize: none;
+            outline: none;
+            border-right: 1px solid #334155;
+        }
+
+        /* Preview Iframe - Fond transparent pour OBS */
+        #preview-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: transparent;
+            display: block;
+        }
+
+        /* Glassmorphism UI */
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- En-tête -->
+    <header class="h-16 border-b border-slate-800 flex items-center justify-between px-6 bg-slate-900/50 backdrop-blur-md z-20">
+        <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/20">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                </svg>
+            </div>
+            <h1 class="font-bold text-xl tracking-tight text-slate-100">Overlay Studio</h1>
+        </div>
+
+        <div class="flex items-center space-x-4">
+            <span id="save-indicator" class="text-xs text-slate-400 opacity-0 transition-opacity">Sauvegardé...</span>
+            <a href="Creator_Studio.html" class="flex items-center space-x-2 bg-slate-800 hover:bg-red-900/40 border border-slate-700 hover:border-red-500 text-slate-300 hover:text-white px-4 py-2 rounded-lg transition-all group">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:-translate-x-1 transition-transform">
+                    <path d="m15 18-6-6 6-6"/>
+                </svg>
+                <span class="font-medium text-sm">Quitter</span>
+            </a>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <!-- Zone d'édition -->
+        <div class="flex flex-col h-full bg-slate-900">
+            <div class="p-3 bg-slate-800/50 border-b border-slate-700 text-xs font-semibold uppercase tracking-wider text-slate-400 flex justify-between items-center">
+                <span>Code HTML / CSS</span>
+                <button onclick="clearCode()" class="hover:text-red-400 transition-colors">Effacer</button>
+            </div>
+            <textarea id="code-editor" class="p-4 flex-grow text-sm leading-relaxed" spellcheck="false" placeholder="Collez votre code ici..."></textarea>
+        </div>
+
+        <!-- Zone de prévisualisation -->
+        <div class="relative flex flex-col items-center justify-center overflow-hidden">
+            <!-- Le fond quadrillé est ici, derrière l'iframe -->
+            <div class="preview-container-bg"></div>
+            
+            <div class="absolute top-4 left-4 z-10 text-[10px] text-slate-500 font-mono bg-slate-950/50 px-2 py-1 rounded">
+                CANVAS: 100% viewport (Transparent)
+            </div>
+
+            <!-- L'iframe n'a pas de fond propre, donc elle sera transparente sur OBS -->
+            <iframe id="preview-frame" title="Overlay Preview"></iframe>
+        </div>
+    </div>
+
+    <script>
+        const editor = document.getElementById('code-editor');
+        const preview = document.getElementById('preview-frame');
+        const saveIndicator = document.getElementById('save-indicator');
+
+        // Initialisation : on commence avec un éditeur vide
+        window.onload = () => {
+            const savedCode = localStorage.getItem('studio_overlay_code');
+            // Si pas de code sauvegardé, on laisse vide au lieu de mettre l'exemple
+            editor.value = savedCode || "";
+            updatePreview();
+        };
+
+        // Mettre à jour la preview
+        function updatePreview() {
+            const code = editor.value;
+            
+            // On s'assure que le corps du document généré est transparent
+            const styledCode = `
+                <style>
+                    body { background: transparent !important; margin: 0; padding: 0; overflow: hidden; }
+                </style>
+                ${code}
+            `;
+
+            const blob = new Blob([styledCode], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            preview.src = url;
+
+            // Sauvegarde auto
+            localStorage.setItem('studio_overlay_code', code);
+            
+            // Notification visuelle
+            saveIndicator.style.opacity = '1';
+            setTimeout(() => {
+                saveIndicator.style.opacity = '0';
+            }, 1000);
+        }
+
+        // Effacer le code
+        function clearCode() {
+            if(confirm('Effacer tout le code ?')) {
+                editor.value = '';
+                updatePreview();
+            }
+        }
+
+        // Écouter les changements
+        let timeout;
+        editor.addEventListener('input', () => {
+            clearTimeout(timeout);
+            timeout = setTimeout(updatePreview, 300);
+        });
+
+        // Tabulation
+        editor.addEventListener('keydown', function(e) {
+            if (e.key == 'Tab') {
+                e.preventDefault();
+                var start = this.selectionStart;
+                var end = this.selectionEnd;
+                this.value = this.value.substring(0, start) + "    " + this.value.substring(end);
+                this.selectionStart = this.selectionEnd = start + 4;
+            }
+        });
+    </script>
+</body>
+</html>
