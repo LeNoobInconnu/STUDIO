@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gain Monitor - Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { 
+            background-color: #0f172a; 
+            color: #f8fafc; 
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        /* Style du fond quadrillé */
+        .preview-container-bg {
+            position: fixed;
+            inset: 0;
+            background-image: radial-gradient(#334155 1px, transparent 1px);
+            background-size: 20px 20px;
+            z-index: -1;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(71, 85, 105, 0.5);
+        }
+
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <!-- Fond stylisé -->
+    <div class="preview-container-bg"></div>
+
+    <!-- Bouton Retour / Quitter -->
+    <a href="Creator_Studio.html" class="fixed top-4 right-4 z-50 flex items-center space-x-2 bg-slate-800 hover:bg-red-900/40 border border-slate-700 hover:border-red-500 text-slate-300 hover:text-white px-4 py-2 md:px-6 md:py-3 rounded-xl transition-all shadow-lg group">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:-translate-x-1 transition-transform">
+            <path d="m15 18-6-6 6-6"/>
+        </svg>
+        <span class="font-semibold text-sm md:text-lg">Quitter vers le Studio</span>
+    </a>
+
+    <!-- Interface Principale -->
+    <div class="w-full max-w-2xl glass-card rounded-3xl p-6 md:p-10 shadow-2xl">
+        <div class="flex items-center space-x-4 mb-8">
+            <div class="p-3 bg-blue-600 rounded-lg shadow-lg shadow-blue-500/20">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M2 12h20"/><path d="M6 7l-4 5 4 5"/><path d="M18 7l4 5-4 5"/></svg>
+            </div>
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold tracking-tight">Gain Monitor</h1>
+                <p class="text-slate-400 text-sm">Optimisez vos niveaux audio sans saturation</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Entrées -->
+            <div class="space-y-5">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Niveau Moyen (dBFS)</label>
+                    <input type="number" id="inputRMS" value="-24" step="0.1" class="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-xl font-mono text-blue-400" placeholder="-24">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Niveau de Pic (dBFS)</label>
+                    <input type="number" id="inputPeak" value="-6" step="0.1" class="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-xl font-mono text-red-400" placeholder="-6">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Cible Souhaitée (dBFS)</label>
+                    <input type="number" id="inputTarget" value="-18" step="0.1" class="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-xl font-mono text-emerald-400" placeholder="-18">
+                </div>
+            </div>
+
+            <!-- Résultats -->
+            <div class="flex flex-col space-y-4">
+                <div id="statusCard" class="flex-1 rounded-2xl border flex flex-col items-center justify-center p-6 transition-colors duration-300">
+                    <span id="statusLabel" class="text-sm font-bold uppercase tracking-widest mb-1">Analyse</span>
+                    <span id="statusText" class="text-2xl font-black text-center">EN ATTENTE</span>
+                </div>
+
+                <div class="bg-slate-900/80 rounded-2xl p-6 border border-slate-800">
+                    <div class="text-center">
+                        <span class="text-xs text-slate-500 uppercase font-bold tracking-widest">Gain Recommandé</span>
+                        <div class="text-4xl font-mono font-bold mt-1 text-white">
+                            <span id="resultGain">0.00</span> <span class="text-lg text-slate-400">dB</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alertes de sécurité -->
+        <div id="safetyNotice" class="mt-8 p-4 rounded-xl border border-amber-500/30 bg-amber-500/10 hidden">
+            <div class="flex items-start space-x-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="text-amber-500 mt-1 shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                <div>
+                    <h4 class="text-amber-500 font-bold text-sm">Gain de sécurité suggéré</h4>
+                    <p class="text-slate-300 text-sm mt-1">Vos pics actuels sont trop élevés. Appliquez plutôt <span id="safetyGain" class="font-mono font-bold text-white">0.0</span> dB pour garder une marge de sécurité de -3 dBFS.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const inputRMS = document.getElementById('inputRMS');
+        const inputPeak = document.getElementById('inputPeak');
+        const inputTarget = document.getElementById('inputTarget');
+        
+        const resultGain = document.getElementById('resultGain');
+        const statusCard = document.getElementById('statusCard');
+        const statusText = document.getElementById('statusText');
+        const statusLabel = document.getElementById('statusLabel');
+        
+        const safetyNotice = document.getElementById('safetyNotice');
+        const safetyGainSpan = document.getElementById('safetyGain');
+
+        function updateCalculations() {
+            const rms = parseFloat(inputRMS.value) || 0;
+            const peak = parseFloat(inputPeak.value) || 0;
+            const target = parseFloat(inputTarget.value) || 0;
+
+            // 1. Gain idéal G = cible - actuel (basé sur le niveau moyen)
+            const recommendedGain = target - rms;
+            
+            // 2. Calcul du pic après application du gain
+            const futurePeak = peak + recommendedGain;
+
+            // Mise à jour de l'affichage du gain
+            resultGain.textContent = (recommendedGain > 0 ? "+" : "") + recommendedGain.toFixed(2);
+
+            // 3. Gestion de l'état du signal
+            if (peak >= 0) {
+                // Saturation déjà présente dans le signal source
+                updateStatus("Saturation détectée", "bg-red-500/20 border-red-500/50 text-red-500", "Danger");
+            } else if (futurePeak > -1) {
+                // Le gain recommandé va faire saturer le signal
+                updateStatus("Risque de saturation", "bg-amber-500/20 border-amber-500/50 text-amber-500", "Attention");
+            } else if (futurePeak > -3) {
+                // Proche de la limite
+                updateStatus("Marge Faible", "bg-blue-500/20 border-blue-500/50 text-blue-400", "Info");
+            } else {
+                // Tout est ok
+                updateStatus("Signal OK", "bg-emerald-500/20 border-emerald-500/50 text-emerald-500", "Optimal");
+            }
+
+            // 4. Gain de sécurité si les pics dépassent ou risquent de dépasser -3 dBFS
+            // Gsécurité = -3 - pic_actuel
+            if (futurePeak > -3) {
+                const safetyGainVal = -3 - peak;
+                safetyGainSpan.textContent = (safetyGainVal > 0 ? "+" : "") + safetyGainVal.toFixed(1);
+                safetyNotice.classList.remove('hidden');
+            } else {
+                safetyNotice.classList.add('hidden');
+            }
+        }
+
+        function updateStatus(text, classes, label) {
+            statusText.textContent = text.toUpperCase();
+            statusLabel.textContent = label;
+            statusCard.className = `flex-1 rounded-2xl border flex flex-col items-center justify-center p-6 transition-colors duration-300 ${classes}`;
+        }
+
+        // Ecouteurs d'événements pour le calcul en temps réel
+        [inputRMS, inputPeak, inputTarget].forEach(input => {
+            input.addEventListener('input', updateCalculations);
+        });
+
+        // Calcul initial
+        updateCalculations();
+    </script>
+</body>
+</html>
