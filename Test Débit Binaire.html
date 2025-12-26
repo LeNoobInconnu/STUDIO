@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studio - Test Débit Binaire</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { 
+            background-color: #0f172a; 
+            color: #f8fafc; 
+            margin: 0;
+            overflow-x: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        /* Style du fond quadrillé */
+        .preview-container-bg {
+            position: fixed;
+            inset: 0;
+            background-image: radial-gradient(#334155 1px, transparent 1px);
+            background-size: 20px 20px;
+            z-index: -1;
+        }
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(71, 85, 105, 0.4);
+        }
+        .bitrate-meter {
+            height: 12px;
+            background: #334155;
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+        .bitrate-fill {
+            height: 100%;
+            width: 0%;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.5s;
+        }
+        .drop-zone {
+            border: 2px dashed #475569;
+            transition: all 0.3s;
+        }
+        .drop-zone.active {
+            border-color: #38bdf8;
+            background: rgba(56, 189, 248, 0.1);
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <!-- Fond stylisé -->
+    <div class="preview-container-bg"></div>
+
+    <!-- Bouton Retour / Quitter -->
+    <a href="Creator_Studio.html" class="fixed top-4 right-4 z-50 flex items-center space-x-2 bg-slate-800 hover:bg-red-900/40 border border-slate-700 hover:border-red-500 text-slate-300 hover:text-white px-4 py-2 md:px-6 md:py-3 rounded-xl transition-all shadow-lg group">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:-translate-x-1 transition-transform">
+            <path d="m15 18-6-6 6-6"/>
+        </svg>
+        <span class="font-semibold text-sm md:text-lg">Quitter vers le Studio</span>
+    </a>
+
+    <main class="w-full max-w-3xl z-10">
+        <div class="text-center mb-10">
+            <h1 class="text-3xl md:text-5xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">
+                Test Débit Binaire Audio
+            </h1>
+            <p class="text-slate-400 text-lg">Vérifiez si votre bitrate est suffisant pour une qualité studio YouTube.</p>
+        </div>
+
+        <div class="glass-panel p-6 md:p-10 rounded-3xl shadow-2xl">
+            <!-- Zone d'upload -->
+            <div id="dropZone" class="drop-zone rounded-2xl p-8 text-center cursor-pointer mb-8">
+                <input type="file" id="fileInput" class="hidden" accept="audio/*,video/*">
+                <div class="flex flex-col items-center space-y-4">
+                    <div class="p-4 bg-slate-800 rounded-full text-blue-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    </div>
+                    <div>
+                        <p class="text-xl font-medium">Glissez votre fichier ici</p>
+                        <p class="text-slate-500 text-sm mt-1">Accepte MP3, WAV, AAC, MP4, MKV...</p>
+                    </div>
+                    <button class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-lg font-semibold transition-colors">
+                        Parcourir les fichiers
+                    </button>
+                </div>
+            </div>
+
+            <!-- Résultats (Cachés par défaut) -->
+            <div id="results" class="hidden space-y-8 animate-in fade-in duration-500">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div class="text-center md:text-left">
+                        <p class="text-slate-400 text-sm uppercase tracking-wider mb-1">Débit Binaire Détecté</p>
+                        <div class="flex items-baseline space-x-2">
+                            <span id="bitrateValue" class="text-6xl font-black text-white">0</span>
+                            <span class="text-2xl font-bold text-slate-500">kbps</span>
+                        </div>
+                    </div>
+                    <div id="statusBadge" class="px-6 py-3 rounded-2xl text-lg font-bold">
+                        Analyse...
+                    </div>
+                </div>
+
+                <!-- Jauge -->
+                <div class="space-y-2">
+                    <div class="bitrate-meter">
+                        <div id="bitrateFill" class="bitrate-fill"></div>
+                    </div>
+                    <div class="flex justify-between text-xs text-slate-500 px-1 font-mono">
+                        <span>0</span>
+                        <span>128k (Basique)</span>
+                        <span>256k (HD)</span>
+                        <span>320k (Studio)</span>
+                        <span>500k+</span>
+                    </div>
+                </div>
+
+                <!-- Conseils -->
+                <div id="adviceCard" class="p-6 rounded-2xl bg-slate-800/50 border border-slate-700">
+                    <h3 class="font-bold text-xl mb-2 flex items-center">
+                        <span id="adviceIcon" class="mr-2"></span>
+                        <span id="adviceTitle">Verdict</span>
+                    </h3>
+                    <p id="adviceText" class="text-slate-300 leading-relaxed"></p>
+                </div>
+                
+                <button onclick="resetUI()" class="w-full py-4 text-slate-400 hover:text-white transition-colors flex items-center justify-center space-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                    <span>Analyser un autre fichier</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Footer Info -->
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="glass-panel p-4 rounded-xl text-center">
+                <p class="text-blue-400 font-bold">128 kbps</p>
+                <p class="text-xs text-slate-400">Minimum pour la voix</p>
+            </div>
+            <div class="glass-panel p-4 rounded-xl text-center border-blue-500/30">
+                <p class="text-emerald-400 font-bold">192 - 256 kbps</p>
+                <p class="text-xs text-slate-400">Recommandé YouTube</p>
+            </div>
+            <div class="glass-panel p-4 rounded-xl text-center">
+                <p class="text-purple-400 font-bold">320 kbps</p>
+                <p class="text-xs text-slate-400">Qualité Studio / Musique</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const results = document.getElementById('results');
+        const bitrateValue = document.getElementById('bitrateValue');
+        const bitrateFill = document.getElementById('bitrateFill');
+        const statusBadge = document.getElementById('statusBadge');
+        const adviceTitle = document.getElementById('adviceTitle');
+        const adviceText = document.getElementById('adviceText');
+        const adviceIcon = document.getElementById('adviceIcon');
+
+        // Drag and drop handlers
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.add('active'), false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.remove('active'), false);
+        });
+
+        dropZone.addEventListener('drop', handleDrop, false);
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+
+        function handleDrop(e) {
+            handleFiles(e.dataTransfer.files);
+        }
+
+        async function handleFiles(files) {
+            if (files.length === 0) return;
+            const file = files[0];
+            
+            // Masquer l'upload, montrer les résultats
+            dropZone.classList.add('hidden');
+            results.classList.remove('hidden');
+
+            // Note technique : Calculer le bitrate réel d'un fichier en JS pur est complexe 
+            // sans bibliothèque lourde. Nous utilisons ici la taille du fichier / durée.
+            // C'est une estimation très précise pour les fichiers constants (CBR).
+            
+            try {
+                const duration = await getDuration(file);
+                const sizeInBits = file.size * 8;
+                const bitrateKbps = Math.round((sizeInBits / duration) / 1000);
+                
+                updateUI(bitrateKbps);
+            } catch (error) {
+                console.error(error);
+                alert("Erreur lors de l'analyse du fichier. Assurez-vous qu'il s'agit d'un média valide.");
+                resetUI();
+            }
+        }
+
+        function getDuration(file) {
+            return new Promise((resolve, reject) => {
+                const url = URL.createObjectURL(file);
+                const media = new Audio(url);
+                media.addEventListener('loadedmetadata', () => {
+                    URL.revokeObjectURL(url);
+                    resolve(media.duration);
+                });
+                media.addEventListener('error', () => reject("Format non supporté"));
+            });
+        }
+
+        function updateUI(kbps) {
+            // Animation du nombre
+            let current = 0;
+            const increment = kbps / 30;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= kbps) {
+                    current = kbps;
+                    clearInterval(timer);
+                }
+                bitrateValue.innerText = Math.round(current);
+            }, 20);
+
+            // Largeur de la barre (max 500k pour l'échelle)
+            const percentage = Math.min((kbps / 400) * 100, 100);
+            bitrateFill.style.width = percentage + '%';
+
+            // Logique de statut et conseils
+            if (kbps < 120) {
+                setVerdict('Médiocre', 'bg-red-500/20 text-red-400', '⚠️', 'Qualité insuffisante', 
+                    "Le débit est trop faible. Votre audience entendra des artefacts de compression (bruit métallique). Pour YouTube, visez au minimum 160 kbps lors de l'exportation.");
+                bitrateFill.style.backgroundColor = '#ef4444';
+            } else if (kbps < 190) {
+                setVerdict('Correct', 'bg-yellow-500/20 text-yellow-400', '💡', 'Qualité standard', 
+                    "C'est acceptable pour de la voix simple, mais manque de clarté pour de la musique ou un podcast pro. Essayez d'exporter en AAC 192kbps ou plus.");
+                bitrateFill.style.backgroundColor = '#eab308';
+            } else if (kbps < 300) {
+                setVerdict('Excellent', 'bg-emerald-500/20 text-emerald-400', '✅', 'Qualité YouTube HD', 
+                    "Félicitations ! Ce débit est parfait pour YouTube. Le son est riche et les détails sont préservés. C'est le 'sweet spot' entre taille de fichier et qualité.");
+                bitrateFill.style.backgroundColor = '#10b981';
+            } else {
+                setVerdict('Studio', 'bg-purple-500/20 text-purple-400', '🏆', 'Qualité Studio Pro', 
+                    "Exceptionnel. Vous travaillez avec un débit de niveau master ou sans perte (Lossless). Parfait pour les audiophiles et le sound design complexe.");
+                bitrateFill.style.backgroundColor = '#a855f7';
+            }
+        }
+
+        function setVerdict(status, colorClass, icon, title, text) {
+            statusBadge.className = `px-6 py-3 rounded-2xl text-lg font-bold ${colorClass}`;
+            statusBadge.innerText = status;
+            adviceIcon.innerText = icon;
+            adviceTitle.innerText = title;
+            adviceText.innerText = text;
+        }
+
+        function resetUI() {
+            results.classList.add('hidden');
+            dropZone.classList.remove('hidden');
+            bitrateValue.innerText = '0';
+            bitrateFill.style.width = '0%';
+            fileInput.value = '';
+        }
+    </script>
+</body>
+</html>
