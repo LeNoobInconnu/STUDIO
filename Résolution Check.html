@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studio - YouTube Resolution Check</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { 
+            background-color: #0f172a; 
+            color: #f8fafc; 
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+        }
+        /* Style du fond quadrillé */
+        .preview-container-bg {
+            position: fixed;
+            inset: 0;
+            background-image: radial-gradient(#334155 1px, transparent 1px);
+            background-size: 20px 20px;
+            z-index: -1;
+        }
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .drop-zone-active {
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+        }
+    </style>
+</head>
+<body class="p-4">
+
+    <!-- Fond stylisé -->
+    <div class="preview-container-bg"></div>
+
+    <!-- Bouton Retour / Quitter -->
+    <a href="Creator_Studio.html" class="fixed top-4 right-4 z-50 flex items-center space-x-2 bg-slate-800 hover:bg-red-900/40 border border-slate-700 hover:border-red-500 text-slate-300 hover:text-white px-6 py-3 rounded-xl transition-all shadow-lg group">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:-translate-x-1 transition-transform">
+            <path d="m15 18-6-6 6-6"/>
+        </svg>
+        <span class="font-semibold text-lg">Quitter vers le Studio</span>
+    </a>
+
+    <!-- Interface Principale -->
+    <div class="w-full max-w-2xl glass-panel rounded-3xl p-8 shadow-2xl">
+        <header class="text-center mb-10">
+            <div class="inline-flex items-center justify-center p-3 bg-blue-500/10 rounded-2xl mb-4 border border-blue-500/20">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+            </div>
+            <h1 class="text-3xl font-bold text-white mb-2">Resolution Check</h1>
+            <p class="text-slate-400">Vérifiez si votre fichier respecte les standards YouTube (4K, 1080p, Shorts)</p>
+        </header>
+
+        <!-- Zone de Drop -->
+        <div id="dropZone" class="relative group cursor-pointer border-2 border-dashed border-slate-700 rounded-2xl p-12 text-center transition-all hover:border-slate-500">
+            <input type="file" id="videoInput" accept="video/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+            
+            <div id="uploadPrompt">
+                <div class="flex flex-col items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-slate-500 mb-4 group-hover:scale-110 transition-transform">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    <p class="text-lg font-medium text-slate-300">Glissez votre vidéo ici</p>
+                    <p class="text-sm text-slate-500 mt-2">ou cliquez pour parcourir vos fichiers</p>
+                </div>
+            </div>
+
+            <!-- Loader caché par défaut -->
+            <div id="loader" class="hidden flex flex-col items-center">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4"></div>
+                <p class="text-slate-300">Analyse du fichier en cours...</p>
+            </div>
+        </div>
+
+        <!-- Résultats (Cachés par défaut) -->
+        <div id="resultArea" class="hidden mt-8 space-y-4">
+            <div class="flex items-center justify-between p-4 bg-slate-900/50 rounded-xl border border-slate-700">
+                <span class="text-slate-400">Résolution détectée</span>
+                <span id="resValue" class="text-xl font-mono font-bold text-white">0 x 0</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="p-4 bg-slate-900/50 rounded-xl border border-slate-700">
+                    <p class="text-xs text-slate-500 uppercase tracking-wider mb-1">Ratio</p>
+                    <p id="ratioValue" class="text-lg font-semibold">-</p>
+                </div>
+                <div class="p-4 bg-slate-900/50 rounded-xl border border-slate-700">
+                    <p class="text-xs text-slate-500 uppercase tracking-wider mb-1">Qualité</p>
+                    <p id="qualityTag" class="text-lg font-semibold">-</p>
+                </div>
+            </div>
+
+            <!-- Verdict -->
+            <div id="verdictBox" class="p-6 rounded-2xl flex items-start space-x-4">
+                <div id="verdictIcon" class="mt-1"></div>
+                <div>
+                    <h3 id="verdictTitle" class="text-lg font-bold mb-1">Analyse complète</h3>
+                    <p id="verdictText" class="text-sm opacity-90 leading-relaxed"></p>
+                </div>
+            </div>
+            
+            <button onclick="resetTool()" class="w-full py-4 text-slate-400 hover:text-white transition-colors text-sm font-medium">
+                Analyser un autre fichier
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const videoInput = document.getElementById('videoInput');
+        const dropZone = document.getElementById('dropZone');
+        const loader = document.getElementById('loader');
+        const uploadPrompt = document.getElementById('uploadPrompt');
+        const resultArea = document.getElementById('resultArea');
+
+        // Événements de Drag & Drop
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropZone.classList.add('drop-zone-active');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('drop-zone-active');
+            }, false);
+        });
+
+        videoInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) handleFile(file);
+        });
+
+        function handleFile(file) {
+            if (!file.type.startsWith('video/')) {
+                showSimpleError("Veuillez sélectionner un fichier vidéo valide.");
+                return;
+            }
+
+            // UI state
+            uploadPrompt.classList.add('hidden');
+            loader.classList.remove('hidden');
+            resultArea.classList.add('hidden');
+
+            const video = document.createElement('video');
+            video.preload = 'metadata';
+
+            video.onloadedmetadata = function() {
+                window.URL.revokeObjectURL(video.src);
+                displayResults(video.videoWidth, video.videoHeight);
+            };
+
+            video.onerror = function() {
+                showSimpleError("Impossible de lire les métadonnées de cette vidéo.");
+            };
+
+            video.src = URL.createObjectURL(file);
+        }
+
+        function displayResults(w, h) {
+            loader.classList.add('hidden');
+            resultArea.classList.remove('hidden');
+
+            document.getElementById('resValue').textContent = `${w} × ${h}`;
+            
+            const ratio = (w / h).toFixed(2);
+            let ratioLabel = "Personnalisé";
+            if (ratio === "1.78") ratioLabel = "16:9 (Paysage)";
+            if (ratio === "0.56") ratioLabel = "9:16 (Portrait / Shorts)";
+            if (ratio === "1.00") ratioLabel = "1:1 (Carré)";
+            
+            document.getElementById('ratioValue').textContent = ratioLabel;
+
+            let quality = "SD";
+            if (w >= 3840 || h >= 2160) quality = "4K Ultra HD";
+            else if (w >= 2560 || h >= 1440) quality = "2K / QHD";
+            else if (w >= 1920 || h >= 1080) quality = "1080p Full HD";
+            else if (w >= 1280 || h >= 720) quality = "720p HD";
+
+            const qualityTag = document.getElementById('qualityTag');
+            qualityTag.textContent = quality;
+
+            // Logique de verdict
+            const verdictBox = document.getElementById('verdictBox');
+            const verdictTitle = document.getElementById('verdictTitle');
+            const verdictText = document.getElementById('verdictText');
+            const verdictIcon = document.getElementById('verdictIcon');
+
+            if (h >= 1080) {
+                verdictBox.className = "p-6 rounded-2xl flex items-start space-x-4 bg-green-500/10 border border-green-500/20 text-green-400";
+                verdictTitle.textContent = "Vidéo Optimisée !";
+                verdictIcon.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+                
+                if (h >= 2160) {
+                    verdictText.textContent = "Excellent ! Votre vidéo est en 4K. C'est le standard le plus élevé sur YouTube, offrant la meilleure netteté possible aux spectateurs.";
+                } else {
+                    verdictText.textContent = "Parfait ! Le 1080p est le standard recommandé. Votre vidéo aura une excellente clarté sur tous les écrans.";
+                }
+            } else if (h >= 720) {
+                verdictBox.className = "p-6 rounded-2xl flex items-start space-x-4 bg-yellow-500/10 border border-yellow-500/20 text-yellow-400";
+                verdictTitle.textContent = "Qualité Acceptable";
+                verdictIcon.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>';
+                verdictText.textContent = "Votre vidéo est en 720p HD. C'est correct, mais pour un rendu plus professionnel, essayez d'exporter vos futurs projets en 1080p.";
+            } else {
+                verdictBox.className = "p-6 rounded-2xl flex items-start space-x-4 bg-red-500/10 border border-red-500/20 text-red-400";
+                verdictTitle.textContent = "Qualité Insuffisante";
+                verdictIcon.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
+                verdictText.textContent = "Attention, votre résolution est inférieure à la HD. YouTube risque de brider la qualité visuelle, ce qui peut nuire à l'expérience de vos abonnés.";
+            }
+
+            // Cas spécial Shorts
+            if (ratio < 1 && h >= 1080) {
+                verdictText.textContent += " Format Shorts détecté : Idéal pour une visibilité sur mobile !";
+            }
+        }
+
+        function resetTool() {
+            videoInput.value = "";
+            uploadPrompt.classList.remove('hidden');
+            resultArea.classList.add('hidden');
+            loader.classList.add('hidden');
+        }
+
+        function showSimpleError(msg) {
+            alert(msg);
+            resetTool();
+        }
+    </script>
+</body>
+</html>
