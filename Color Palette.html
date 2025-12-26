@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Palette Master - Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary: #6366f1;
+        }
+        body { 
+            background-color: #0f172a; 
+            color: #f8fafc; 
+            margin: 0;
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+        /* Style du fond quadrillé */
+        .preview-container-bg {
+            position: fixed;
+            inset: 0;
+            background-image: radial-gradient(#334155 1px, transparent 1px);
+            background-size: 20px 20px;
+            z-index: -1;
+        }
+        #drop-zone {
+            border: 2px dashed #334155;
+            transition: all 0.3s ease;
+            background-color: rgba(30, 41, 59, 0.5);
+        }
+        #drop-zone.dragover {
+            border-color: var(--primary);
+            background-color: rgba(99, 102, 241, 0.1);
+        }
+        .color-card:hover .copy-badge {
+            opacity: 1;
+        }
+        canvas {
+            max-width: 100%;
+            height: auto;
+            cursor: crosshair;
+        }
+        .custom-shadow {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+        .glass-panel {
+            background-color: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(51, 65, 85, 0.5);
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 min-h-screen">
+    <!-- Fond stylisé -->
+    <div class="preview-container-bg"></div>
+
+    <!-- Bouton Retour / Quitter -->
+    <a href="Creator_Studio.html" class="fixed top-4 right-4 z-50 flex items-center space-x-2 bg-slate-800 hover:bg-red-900/40 border border-slate-700 hover:border-red-500 text-slate-300 hover:text-white px-6 py-3 rounded-xl transition-all shadow-lg group">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:-translate-x-1 transition-transform">
+            <path d="m15 18-6-6 6-6"/>
+        </svg>
+        <span class="font-semibold text-lg">Quitter vers le Studio</span>
+    </a>
+
+    <div class="max-w-6xl mx-auto pt-16 lg:pt-8">
+        <!-- Header -->
+        <header class="mb-8 text-center">
+            <h1 class="text-4xl font-black text-white mb-2 tracking-tight">Palette Master</h1>
+            <p class="text-slate-400">Environnement Studio pour l'extraction de couleurs.</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column: Upload & Preview -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Drop Zone -->
+                <div id="drop-zone" class="rounded-2xl p-12 text-center cursor-pointer hover:border-indigo-400 transition-colors">
+                    <input type="file" id="file-input" class="hidden" accept="image/*">
+                    <div id="upload-prompt">
+                        <div class="bg-indigo-500/20 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-indigo-500/30">
+                            <svg class="w-8 h-8 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                            </svg>
+                        </div>
+                        <p class="text-xl font-bold text-slate-200">Importer une image</p>
+                        <p class="text-sm text-slate-500 mt-2">Glissez-déposez ou cliquez pour explorer</p>
+                    </div>
+                </div>
+
+                <!-- Canvas Preview -->
+                <div id="canvas-container" class="hidden glass-panel p-4 rounded-2xl custom-shadow overflow-hidden relative">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-xs font-bold uppercase tracking-widest text-indigo-400">Visualiseur Studio</span>
+                        <button id="reset-btn" class="text-xs text-slate-400 hover:text-red-400 font-medium transition-colors">Réinitialiser l'image</button>
+                    </div>
+                    <div class="flex justify-center bg-slate-900/50 rounded-xl overflow-hidden border border-slate-700/50">
+                        <canvas id="main-canvas"></canvas>
+                    </div>
+                    <p class="mt-4 text-xs text-slate-500 italic text-center">Utilisez le curseur pour prélever une couleur précise sur l'image.</p>
+                </div>
+            </div>
+
+            <!-- Right Column: Results -->
+            <div class="space-y-6">
+                <!-- Eyedropper Result -->
+                <div id="eyedropper-result" class="hidden glass-panel p-6 rounded-2xl custom-shadow border-l-4 border-indigo-500">
+                    <h2 class="text-xs font-bold text-slate-400 mb-6 uppercase tracking-[0.2em]">Sélecteur précis</h2>
+                    <div class="flex items-center gap-5">
+                        <div id="picked-preview" class="w-20 h-20 rounded-2xl shadow-xl border border-white/10"></div>
+                        <div class="flex-1">
+                            <div id="picked-hex" class="font-mono text-2xl font-black text-white cursor-pointer hover:text-indigo-400 transition-colors">#FFFFFF</div>
+                            <div id="picked-rgb" class="text-sm text-slate-500 font-mono mt-1">rgb(255, 255, 255)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Automatic Palette -->
+                <div id="palette-result" class="hidden glass-panel p-6 rounded-2xl custom-shadow">
+                    <h2 class="text-xs font-bold text-slate-400 mb-6 uppercase tracking-[0.2em]">Analyse automatique</h2>
+                    <div id="color-list" class="grid grid-cols-2 gap-4">
+                        <!-- Colors will be injected here -->
+                    </div>
+                </div>
+
+                <!-- Empty State Side -->
+                <div id="side-empty-state" class="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-12 text-center">
+                    <div class="text-slate-600 mb-2">
+                         <svg class="w-10 h-10 mx-auto opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7c0-2-1-3-3-3H7c-2 0-3 1-3 3z"/></svg>
+                    </div>
+                    <p class="text-slate-500 text-sm font-medium">Aucune donnée de couleur</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-indigo-600 text-white px-8 py-3 rounded-2xl text-sm font-bold opacity-0 transition-all duration-300 pointer-events-none z-50 shadow-2xl">
+        COPIÉ !
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const canvas = document.getElementById('main-canvas');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        const canvasContainer = document.getElementById('canvas-container');
+        const paletteResult = document.getElementById('palette-result');
+        const eyedropperResult = document.getElementById('eyedropper-result');
+        const sideEmptyState = document.getElementById('side-empty-state');
+        const colorList = document.getElementById('color-list');
+        const toast = document.getElementById('toast');
+
+        // Events
+        dropZone.addEventListener('click', () => fileInput.click());
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+        dropZone.addEventListener('drop', handleDrop);
+        fileInput.addEventListener('change', (e) => handleImage(e.target.files[0]));
+        document.getElementById('reset-btn').addEventListener('click', () => location.reload());
+
+        function handleDrop(e) {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) handleImage(file);
+        }
+
+        function handleImage(file) {
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    setupCanvas(img);
+                    extractPalette(img);
+                    showUI();
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function setupCanvas(img) {
+            const maxDim = 800;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+                if (width > maxDim) {
+                    height *= maxDim / width;
+                    width = maxDim;
+                }
+            } else {
+                if (height > maxDim) {
+                    width *= maxDim / height;
+                    height = maxDim;
+                }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            ctx.drawImage(img, 0, 0, width, height);
+
+            canvas.onclick = (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+                const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+                const pixel = ctx.getImageData(x, y, 1, 1).data;
+                updateEyedropper(pixel[0], pixel[1], pixel[2]);
+            };
+        }
+
+        function showUI() {
+            dropZone.classList.add('hidden');
+            canvasContainer.classList.remove('hidden');
+            paletteResult.classList.remove('hidden');
+            eyedropperResult.classList.remove('hidden');
+            sideEmptyState.classList.add('hidden');
+        }
+
+        function rgbToHex(r, g, b) {
+            return "#" + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('').toUpperCase();
+        }
+
+        function updateEyedropper(r, g, b) {
+            const hex = rgbToHex(r, g, b);
+            const pickedPreview = document.getElementById('picked-preview');
+            const pickedHex = document.getElementById('picked-hex');
+            const pickedRgb = document.getElementById('picked-rgb');
+
+            pickedPreview.style.backgroundColor = hex;
+            pickedHex.innerText = hex;
+            pickedRgb.innerText = `rgb(${r}, ${g}, ${b})`;
+            
+            pickedHex.onclick = () => copyToClipboard(hex);
+        }
+
+        function extractPalette(img) {
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+            const colorCounts = {};
+            const step = 15; 
+
+            for (let i = 0; i < imageData.length; i += 4 * step) {
+                const r = Math.round(imageData[i] / 15) * 15;
+                const g = Math.round(imageData[i+1] / 15) * 15;
+                const b = Math.round(imageData[i+2] / 15) * 15;
+                const key = `${r},${g},${b}`;
+                colorCounts[key] = (colorCounts[key] || 0) + 1;
+            }
+
+            const sortedColors = Object.keys(colorCounts)
+                .sort((a, b) => colorCounts[b] - colorCounts[a])
+                .slice(0, 6);
+
+            renderPalette(sortedColors);
+        }
+
+        function renderPalette(colors) {
+            colorList.innerHTML = '';
+            colors.forEach(rgbStr => {
+                const [r, g, b] = rgbStr.split(',').map(Number);
+                const hex = rgbToHex(r, g, b);
+
+                const card = document.createElement('div');
+                card.className = 'color-card group cursor-pointer bg-slate-800/40 p-2 rounded-2xl border border-slate-700/50 transition-all hover:bg-slate-700/60 hover:scale-105';
+                card.innerHTML = `
+                    <div class="h-14 w-full rounded-xl mb-3 relative overflow-hidden" style="background-color: ${hex}">
+                        <div class="copy-badge opacity-0 absolute inset-0 flex items-center justify-center bg-black/40 text-white text-[10px] font-black tracking-widest transition-opacity uppercase">Copier</div>
+                    </div>
+                    <div class="text-[11px] font-mono font-bold text-slate-300 text-center">${hex}</div>
+                `;
+                card.onclick = () => copyToClipboard(hex);
+                colorList.appendChild(card);
+            });
+        }
+
+        function copyToClipboard(text) {
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+
+            toast.style.opacity = '1';
+            toast.style.bottom = '40px';
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.bottom = '32px';
+            }, 1500);
+        }
+    </script>
+</body>
+</html>
