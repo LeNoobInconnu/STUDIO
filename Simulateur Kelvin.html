@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studio - Simulateur Kelvin & Caméra</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { 
+            background-color: #0f172a; 
+            color: #f8fafc; 
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        .preview-container-bg {
+            position: fixed;
+            inset: 0;
+            background-image: radial-gradient(#334155 1px, transparent 1px);
+            background-size: 20px 20px;
+            z-index: -1;
+        }
+        /* Curseur personnalisé */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 8px;
+            cursor: pointer;
+            background: linear-gradient(to right, #ff8c00, #ffffff, #87ceeb);
+            border-radius: 4px;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: #ffffff;
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+            overflow: hidden;
+        }
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        #color-overlay {
+            mix-blend-mode: overlay; /* Mode de fusion pour colorer la vidéo proprement */
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="p-4">
+
+    <div class="preview-container-bg"></div>
+
+    <!-- Bouton Retour -->
+    <a href="Creator_Studio.html" class="fixed top-4 right-4 z-50 flex items-center space-x-2 bg-slate-800 hover:bg-red-900/40 border border-slate-700 hover:border-red-500 text-slate-300 hover:text-white px-4 py-2 rounded-xl transition-all shadow-lg group">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:-translate-x-1 transition-transform">
+            <path d="m15 18-6-6 6-6"/>
+        </svg>
+        <span class="font-semibold text-sm">Retour Studio</span>
+    </a>
+
+    <div class="max-w-5xl w-full bg-slate-900/90 backdrop-blur-xl border border-slate-700 rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row">
+        
+        <!-- Zone de Prévisualisation (Caméra ou Avatar) -->
+        <div id="preview-area" class="w-full md:w-1/2 min-h-[400px] flex flex-col items-center justify-center relative border-b md:border-b-0 md:border-r border-slate-700 bg-slate-950">
+            
+            <div id="placeholder-ui" class="text-center z-10 p-6">
+                <div class="w-24 h-24 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                </div>
+                <p class="text-slate-400 text-sm mb-4">La caméra n'est pas activée</p>
+                <button id="start-camera" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-full font-bold transition-all shadow-lg active:scale-95">
+                    Activer ma caméra
+                </button>
+            </div>
+
+            <div id="video-wrapper" class="hidden video-container">
+                <video id="webcam" autoplay playsinline></video>
+            </div>
+
+            <!-- Calque de couleur dynamique -->
+            <div id="color-overlay" class="absolute inset-0 opacity-50 transition-colors duration-300"></div>
+            
+            <!-- Badge Info -->
+            <div class="absolute bottom-4 left-4 bg-black/60 backdrop-blur px-3 py-1 rounded text-[10px] font-mono text-white z-20 border border-white/10 uppercase tracking-widest">
+                Live Preview
+            </div>
+        </div>
+
+        <!-- Zone de Contrôle -->
+        <div class="w-full md:w-1/2 p-6 md:p-8 flex flex-col justify-between bg-slate-900">
+            <div>
+                <h1 class="text-2xl font-black mb-2 flex items-center">
+                    <span class="bg-blue-500 w-2 h-8 mr-3 rounded-full"></span>
+                    Simulateur Kelvin
+                </h1>
+                <p class="text-slate-400 text-sm mb-6">Visualise l'impact de la balance des blancs sur ta propre image pour régler ta caméra.</p>
+
+                <div class="bg-slate-800/80 p-6 rounded-2xl border border-slate-700 mb-6 shadow-inner">
+                    <div class="flex justify-between items-end mb-4">
+                        <span class="text-xs font-bold text-slate-500 uppercase tracking-tighter">Réglage Caméra</span>
+                        <div class="text-right">
+                            <span id="kelvin-value" class="text-5xl font-mono font-black text-white">5600</span>
+                            <span class="text-blue-400 font-bold ml-1 text-xl">K</span>
+                        </div>
+                    </div>
+                    
+                    <input type="range" id="kelvin-slider" min="2000" max="10000" step="100" value="5600" class="mb-4">
+                    
+                    <div class="flex justify-between text-[10px] text-slate-500 font-bold uppercase tracking-widest">
+                        <span class="text-orange-400">Chaud</span>
+                        <span>Neutre (Midi)</span>
+                        <span class="text-blue-400">Froid</span>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h3 class="text-xs font-bold text-slate-500 uppercase mb-2">Correspondance Réelle :</h3>
+                    <div id="source-info" class="flex items-center space-x-4 bg-slate-800/40 p-4 rounded-xl border border-slate-700/50">
+                        <div id="source-icon" class="w-12 h-12 flex items-center justify-center bg-blue-500/20 rounded-full text-blue-400 shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                        </div>
+                        <div>
+                            <p id="source-name" class="font-bold text-white text-lg leading-tight">Lumière du jour</p>
+                            <p id="source-desc" class="text-xs text-slate-400 mt-1">Réglage standard pour le plein soleil ou les éclairages studio LED.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 p-4 bg-blue-500/5 rounded-xl border border-blue-500/10">
+                <p class="text-xs text-blue-300 leading-relaxed">
+                    <strong>Conseil de pro :</strong> Si ton image est trop orange, augmente les Kelvins sur ta caméra. Si elle est trop bleue, diminue-les.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const slider = document.getElementById('kelvin-slider');
+        const kelvinDisplay = document.getElementById('kelvin-value');
+        const colorOverlay = document.getElementById('color-overlay');
+        const startBtn = document.getElementById('start-camera');
+        const video = document.getElementById('webcam');
+        const videoWrapper = document.getElementById('video-wrapper');
+        const placeholder = document.getElementById('placeholder-ui');
+        
+        const sourceName = document.getElementById('source-name');
+        const sourceDesc = document.getElementById('source-desc');
+        const sourceIcon = document.getElementById('source-icon');
+
+        const sources = [
+            { limit: 2800, name: "Bougie / Feu", desc: "Ambiance très chaude. Idéal pour des plans cocooning nocturnes.", color: "rgba(255, 100, 0, 0.7)" },
+            { limit: 3500, name: "Ampoule Classique", desc: "Lumière d'intérieur jaune (Tungstène).", color: "rgba(255, 160, 20, 0.5)" },
+            { limit: 4800, name: "Fluorescent / Aube", desc: "Lumière de bureau ou début de journée.", color: "rgba(255, 220, 100, 0.3)" },
+            { limit: 6000, name: "Lumière du jour", desc: "Soleil direct (12h) ou panneaux LED Daylight.", color: "rgba(255, 255, 255, 0.1)" },
+            { limit: 7500, name: "Ciel Nuageux", desc: "Lumière douce et bleutée. Parfait pour un look naturel.", color: "rgba(100, 180, 255, 0.4)" },
+            { limit: 10000, name: "Ombre portée", desc: "Lumière très froide des zones à l'ombre par grand soleil.", color: "rgba(0, 100, 255, 0.6)" }
+        ];
+
+        // Activer la caméra
+        startBtn.addEventListener('click', async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+                placeholder.classList.add('hidden');
+                videoWrapper.classList.remove('hidden');
+            } catch (err) {
+                alert("Impossible d'accéder à la caméra. Vérifie les autorisations de ton navigateur.");
+            }
+        });
+
+        function updateUI(value) {
+            kelvinDisplay.innerText = value;
+            
+            // Trouver la source correspondante
+            const source = sources.find(s => value <= s.limit) || sources[sources.length - 1];
+            
+            sourceName.innerText = source.name;
+            sourceDesc.innerText = source.desc;
+
+            // Appliquer la couleur sur le calque
+            colorOverlay.style.backgroundColor = source.color;
+        }
+
+        slider.addEventListener('input', (e) => {
+            updateUI(e.target.value);
+        });
+
+        // Initialisation
+        updateUI(5600);
+    </script>
+</body>
+</html>
