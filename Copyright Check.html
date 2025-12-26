@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Copyright Check - Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { 
+            background-color: #0f172a; 
+            color: #f8fafc; 
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+        /* Style du fond quadrillé */
+        .preview-container-bg {
+            position: fixed;
+            inset: 0;
+            background-image: radial-gradient(#334155 1px, transparent 1px);
+            background-size: 24px 24px;
+            z-index: -1;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="p-4">
+
+    <!-- Fond stylisé -->
+    <div class="preview-container-bg"></div>
+
+    <!-- Bouton Retour / Quitter -->
+    <a href="Creator_Studio.html" class="fixed top-4 right-4 z-50 flex items-center space-x-2 bg-slate-800 hover:bg-red-900/40 border border-slate-700 hover:border-red-500 text-slate-300 hover:text-white px-5 py-2.5 rounded-xl transition-all shadow-lg group">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:-translate-x-1 transition-transform">
+            <path d="m15 18-6-6 6-6"/>
+        </svg>
+        <span class="font-medium">Quitter le Studio</span>
+    </a>
+
+    <!-- Main Content -->
+    <main class="w-full max-w-2xl">
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center p-3 bg-red-500/10 border border-red-500/20 rounded-2xl mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>
+            </div>
+            <h1 class="text-3xl font-bold tracking-tight text-white mb-2">Copyright Check</h1>
+            <p class="text-slate-400">Vérifiez si une musique est sûre pour votre vidéo YouTube.</p>
+        </div>
+
+        <div class="glass-card rounded-3xl p-6 shadow-2xl">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-400 mb-2">Tapez un artiste, un titre ou une plateforme</label>
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            id="musicQuery" 
+                            onkeyup="handleKeyPress(event)"
+                            placeholder="Ex: NCS, Lofi Girl, Kevin MacLeod, Drake..."
+                            class="w-full bg-slate-900/50 border border-slate-700 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500 transition-all placeholder:text-slate-600"
+                        >
+                        <button 
+                            onclick="checkCopyrightManual()" 
+                            id="checkBtn"
+                            class="absolute right-2 top-2 bottom-2 bg-red-600 hover:bg-red-500 text-white px-6 rounded-xl font-semibold transition-colors flex items-center"
+                        >
+                            Vérifier
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Result Area -->
+            <div id="resultArea" class="mt-8 hidden">
+                <div id="content">
+                    <div id="statusBadge" class="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-bold mb-4 uppercase tracking-wider">
+                        <!-- Status text injection -->
+                    </div>
+                    
+                    <div class="bg-slate-900/40 border border-slate-800 rounded-2xl p-5 mb-4">
+                        <h3 class="text-white font-bold mb-2">Verdict de la base de données :</h3>
+                        <p id="analysisText" class="text-slate-300 leading-relaxed text-sm"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 grid grid-cols-2 gap-4">
+                <div class="p-4 bg-slate-800/30 rounded-2xl border border-slate-700/50 text-center">
+                    <p class="text-xs text-slate-500 uppercase font-bold mb-1">Bibliothèque Sûre</p>
+                    <p class="text-xs text-emerald-400 font-medium">YouTube Audio Library</p>
+                </div>
+                <div class="p-4 bg-slate-800/30 rounded-2xl border border-slate-700/50 text-center">
+                    <p class="text-xs text-slate-500 uppercase font-bold mb-1">Source Gratuite</p>
+                    <p class="text-xs text-emerald-400 font-medium">NoCopyrightSounds (NCS)</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Base de données étendue avec 50+ entrées
+        const musicDatabase = [
+            // --- SECURE (Libre de droits / Creative Commons) ---
+            {
+                keywords: ["ncs", "nocopyrightsounds", "alan walker faded ncs", "cartoon on & on", "deaf kev"],
+                status: "SECURE",
+                explanation: "NCS est la référence pour les gamers et créateurs. Musique 100% sûre avec attribution.",
+                recommendation: "Copiez le bloc de texte 'Track: ... / Music provided by NoCopyrightSounds' dans votre description."
+            },
+            {
+                keywords: ["lofi girl", "lofigirl", "chilledcow", "lofi beats"],
+                status: "SECURE",
+                explanation: "Lofi Girl autorise l'usage pour les créateurs de contenu individuels.",
+                recommendation: "Idéal pour les fonds de vidéos de discussion ou d'étude. Créditez l'artiste et le label."
+            },
+            {
+                keywords: ["macleod", "incompetech", "kevin macleod", "sneaky snitch", "monkeys spinning monkeys"],
+                status: "SECURE",
+                explanation: "Presque toutes les musiques de memes YouTube viennent de lui. Très sûr.",
+                recommendation: "Mentionnez obligatoirement 'Music by Kevin MacLeod' et le lien vers Incompetech."
+            },
+            {
+                keywords: ["youtube library", "bibliothèque audio", "youtube audio", "patrick patrikios", "otrav"],
+                status: "SECURE",
+                explanation: "Validation officielle par Google. Zéro risque de strike.",
+                recommendation: "Utilisez l'outil intégré à YouTube Studio pour télécharger ces morceaux."
+            },
+            {
+                keywords: ["thefatrat", "unity", "xenogenesis", "monody"],
+                status: "SECURE",
+                explanation: "TheFatRat est un fervent défenseur du contenu libre pour les créateurs.",
+                recommendation: "Sûr pour la monétisation si vous le créditez correctement."
+            },
+            {
+                keywords: ["bensound"],
+                status: "SECURE",
+                explanation: "Bensound propose des morceaux gratuits sous licence 'Free License with Attribution'.",
+                recommendation: "Ne peut pas être utilisé pour des podcasts ou livres audio sans licence Pro."
+            },
+            {
+                keywords: ["freetousemusic", "freetouse music"],
+                status: "SECURE",
+                explanation: "Chaîne YouTube spécialisée dans le libre de droits.",
+                recommendation: "Lisez bien la description pour savoir si la monétisation est autorisée."
+            },
+            {
+                keywords: ["audiolibrary", "audio library plus"],
+                status: "SECURE",
+                explanation: "Chaînes relayant des musiques sous licence Creative Commons.",
+                recommendation: "Vérifiez toujours le lien de licence dans la description."
+            },
+
+            // --- RISKY (Abonnement, Partage de revenus ou Conditions strictes) ---
+            {
+                keywords: ["epidemic sound", "epidemicsound", "artlist", "musicvine", "soundstripe", "audiio", "uppbeat"],
+                status: "RISKY",
+                explanation: "Ce sont des services payants. Si vous n'avez pas d'abonnement, vous serez réclamé.",
+                recommendation: "Si vous résiliez votre abonnement, les anciennes vidéos restent protégées, mais les nouvelles seront réclamées."
+            },
+            {
+                keywords: ["monstercat", "marshmello alone", "vicetone"],
+                status: "RISKY",
+                explanation: "Monstercat propose un programme 'Gold' pour les créateurs.",
+                recommendation: "Sans abonnement Gold, vous pouvez utiliser la musique mais vous ne pourrez pas monétiser."
+            },
+            {
+                keywords: ["neffex"],
+                status: "SECURE",
+                explanation: "NEFFEX a sorti des centaines de chansons libres de droits pour les créateurs.",
+                recommendation: "Très bon pour les vidéos de sport ou de motivation."
+            },
+            {
+                keywords: ["tobu", "itro"],
+                status: "SECURE",
+                explanation: "Artistes souvent liés à NCS ou publiant en CC.",
+                recommendation: "Vérifiez si le morceau spécifique est bien marqué 'Free to use'."
+            },
+
+            // --- FORBIDDEN (Interdit / Musiques de Stars / Labels) ---
+            {
+                keywords: ["drake", "taylor swift", "weeknd", "eminem", "rihanna", "bieber", "sheeran", "dua lipa", "grande", "shakira", "bts", "blackpink"],
+                status: "FORBIDDEN",
+                explanation: "Artistes sous labels Universal, Sony ou Warner. Blocage presque garanti.",
+                recommendation: "Même 5 secondes peuvent déclencher un Content ID. À éviter absolument."
+            },
+            {
+                keywords: ["nintendo", "mario music", "zelda music", "pokemon music", "splatoon"],
+                status: "FORBIDDEN",
+                explanation: "Nintendo est très strict avec l'utilisation de ses bandes originales hors gameplay.",
+                recommendation: "Utilisez des 'Remix' autorisés ou de la musique inspirée, mais pas l'originale pure."
+            },
+            {
+                keywords: ["disney", "frozen", "let it go", "star wars music", "marvel music"],
+                status: "FORBIDDEN",
+                explanation: "Disney possède les droits les plus protégés au monde.",
+                recommendation: "Blocage immédiat et risque élevé d'avertissement (strike)."
+            },
+            {
+                keywords: ["daft punk", "david guetta", "calvin harris", "avicii"],
+                status: "FORBIDDEN",
+                explanation: "Musique électronique commerciale sous licence majeure.",
+                recommendation: "Utilisez plutôt des artistes NCS qui font du style 'Electro/House'."
+            },
+            {
+                keywords: ["bad bunny", "j balvin", "karol g"],
+                status: "FORBIDDEN",
+                explanation: "Reggaeton commercial protégé par Rimas ou Universal.",
+                recommendation: "Risque de démonétisation totale de votre vidéo."
+            },
+            {
+                keywords: ["juice wrld", "xxxtentacion", "lil peep"],
+                status: "FORBIDDEN",
+                explanation: "Leurs catalogues sont gérés de manière très stricte après leur décès.",
+                recommendation: "Évitez même pour les vidéos d'hommage sans autorisation."
+            },
+            {
+                keywords: ["hans zimmer", "john williams", "interstellar", "pirates of the caribbean"],
+                status: "FORBIDDEN",
+                explanation: "Musiques de films épiques protégées par les studios de cinéma.",
+                recommendation: "Cherchez 'Epic Cinematic No Copyright' pour des alternatives sûres."
+            }
+        ];
+
+        function handleKeyPress(event) {
+            if (event.key === "Enter") {
+                checkCopyrightManual();
+            }
+        }
+
+        function checkCopyrightManual() {
+            const query = document.getElementById('musicQuery').value.toLowerCase().trim();
+            const resultArea = document.getElementById('resultArea');
+
+            if (!query || query.length < 2) return;
+
+            resultArea.classList.remove('hidden');
+            
+            // Recherche par correspondance de mots-clés
+            const result = musicDatabase.find(item => 
+                item.keywords.some(keyword => query.includes(keyword))
+            );
+
+            if (result) {
+                displayResult(result);
+            } else {
+                displayUnknown();
+            }
+        }
+
+        function displayResult(data) {
+            const badge = document.getElementById('statusBadge');
+            const text = document.getElementById('analysisText');
+
+            if (data.status === "SECURE") {
+                badge.className = "inline-flex items-center px-4 py-1.5 rounded-full text-sm font-bold mb-4 uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+                badge.innerHTML = "✓ Utilisation Sûre";
+            } else if (data.status === "RISKY") {
+                badge.className = "inline-flex items-center px-4 py-1.5 rounded-full text-sm font-bold mb-4 uppercase tracking-wider bg-orange-500/20 text-orange-400 border border-orange-500/30";
+                badge.innerHTML = "⚠ Attention / Abonnement";
+            } else {
+                badge.className = "inline-flex items-center px-4 py-1.5 rounded-full text-sm font-bold mb-4 uppercase tracking-wider bg-red-500/20 text-red-400 border border-red-500/30";
+                badge.innerHTML = "✖ Bloqué / Strike";
+            }
+
+            text.innerHTML = `<strong>Détails :</strong> ${data.explanation}<br><br><strong>Conseil :</strong> ${data.recommendation}`;
+        }
+
+        function displayUnknown() {
+            const badge = document.getElementById('statusBadge');
+            const text = document.getElementById('analysisText');
+
+            badge.className = "inline-flex items-center px-4 py-1.5 rounded-full text-sm font-bold mb-4 uppercase tracking-wider bg-slate-500/20 text-slate-400 border border-slate-500/30";
+            badge.innerHTML = "? Inconnu";
+            
+            text.innerHTML = `<strong>Détails :</strong> Cet artiste ou cette plateforme n'est pas répertorié dans ma base de données locale.<br><br><strong>Conseil de sécurité :</strong> Si vous avez trouvé cette musique sur une radio ou un album commercial, elle est <strong>interdite</strong>. Cherchez toujours des termes comme "No Copyright" ou "Royalty Free".`;
+        }
+    </script>
+</body>
+</html>
