@@ -1,0 +1,178 @@
+
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soutenez LeNoobInconnu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            overflow: hidden;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .white-text-highlight {
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .progress-ring {
+            transition: stroke-dashoffset 0.35s;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        #redirect-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        /* Cache le contenu pendant la vérification du speed-pass */
+        #main-content {
+            display: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <!-- Cercles décoratifs en arrière-plan -->
+    <div class="fixed top-[-10%] left-[-10%] w-96 h-96 bg-blue-600/20 rounded-full blur-[100px]"></div>
+    <div class="fixed bottom-[-10%] right-[-10%] w-96 h-96 bg-purple-600/20 rounded-full blur-[100px]"></div>
+
+    <div id="main-content" class="glass-card w-full max-w-lg rounded-3xl p-8 md:p-12 text-center relative z-10 transition-all duration-500 transform hover:scale-[1.01]">
+        
+        <!-- Logo / Icon -->
+        <div class="mb-6 flex justify-center">
+            <div class="bg-red-500/10 p-4 rounded-full pulse-animation">
+                <i class="fab fa-youtube text-5xl text-red-500"></i>
+            </div>
+        </div>
+
+        <!-- Titre -->
+        <h1 class="text-3xl md:text-4xl font-bold mb-4">
+            Soutenez <span class="white-text-highlight">LeNoobInconnu</span>
+        </h1>
+
+        <!-- Message -->
+        <p class="text-slate-400 text-lg mb-8 leading-relaxed">
+            Pour soutenir notre progrès et nous aider à créer plus de contenus, n'hésitez pas à vous abonner à la chaîne. Votre soutien est notre moteur !
+        </p>
+
+        <!-- Section Compteur -->
+        <div class="flex flex-col items-center justify-center mb-10">
+            <div class="relative flex items-center justify-center mb-4">
+                <svg class="w-24 h-24">
+                    <circle class="text-slate-700" stroke-width="4" stroke="currentColor" fill="transparent" r="40" cx="48" cy="48" />
+                    <circle id="progress-circle" class="text-blue-500 progress-ring" stroke-width="4" stroke-dasharray="251.2" stroke-dashoffset="0" stroke-linecap="round" stroke="currentColor" fill="transparent" r="40" cx="48" cy="48" />
+                </svg>
+                <span id="timer-text" class="absolute text-2xl font-bold">15</span>
+            </div>
+            <p class="text-sm text-slate-500 uppercase tracking-widest">Préparation des outils...</p>
+        </div>
+
+        <!-- Actions -->
+        <div class="space-y-4">
+            <a href="https://www.youtube.com/@LeNoobInconnu?sub_confirmation=1" target="_blank" 
+               class="flex items-center justify-center gap-3 w-full py-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-red-600/20 active:scale-95">
+                <i class="fab fa-youtube text-xl"></i>
+                S'ABONNER MAINTENANT
+            </a>
+
+            <button id="redirect-btn" disabled 
+                    class="flex items-center justify-center gap-3 w-full py-4 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-xl transition-all">
+                <i class="fas fa-toolbox text-lg"></i>
+                <span id="btn-label">Patientez quelques secondes...</span>
+            </button>
+        </div>
+
+        <p class="mt-8 text-xs text-slate-500">
+            En cliquant sur s'abonner, vous ouvrez YouTube dans un nouvel onglet.
+        </p>
+    </div>
+
+    <script>
+        const DURATION = 15; 
+        const REDIRECT_URL = "https://votre-site-outils.com"; // Remplace par ton lien
+        const STORAGE_KEY = "lenoob_visited_before";
+        
+        const mainContent = document.getElementById('main-content');
+        const timerText = document.getElementById('timer-text');
+        const progressCircle = document.getElementById('progress-circle');
+        const redirectBtn = document.getElementById('redirect-btn');
+        const btnLabel = document.getElementById('btn-label');
+        const circumference = 2 * Math.PI * 40;
+
+        let timeLeft = DURATION;
+        let timerInterval;
+
+        // Fonction de vérification de visite
+        function checkFirstVisit() {
+            if (localStorage.getItem(STORAGE_KEY)) {
+                // Déjà visité : Redirection directe
+                window.location.href = REDIRECT_URL;
+            } else {
+                // Première fois : On affiche la page et on lance le chrono
+                mainContent.style.display = "block";
+                startTimer();
+            }
+        }
+
+        function startTimer() {
+            progressCircle.style.strokeDasharray = circumference;
+            timerInterval = setInterval(updateTimer, 1000);
+            updateTimer();
+        }
+
+        function updateTimer() {
+            timerText.innerText = timeLeft;
+            const offset = circumference - (timeLeft / DURATION) * circumference;
+            progressCircle.style.strokeDashoffset = offset;
+
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                enableButton();
+            }
+            timeLeft--;
+        }
+
+        function enableButton() {
+            // On enregistre que l'utilisateur a fini l'attente
+            localStorage.setItem(STORAGE_KEY, "true");
+            
+            redirectBtn.disabled = false;
+            redirectBtn.classList.remove('bg-slate-700');
+            redirectBtn.classList.add('bg-blue-600', 'hover:bg-blue-500', 'shadow-lg', 'shadow-blue-600/20');
+            btnLabel.innerText = "Accéder aux Outils Gratuits";
+            
+            redirectBtn.onclick = () => {
+                window.location.href = REDIRECT_URL;
+            };
+        }
+
+        // Lancement au chargement
+        window.onload = checkFirstVisit;
+    </script>
+</body>
+</html>
