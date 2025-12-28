@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -109,7 +109,8 @@
 
     <script>
         const DURATION = 15; 
-        const REDIRECT_PATH = "Creator_Studio.html"; // Redirection vers le fichier local
+        const REDIRECT_PATH = "Creator_Studio.html";
+        const STORAGE_KEY = "lenoob_unlock_completed";
         
         let timeLeft = DURATION;
         const timerText = document.getElementById('timer-text');
@@ -124,7 +125,6 @@
         function updateTimer() {
             timerText.innerText = timeLeft;
             
-            // Calcul du progrès du cercle (décroissant)
             const offset = circumference - (timeLeft / DURATION) * circumference;
             progressCircle.style.strokeDashoffset = offset;
 
@@ -133,13 +133,18 @@
                 timeLeft--;
             } else {
                 clearInterval(timerInterval);
-                enableButton();
+                enableButton(true); // true pour sauvegarder l'état
             }
         }
 
-        function enableButton() {
+        function enableButton(shouldSave = false) {
+            if (shouldSave) {
+                localStorage.setItem(STORAGE_KEY, "true");
+            }
+
             timerText.innerText = "✓";
-            statusText.innerText = "Prêt à l'emploi !";
+            progressCircle.style.strokeDashoffset = 0;
+            statusText.innerText = "Accès autorisé !";
             statusText.classList.remove('text-slate-500');
             statusText.classList.add('text-green-400');
 
@@ -148,15 +153,22 @@
             redirectBtn.classList.add('bg-blue-600', 'hover:bg-blue-500', 'shadow-lg', 'shadow-blue-600/20', 'active:scale-95');
             btnLabel.innerText = "Accéder au Creator Studio";
             
-            // Redirection vers le fichier local lors du clic
             redirectBtn.onclick = () => {
                 window.location.href = REDIRECT_PATH;
             };
         }
 
-        // Démarrage du compteur
-        const timerInterval = setInterval(updateTimer, 1000);
-        updateTimer();
+        // Vérification au chargement
+        const isAlreadyUnlocked = localStorage.getItem(STORAGE_KEY);
+
+        let timerInterval;
+        if (isAlreadyUnlocked === "true") {
+            enableButton(false);
+        } else {
+            // Démarrage normal du compteur
+            timerInterval = setInterval(updateTimer, 1000);
+            updateTimer();
+        }
     </script>
 </body>
 </html>
