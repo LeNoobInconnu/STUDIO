@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convertisseur de vitesse</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { 
+            background-color: #0f172a; 
+            color: #f8fafc; 
+            margin: 0;
+            overflow-x: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+        }
+        .preview-container-bg {
+            position: fixed;
+            inset: 0;
+            background-image: radial-gradient(#334155 1px, transparent 1px);
+            background-size: 20px 20px;
+            z-index: -1;
+        }
+        input[type=range] { accent-color: #3b82f6; }
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(71, 85, 105, 0.5);
+        }
+        #video-preview {
+            max-height: 45vh;
+            width: 100%;
+            border-radius: 0.75rem;
+            background: #000;
+        }
+        .recording-pulse {
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(0.98); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        .speed-extreme {
+            color: #ef4444;
+            text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4">
+
+    <div class="preview-container-bg"></div>
+
+    <a href="Creator_Studio.html" class="fixed top-4 right-4 z-50 flex items-center space-x-2 bg-slate-800 hover:bg-red-900/40 border border-slate-700 hover:border-red-500 text-slate-300 hover:text-white px-6 py-3 rounded-xl transition-all shadow-lg group">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:-translate-x-1 transition-transform">
+            <path d="m15 18-6-6 6-6"/>
+        </svg>
+        <span class="font-semibold text-lg">Quitter vers le Studio</span>
+    </a>
+
+    <div class="w-full max-w-4xl">
+        <div class="glass-panel p-6 md:p-8 rounded-3xl shadow-2xl flex flex-col gap-6">
+            
+            <div class="text-center space-y-2">
+                <h1 class="text-3xl font-bold text-white tracking-tight"></h1>
+                <p class="text-slate-400 text-sm md:text-base">Accélérez vos vidéos jusqu'à x100 </p>
+            </div>
+
+            <div id="drop-zone" class="relative group border-2 border-dashed border-slate-600 hover:border-blue-500 rounded-2xl p-4 transition-colors flex flex-col items-center justify-center min-h-[200px] cursor-pointer">
+                <input type="file" id="video-input" accept="video/*" class="hidden">
+                
+                <div id="upload-placeholder" class="text-center flex flex-col items-center">
+                    <div class="bg-blue-500/10 p-4 rounded-full mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    </div>
+                    <p class="font-medium">Importer une vidéo</p>
+                </div>
+
+                <video id="video-preview" controls class="hidden"></video>
+            </div>
+
+            <div id="controls-panel" class="opacity-50 pointer-events-none transition-opacity duration-300 space-y-6">
+                
+                <div class="flex flex-col space-y-4">
+                    <div class="flex justify-between items-center">
+                        <label class="text-slate-300 font-medium">Vitesse choisie</label>
+                        <span id="speed-display" class="bg-blue-600 text-white px-4 py-1 rounded-lg font-mono font-bold text-xl transition-all">1.00x</span>
+                    </div>
+                    
+                    <input type="range" id="speed-slider" min="0.25" max="100" step="0.25" value="1" class="w-full h-3 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                    
+                    <div class="flex justify-between text-[10px] text-slate-500 font-mono">
+                        <span>0.25x</span>
+                        <span>16x</span>
+                        <span>100x</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-2">
+                    <button onclick="setSpeed(1)" class="bg-slate-700 hover:bg-slate-600 p-2 rounded-lg text-xs transition-colors">Normal</button>
+                    <button onclick="setSpeed(10)" class="bg-slate-700 hover:bg-slate-600 p-2 rounded-lg text-xs transition-colors">10x</button>
+                    <button onclick="setSpeed(25)" class="bg-orange-900/40 border border-orange-700 p-2 rounded-lg text-xs transition-colors">25x</button>
+                    <button onclick="setSpeed(50)" class="bg-red-900/40 border border-red-700 p-2 rounded-lg text-xs transition-colors font-bold">50x</button>
+                    <button onclick="setSpeed(100)" class="bg-red-600 hover:bg-red-500 p-2 rounded-lg text-xs text-white transition-colors font-bold">100x</button>
+                </div>
+
+                <!-- Section Export -->
+                <div class="pt-4 border-t border-slate-700">
+                    <button id="download-btn" class="w-full bg-blue-600 hover:bg-blue-500 disabled:bg-slate-700 disabled:opacity-50 text-white font-bold py-4 rounded-xl flex items-center justify-center space-x-3 transition-all shadow-lg">
+                        <svg id="download-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        <span id="download-text">Générer la vidéo accélérée</span>
+                    </button>
+                    <p id="export-status" class="text-center text-xs text-slate-400 mt-3 hidden">
+                        <span class="text-amber-500 font-bold">Note :</span> Pour les vitesses > 16x, la vidéo sera générée très rapidement !
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const videoInput = document.getElementById('video-input');
+        const videoPreview = document.getElementById('video-preview');
+        const dropZone = document.getElementById('drop-zone');
+        const uploadPlaceholder = document.getElementById('upload-placeholder');
+        const speedSlider = document.getElementById('speed-slider');
+        const speedDisplay = document.getElementById('speed-display');
+        const controlsPanel = document.getElementById('controls-panel');
+        const downloadBtn = document.getElementById('download-btn');
+        const downloadText = document.getElementById('download-text');
+        const exportStatus = document.getElementById('export-status');
+
+        let mediaRecorder;
+        let recordedChunks = [];
+        let isRecording = false;
+
+        videoInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const url = URL.createObjectURL(file);
+                videoPreview.src = url;
+                videoPreview.classList.remove('hidden');
+                uploadPlaceholder.classList.add('hidden');
+                controlsPanel.classList.remove('opacity-50', 'pointer-events-none');
+            }
+        });
+
+        speedSlider.addEventListener('input', function() {
+            updateVideoSpeed(parseFloat(this.value));
+        });
+
+        function setSpeed(value) {
+            speedSlider.value = value;
+            updateVideoSpeed(value);
+        }
+
+        function updateVideoSpeed(speed) {
+            // Limite physique du navigateur pour la lecture visuelle
+            const visualSpeed = Math.min(speed, 16);
+            videoPreview.playbackRate = visualSpeed;
+            
+            speedDisplay.textContent = speed.toFixed(2) + 'x';
+            
+            if (speed > 16) {
+                speedDisplay.classList.add('speed-extreme');
+                speedDisplay.classList.add('bg-red-600');
+                speedDisplay.classList.remove('bg-blue-600');
+            } else {
+                speedDisplay.classList.remove('speed-extreme');
+                speedDisplay.classList.remove('bg-red-600');
+                speedDisplay.classList.add('bg-blue-600');
+            }
+        }
+
+        downloadBtn.addEventListener('click', async () => {
+            if (isRecording) return;
+            const speed = parseFloat(speedSlider.value);
+
+            try {
+                isRecording = true;
+                recordedChunks = [];
+                
+                videoPreview.currentTime = 0;
+                videoPreview.pause();
+                
+                // On s'assure que la lecture est à la vitesse max supportée pour l'export
+                videoPreview.playbackRate = Math.min(speed, 16);
+                
+                const stream = videoPreview.captureStream ? videoPreview.captureStream() : videoPreview.mozCaptureStream();
+                
+                mediaRecorder = new MediaRecorder(stream, {
+                    mimeType: 'video/webm; codecs=vp9',
+                    videoBitsPerSecond: 5000000 // Haute qualité
+                });
+
+                mediaRecorder.ondataavailable = (e) => {
+                    if (e.data.size > 0) recordedChunks.push(e.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `studio_fast_${speed}x.webm`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    
+                    isRecording = false;
+                    downloadBtn.disabled = false;
+                    downloadText.textContent = "Générer la vidéo accélérée";
+                    exportStatus.classList.add('hidden');
+                    downloadBtn.classList.remove('recording-pulse', 'bg-red-600');
+                };
+
+                mediaRecorder.start();
+                videoPreview.play();
+                
+                downloadBtn.disabled = true;
+                downloadBtn.classList.add('recording-pulse', 'bg-red-600');
+                downloadText.textContent = "Accélération en cours...";
+                exportStatus.classList.remove('hidden');
+
+                videoPreview.onended = () => {
+                    mediaRecorder.stop();
+                    videoPreview.onended = null;
+                };
+
+            } catch (err) {
+                console.error(err);
+                isRecording = false;
+                alert("Erreur lors de la génération. Essayez un format plus court.");
+            }
+        });
+
+        // Drag and Drop
+        dropZone.addEventListener('click', () => videoInput.click());
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-blue-500'); });
+        dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('border-blue-500'); });
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const file = e.dataTransfer.files[0];
+            if (file?.type.startsWith('video/')) {
+                videoInput.files = e.dataTransfer.files;
+                videoInput.dispatchEvent(new Event('change'));
+            }
+        });
+    </script>
+</body>
+</html>
