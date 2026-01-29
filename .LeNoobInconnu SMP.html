@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statut du Serveur Minecraft - En Développement</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap');
+
+        :root {
+            --mc-green: #55FF55;
+            --mc-dark: #1e1e1e;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f0f0f;
+            color: white;
+            overflow: hidden;
+        }
+
+        .bg-animate {
+            background: linear-gradient(45deg, #0f0f0f, #1a1a1a, #0f0f0f);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .glow {
+            box-shadow: 0 0 30px rgba(85, 255, 85, 0.2);
+        }
+
+        .progress-bar {
+            width: 0%;
+            transition: width 2s ease-out;
+        }
+    </style>
+</head>
+<body class="bg-animate min-h-screen flex items-center justify-center p-4">
+
+    <!-- Décoration d'arrière-plan (Particules SVG simples) -->
+    <div class="absolute inset-0 opacity-20 pointer-events-none">
+        <svg width="100%" height="100%">
+            <rect width="10" height="10" x="10%" y="20%" fill="#55FF55" class="floating" style="animation-delay: 0s;"></rect>
+            <rect width="15" height="15" x="80%" y="10%" fill="#55FF55" class="floating" style="animation-delay: 1s;"></rect>
+            <rect width="8" height="8" x="40%" y="70%" fill="#55FF55" class="floating" style="animation-delay: 2s;"></rect>
+        </svg>
+    </div>
+
+    <main class="relative z-10 text-center max-w-2xl w-full">
+        <!-- Logo ou Icône -->
+        <div class="mb-8 inline-block">
+            <div class="w-24 h-24 bg-[#55FF55] rounded-2xl flex items-center justify-center glow floating mx-auto">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+            </div>
+        </div>
+
+        <!-- Titre -->
+        <h1 class="text-5xl md:text-7xl font-black mb-4 tracking-tighter">
+            PROCHAINEMENT <span class="text-[#55FF55]">DISPONIBLE</span>
+        </h1>
+
+        <!-- Message -->
+        <p class="text-gray-400 text-lg md:text-xl mb-12 font-light">
+            Notre site est actuellement en cours de développement. 
+            « Vous pouvez dès maintenant rejoindre le serveur Discord pour jouer ! 
+        </p>
+
+        <!-- Statut / Barre de progression -->
+        <div class="bg-white/5 p-8 rounded-3xl border border-white/10 backdrop-blur-md mb-8">
+            <div class="flex justify-between items-center mb-4">
+                <span class="text-sm font-bold uppercase tracking-widest text-[#55FF55]">Progression</span>
+                <span id="percent" class="text-sm font-mono">60%</span>
+            </div>
+            <div class="w-full bg-black/50 h-3 rounded-full overflow-hidden">
+                <div id="bar" class="progress-bar h-full bg-[#55FF55] shadow-[0_0_15px_#55FF55]"></div>
+            </div>
+            <p class="mt-4 text-sm text-gray-500 italic">
+                Statut actuel : Développement du Statue du serveur...
+            </p>
+        </div>
+
+        <!-- Réseaux Sociaux / Contact -->
+        <div class="flex justify-center gap-6">
+            <a href="https://discord.gg/uN78XcdHr7" class="hover:text-[#55FF55] transition-colors flex items-center gap-2 text-sm font-semibold">
+                DISCORD
+            </a>
+            <span class="text-gray-700">|</span>
+            <a href="#" class="hover:text-[#55FF55] transition-colors flex items-center gap-2 text-sm font-semibold">
+                Youtube
+            </a>
+        </div>
+    </main>
+
+    <script>
+        window.onload = () => {
+            // Animation de la barre de progression au chargement
+            setTimeout(() => {
+                document.getElementById('bar').style.width = '60%';
+            }, 500);
+        };
+    </script>
+</body>
+</html>
