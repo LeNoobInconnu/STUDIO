@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Statut du Serveur Minecraft - En Développement</title>
+    <title>Statut du Serveur Minecraft - Live</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap');
 
         :root {
             --mc-green: #55FF55;
+            --mc-red: #ff5555;
             --mc-dark: #1e1e1e;
         }
 
@@ -17,7 +18,7 @@
             font-family: 'Inter', sans-serif;
             background-color: #0f0f0f;
             color: white;
-            overflow: hidden;
+            overflow-x: hidden;
         }
 
         .bg-animate {
@@ -38,82 +39,219 @@
 
         @keyframes floating {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
+            50% { transform: translateY(-10px); }
         }
 
         .glow {
-            box-shadow: 0 0 30px rgba(85, 255, 85, 0.2);
+            box-shadow: 0 0 30px rgba(85, 255, 85, 0.15);
         }
 
-        .progress-bar {
-            width: 0%;
-            transition: width 2s ease-out;
+        .status-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+
+        .copy-feedback {
+            display: none;
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--mc-green);
+            color: black;
+            padding: 6px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 800;
+            z-index: 50;
+            box-shadow: 0 4px 15px rgba(85, 255, 85, 0.4);
+            white-space: nowrap;
         }
     </style>
 </head>
 <body class="bg-animate min-h-screen flex items-center justify-center p-4">
 
-    <!-- Décoration d'arrière-plan (Particules SVG simples) -->
-    <div class="absolute inset-0 opacity-20 pointer-events-none">
+    <!-- Décoration d'arrière-plan -->
+    <div class="absolute inset-0 opacity-10 pointer-events-none">
         <svg width="100%" height="100%">
             <rect width="10" height="10" x="10%" y="20%" fill="#55FF55" class="floating" style="animation-delay: 0s;"></rect>
-            <rect width="15" height="15" x="80%" y="10%" fill="#55FF55" class="floating" style="animation-delay: 1s;"></rect>
-            <rect width="8" height="8" x="40%" y="70%" fill="#55FF55" class="floating" style="animation-delay: 2s;"></rect>
+            <rect width="15" height="15" x="85%" y="15%" fill="#55FF55" class="floating" style="animation-delay: 1s;"></rect>
+            <rect width="8" height="8" x="40%" y="75%" fill="#55FF55" class="floating" style="animation-delay: 2s;"></rect>
+            <rect width="12" height="12" x="70%" y="60%" fill="#55FF55" class="floating" style="animation-delay: 1.5s;"></rect>
         </svg>
     </div>
 
-    <main class="relative z-10 text-center max-w-2xl w-full">
-        <!-- Logo ou Icône -->
-        <div class="mb-8 inline-block">
-            <div class="w-24 h-24 bg-[#55FF55] rounded-2xl flex items-center justify-center glow floating mx-auto">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+    <main class="relative z-10 text-center max-w-4xl w-full py-12">
+        <!-- Logo -->
+        <div class="mb-6 inline-block">
+            <div class="w-20 h-20 bg-[#55FF55] rounded-2xl flex items-center justify-center glow floating mx-auto">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
             </div>
         </div>
 
-        <!-- Titre -->
-        <h1 class="text-5xl md:text-7xl font-black mb-4 tracking-tighter">
-            PROCHAINEMENT <span class="text-[#55FF55]">DISPONIBLE</span>
+        <h1 class="text-4xl md:text-6xl font-black mb-2 tracking-tighter uppercase">
+            Statut du <span class="text-[#55FF55]">Serveur</span>
         </h1>
+        
+        <!-- Carte de Statut -->
+        <div class="bg-white/5 border border-white/10 backdrop-blur-xl rounded-[2.5rem] p-6 md:p-10 mb-8 mt-8 shadow-2xl">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-8 mb-10">
+                
+                <!-- Info Serveur -->
+                <div class="text-left w-full md:w-1/2">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div id="status-indicator" class="w-4 h-4 rounded-full bg-gray-500"></div>
+                        <span id="status-text" class="text-gray-400 font-bold uppercase tracking-widest text-xs">Vérification...</span>
+                    </div>
+                    <h2 id="server-motd" class="text-2xl font-black text-white mb-1 tracking-tight">Chargement du serveur...</h2>
+                    <p id="server-version" class="text-gray-500 text-sm font-medium">Recherche de la version...</p>
+                </div>
 
-        <!-- Message -->
-        <p class="text-gray-400 text-lg md:text-xl mb-12 font-light">
-            Notre site est actuellement en cours de développement. 
-            « Vous pouvez dès maintenant rejoindre le serveur Discord pour jouer ! 
-        </p>
+                <!-- Nombre de Joueurs -->
+                <div class="bg-black/40 rounded-3xl p-6 flex flex-col items-center justify-center min-w-[200px] border border-white/5">
+                    <span class="text-gray-500 text-xs uppercase font-black tracking-widest mb-2">Joueurs connectés</span>
+                    <div class="text-5xl font-black text-[#55FF55]">
+                        <span id="players-online">0</span><span class="text-gray-700">/</span><span id="players-max" class="text-gray-500">0</span>
+                    </div>
+                </div>
+            </div>
 
-        <!-- Statut / Barre de progression -->
-        <div class="bg-white/5 p-8 rounded-3xl border border-white/10 backdrop-blur-md mb-8">
-            <div class="flex justify-between items-center mb-4">
-                <span class="text-sm font-bold uppercase tracking-widest text-[#55FF55]">Progression</span>
-                <span id="percent" class="text-sm font-mono">60%</span>
+            <!-- Section des IPs -->
+            <div class="flex flex-col gap-6">
+                <!-- Bloc Java Edition -->
+                <div class="relative group bg-white/5 p-8 rounded-3xl border border-white/10 hover:border-[#55FF55]/40 transition-all flex flex-col gap-6">
+                    <div id="copy-java" class="copy-feedback">Élément Copié !</div>
+                    <div class="text-center lg:text-left">
+                        <span class="text-sm text-[#55FF55] font-black uppercase tracking-widest block mb-4">Java Edition (PC)</span>
+                    </div>
+                    
+                    <div class="w-full">
+                        <!-- IP Box Java (Pleine largeur car pas de port) -->
+                        <div class="bg-black/30 p-6 rounded-2xl border border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <div class="text-left">
+                                <span class="text-[10px] text-gray-500 font-bold uppercase block">Adresse de connexion</span>
+                                <code class="text-2xl md:text-3xl font-mono text-white tracking-tight">91.197.6.16:26781</code>
+                            </div>
+                            <button onclick="copyIP('91.197.6.16:26781', 'java')" class="bg-[#55FF55] hover:bg-white text-black px-6 py-4 rounded-xl font-black text-sm transition-all flex items-center gap-2 uppercase shadow-lg active:scale-95" title="Copier l'IP">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                                Copier
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bloc Bedrock Edition -->
+                <div class="relative group bg-white/5 p-8 rounded-3xl border border-white/10 hover:border-[#55FF55]/40 transition-all flex flex-col gap-6">
+                    <div id="copy-bedrock" class="copy-feedback">Élément Copié !</div>
+                    <div class="text-center lg:text-left">
+                        <span class="text-sm text-[#55FF55] font-black uppercase tracking-widest block mb-4">Bedrock Edition (Consoles / Mobile)</span>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+                        <!-- IP Box Bedrock -->
+                        <div class="bg-black/30 p-4 rounded-2xl border border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <div class="text-left">
+                                <span class="text-[10px] text-gray-500 font-bold uppercase block">Adresse IP</span>
+                                <code class="text-xl font-mono text-white">91.197.6.16</code>
+                            </div>
+                            <button onclick="copyIP('91.197.6.16', 'bedrock')" class="bg-white/10 hover:bg-white hover:text-black text-white p-3 rounded-xl transition-all" title="Copier l'IP">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                            </button>
+                        </div>
+                        <!-- Port Box Bedrock -->
+                        <div class="bg-black/30 p-4 rounded-2xl border border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <div class="text-left">
+                                <span class="text-[10px] text-gray-500 font-bold uppercase block">Port</span>
+                                <code class="text-xl font-mono text-white">26781</code>
+                            </div>
+                            <button onclick="copyIP('26781', 'bedrock')" class="bg-white/10 hover:bg-white hover:text-black text-white p-3 rounded-xl transition-all" title="Copier le Port">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="w-full bg-black/50 h-3 rounded-full overflow-hidden">
-                <div id="bar" class="progress-bar h-full bg-[#55FF55] shadow-[0_0_15px_#55FF55]"></div>
+
+            <!-- Bouton Tutoriel -->
+            <div class="mt-10">
+                <a href="https://youtu.be/te-PyEU928Q?si=FtdGZSXDy2ub_33c" target="_blank" class="w-full inline-flex items-center justify-center gap-4 bg-[#55FF55] text-black px-8 py-6 rounded-[2rem] font-black text-lg hover:scale-[1.02] transition-transform active:scale-95 shadow-[0_15px_30px_-10px_rgba(85,255,85,0.5)]">
+                    TUTO POUR REJOINDRE SUR CONSOLE
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                </a>
+                <p class="text-[10px] text-gray-500 mt-4 uppercase tracking-[0.2em]">Regardez la vidéo pour savoir comment jouer sur PS4, Xbox ou Switch</p>
             </div>
-            <p class="mt-4 text-sm text-gray-500 italic">
-                Statut actuel : Développement du Statue du serveur...
-            </p>
         </div>
 
-        <!-- Réseaux Sociaux / Contact -->
-        <div class="flex justify-center gap-6">
-            <a href="https://discord.gg/uN78XcdHr7" class="hover:text-[#55FF55] transition-colors flex items-center gap-2 text-sm font-semibold">
-                DISCORD
+        <!-- Réseaux Sociaux -->
+        <div class="flex flex-wrap justify-center gap-8 opacity-60 hover:opacity-100 transition-opacity">
+            <a href="https://discord.gg/uN78XcdHr7" target="_blank" class="group flex items-center gap-3 text-sm font-black tracking-widest hover:text-[#55FF55] transition-colors uppercase">
+                <span class="bg-white/10 group-hover:bg-[#55FF55]/20 p-2 rounded-lg">Discord</span>
             </a>
-            <span class="text-gray-700">|</span>
-            <a href="www.youtube.com/@LeNoobInconnu" class="hover:text-[#55FF55] transition-colors flex items-center gap-2 text-sm font-semibold">
-                Youtube
+            <span class="text-gray-800 self-center">|</span>
+            <a href="https://www.youtube.com/@LeNoobInconnu" target="_blank" class="group flex items-center gap-3 text-sm font-black tracking-widest hover:text-[#55FF55] transition-colors uppercase">
+                <span class="bg-white/10 group-hover:bg-[#55FF55]/20 p-2 rounded-lg">Youtube</span>
             </a>
         </div>
     </main>
 
     <script>
-        window.onload = () => {
-            // Animation de la barre de progression au chargement
+        const SERVER_IP = "91.197.6.16";
+        const SERVER_PORT = "26781";
+
+        async function updateStatus() {
+            const statusIndicator = document.getElementById('status-indicator');
+            const statusText = document.getElementById('status-text');
+            const playersOnline = document.getElementById('players-online');
+            const playersMax = document.getElementById('players-max');
+            const serverMotd = document.getElementById('server-motd');
+            const serverVersion = document.getElementById('server-version');
+
+            try {
+                const response = await fetch(`https://mcapi.us/server/status?ip=${SERVER_IP}&port=${SERVER_PORT}`);
+                const data = await response.json();
+
+                if (data.online) {
+                    statusIndicator.className = "w-4 h-4 rounded-full bg-[#55FF55] status-pulse shadow-[0_0_15px_#55FF55]";
+                    statusText.innerText = "Serveur en ligne";
+                    statusText.className = "text-[#55FF55] font-black uppercase tracking-widest text-xs";
+                    playersOnline.innerText = data.players.now;
+                    playersMax.innerText = data.players.max;
+                    serverMotd.innerText = data.motd || "Bienvenue sur le serveur !";
+                    serverVersion.innerText = data.server.name || "Minecraft";
+                } else {
+                    statusIndicator.className = "w-4 h-4 rounded-full bg-[#ff5555] shadow-[0_0_15px_#ff5555]";
+                    statusText.innerText = "Serveur hors ligne";
+                    statusText.className = "text-[#ff5555] font-black uppercase tracking-widest text-xs";
+                    serverMotd.innerText = "Maintenance en cours";
+                    serverVersion.innerText = "Le serveur est éteint";
+                }
+            } catch (error) {
+                console.error("Impossible de joindre l'API:", error);
+                statusText.innerText = "Erreur de connexion API";
+            }
+        }
+
+        function copyIP(text, id) {
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+
+            const feedback = document.getElementById('copy-' + id);
+            feedback.style.display = 'block';
             setTimeout(() => {
-                document.getElementById('bar').style.width = '60%';
-            }, 500);
-        };
+                feedback.style.display = 'none';
+            }, 2000);
+        }
+
+        updateStatus();
+        setInterval(updateStatus, 30000);
     </script>
 </body>
 </html>
