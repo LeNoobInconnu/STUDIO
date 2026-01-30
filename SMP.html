@@ -71,6 +71,26 @@
             box-shadow: 0 4px 15px rgba(85, 255, 85, 0.4);
             white-space: nowrap;
         }
+
+        .player-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .player-card:hover {
+            transform: scale(1.05);
+            background: rgba(85, 255, 85, 0.1);
+            border-color: rgba(85, 255, 85, 0.4);
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        .player-head {
+            image-rendering: pixelated;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            background-color: rgba(0,0,0,0.2);
+            border: 2px solid rgba(255,255,255,0.1);
+        }
     </style>
 </head>
 <body class="bg-animate min-h-screen flex items-center justify-center p-4">
@@ -97,17 +117,17 @@
             Statut du <span class="text-[#55FF55]">Serveur</span>
         </h1>
         
-        <!-- Carte de Statut -->
+        <!-- Carte de Statut Principale -->
         <div class="bg-white/5 border border-white/10 backdrop-blur-xl rounded-[2.5rem] p-6 md:p-10 mb-8 mt-8 shadow-2xl">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-8 mb-10">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-8 mb-10 text-center md:text-left">
                 
                 <!-- Info Serveur -->
-                <div class="text-left w-full md:w-1/2">
-                    <div class="flex items-center gap-3 mb-2">
+                <div class="w-full md:w-1/2">
+                    <div class="flex items-center justify-center md:justify-start gap-3 mb-2">
                         <div id="status-indicator" class="w-4 h-4 rounded-full bg-gray-500"></div>
                         <span id="status-text" class="text-gray-400 font-bold uppercase tracking-widest text-xs">Vérification...</span>
                     </div>
-                    <h2 id="server-motd" class="text-2xl font-black text-white mb-1 tracking-tight">Chargement du serveur...</h2>
+                    <h2 id="server-motd" class="text-2xl font-black text-white mb-1 tracking-tight text-center md:text-left">Chargement du serveur...</h2>
                     <p id="server-version" class="text-gray-500 text-sm font-medium">Recherche de la version...</p>
                 </div>
 
@@ -120,87 +140,88 @@
                 </div>
             </div>
 
+            <!-- SECTION JOUEURS EN LIGNE -->
+            <div id="players-section" class="hidden mb-12">
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="h-[1px] flex-1 bg-white/10"></div>
+                    <span class="text-[10px] text-gray-500 font-black uppercase tracking-[0.4em]">Joueurs en ligne</span>
+                    <div class="h-[1px] flex-1 bg-white/10"></div>
+                </div>
+                <!-- Grille des joueurs -->
+                <div id="players-list" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                    <!-- Les cartes joueurs apparaîtront ici -->
+                </div>
+            </div>
+
             <!-- Section des IPs -->
             <div class="flex flex-col gap-6">
-                <!-- Bloc Java Edition -->
-                <div class="relative group bg-white/5 p-8 rounded-3xl border border-white/10 hover:border-[#55FF55]/40 transition-all flex flex-col gap-6">
-                    <div id="copy-java" class="copy-feedback">Élément Copié !</div>
+                <!-- Java -->
+                <div class="relative group bg-white/5 p-8 rounded-3xl border border-white/10 transition-all flex flex-col gap-6">
+                    <div id="copy-java" class="copy-feedback">Copié !</div>
                     <div class="text-center lg:text-left">
                         <span class="text-sm text-[#55FF55] font-black uppercase tracking-widest block mb-4">Java Edition (PC)</span>
                     </div>
-                    
-                    <div class="w-full">
-                        <!-- IP Box Java (Pleine largeur car pas de port) -->
-                        <div class="bg-black/30 p-6 rounded-2xl border border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
-                            <div class="text-left">
-                                <span class="text-[10px] text-gray-500 font-bold uppercase block">Adresse de connexion</span>
-                                <code class="text-2xl md:text-3xl font-mono text-white tracking-tight">91.197.6.16:26781</code>
-                            </div>
-                            <button onclick="copyIP('91.197.6.16:26781', 'java')" class="bg-[#55FF55] hover:bg-white text-black px-6 py-4 rounded-xl font-black text-sm transition-all flex items-center gap-2 uppercase shadow-lg active:scale-95" title="Copier l'IP">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-                                Copier
-                            </button>
+                    <div class="bg-black/30 p-6 rounded-2xl border border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div class="text-left">
+                            <span class="text-[10px] text-gray-500 font-bold uppercase block">IP de connexion</span>
+                            <code class="text-2xl md:text-3xl font-mono text-white tracking-tight">91.197.6.16:26781</code>
                         </div>
+                        <button onclick="copyIP('91.197.6.16:26781', 'java')" class="bg-[#55FF55] hover:bg-white text-black px-6 py-4 rounded-xl font-black text-sm transition-all flex items-center gap-2 uppercase shadow-lg">
+                            Copier
+                        </button>
                     </div>
                 </div>
 
-                <!-- Bloc Bedrock Edition -->
-                <div class="relative group bg-white/5 p-8 rounded-3xl border border-white/10 hover:border-[#55FF55]/40 transition-all flex flex-col gap-6">
-                    <div id="copy-bedrock" class="copy-feedback">Élément Copié !</div>
+                <!-- Bedrock -->
+                <div class="relative group bg-white/5 p-8 rounded-3xl border border-white/10 transition-all flex flex-col gap-6">
+                    <div id="copy-bedrock" class="copy-feedback">Copié !</div>
                     <div class="text-center lg:text-left">
-                        <span class="text-sm text-[#55FF55] font-black uppercase tracking-widest block mb-4">Bedrock Edition (Consoles / Mobile)</span>
+                        <span class="text-sm text-[#55FF55] font-black uppercase tracking-widest block mb-4">Bedrock Edition (Mobile/Console)</span>
                     </div>
-                    
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
-                        <!-- IP Box Bedrock -->
-                        <div class="bg-black/30 p-4 rounded-2xl border border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div class="bg-black/30 p-4 rounded-2xl border border-white/5 flex items-center justify-between gap-4">
                             <div class="text-left">
-                                <span class="text-[10px] text-gray-500 font-bold uppercase block">Adresse IP</span>
+                                <span class="text-[10px] text-gray-500 font-bold uppercase block">IP</span>
                                 <code class="text-xl font-mono text-white">91.197.6.16</code>
                             </div>
-                            <button onclick="copyIP('91.197.6.16', 'bedrock')" class="bg-white/10 hover:bg-white hover:text-black text-white p-3 rounded-xl transition-all" title="Copier l'IP">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                            <button onclick="copyIP('91.197.6.16', 'bedrock')" class="bg-white/10 hover:bg-white hover:text-black text-white p-3 rounded-xl transition-all">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
                             </button>
                         </div>
-                        <!-- Port Box Bedrock -->
-                        <div class="bg-black/30 p-4 rounded-2xl border border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div class="bg-black/30 p-4 rounded-2xl border border-white/5 flex items-center justify-between gap-4">
                             <div class="text-left">
                                 <span class="text-[10px] text-gray-500 font-bold uppercase block">Port</span>
                                 <code class="text-xl font-mono text-white">26781</code>
                             </div>
-                            <button onclick="copyIP('26781', 'bedrock')" class="bg-white/10 hover:bg-white hover:text-black text-white p-3 rounded-xl transition-all" title="Copier le Port">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                            <button onclick="copyIP('26781', 'bedrock')" class="bg-white/10 hover:bg-white hover:text-black text-white p-3 rounded-xl transition-all">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Bouton Tutoriel -->
+            <!-- Tuto -->
             <div class="mt-10">
-                <a href="https://youtu.be/te-PyEU928Q?si=FtdGZSXDy2ub_33c" target="_blank" class="w-full inline-flex items-center justify-center gap-4 bg-[#55FF55] text-black px-8 py-6 rounded-[2rem] font-black text-lg hover:scale-[1.02] transition-transform active:scale-95 shadow-[0_15px_30px_-10px_rgba(85,255,85,0.5)]">
-                    TUTO POUR REJOINDRE SUR CONSOLE
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                <a href="https://youtu.be/te-PyEU928Q?si=FtdGZSXDy2ub_33c" target="_blank" class="w-full inline-flex items-center justify-center gap-4 bg-[#55FF55] text-black px-8 py-6 rounded-[2rem] font-black text-lg hover:scale-[1.02] transition-transform shadow-[0_15px_30px_-10px_rgba(85,255,85,0.5)]">
+                    TUTO POUR REJOINDRE
                 </a>
-                <p class="text-[10px] text-gray-500 mt-4 uppercase tracking-[0.2em]">Regardez la vidéo pour savoir comment jouer sur PS4, Xbox ou Switch</p>
             </div>
         </div>
 
-        <!-- Réseaux Sociaux -->
-        <div class="flex flex-wrap justify-center gap-8 opacity-60 hover:opacity-100 transition-opacity">
-            <a href="https://discord.gg/uN78XcdHr7" target="_blank" class="group flex items-center gap-3 text-sm font-black tracking-widest hover:text-[#55FF55] transition-colors uppercase">
-                <span class="bg-white/10 group-hover:bg-[#55FF55]/20 p-2 rounded-lg">Discord</span>
-            </a>
-            <span class="text-gray-800 self-center">|</span>
-            <a href="https://www.youtube.com/@LeNoobInconnu" target="_blank" class="group flex items-center gap-3 text-sm font-black tracking-widest hover:text-[#55FF55] transition-colors uppercase">
-                <span class="bg-white/10 group-hover:bg-[#55FF55]/20 p-2 rounded-lg">Youtube</span>
-            </a>
+        <!-- Social -->
+        <div class="flex flex-wrap justify-center gap-8 opacity-60">
+            <a href="https://discord.gg/uN78XcdHr7" target="_blank" class="text-sm font-black tracking-widest hover:text-[#55FF55] uppercase">Discord</a>
+            <span class="text-gray-800">|</span>
+            <a href="https://www.youtube.com/@LeNoobInconnu" target="_blank" class="text-sm font-black tracking-widest hover:text-[#55FF55] uppercase">Youtube</a>
         </div>
     </main>
 
     <script>
         const SERVER_IP = "91.197.6.16";
         const SERVER_PORT = "26781";
+        // URL de l'image par défaut (Steve)
+        const DEFAULT_HEAD = "https://crafatar.com/avatars/MHF_Steve?size=128&overlay";
 
         async function updateStatus() {
             const statusIndicator = document.getElementById('status-indicator');
@@ -209,29 +230,92 @@
             const playersMax = document.getElementById('players-max');
             const serverMotd = document.getElementById('server-motd');
             const serverVersion = document.getElementById('server-version');
+            const playersSection = document.getElementById('players-section');
+            const playersList = document.getElementById('players-list');
 
             try {
-                const response = await fetch(`https://mcapi.us/server/status?ip=${SERVER_IP}&port=${SERVER_PORT}`);
+                const response = await fetch(`https://api.mcsrvstat.us/2/${SERVER_IP}:${SERVER_PORT}`);
                 const data = await response.json();
 
                 if (data.online) {
                     statusIndicator.className = "w-4 h-4 rounded-full bg-[#55FF55] status-pulse shadow-[0_0_15px_#55FF55]";
                     statusText.innerText = "Serveur en ligne";
                     statusText.className = "text-[#55FF55] font-black uppercase tracking-widest text-xs";
-                    playersOnline.innerText = data.players.now;
+                    
+                    playersOnline.innerText = data.players.online;
                     playersMax.innerText = data.players.max;
-                    serverMotd.innerText = data.motd || "Bienvenue sur le serveur !";
-                    serverVersion.innerText = data.server.name || "Minecraft";
+                    
+                    serverMotd.innerText = data.motd && data.motd.clean ? data.motd.clean[0] : "Bienvenue sur le serveur !";
+                    serverVersion.innerText = data.version || "Minecraft";
+
+                    if (data.players.list && data.players.list.length > 0) {
+                        playersSection.classList.remove('hidden');
+                        playersList.innerHTML = '';
+                        
+                        data.players.list.forEach(playerName => {
+                            const card = document.createElement('div');
+                            card.className = "player-card rounded-2xl p-4 flex flex-col items-center gap-3";
+                            
+                            const headUrl = `https://crafatar.com/avatars/${playerName}?size=128&overlay`;
+                            
+                            card.innerHTML = `
+                                <img src="${headUrl}" 
+                                     class="player-head w-16 h-16 rounded-xl block" 
+                                     alt="${playerName}"
+                                     onerror="this.onerror=null; this.src='${DEFAULT_HEAD}'">
+                                <span class="text-[11px] font-bold text-white tracking-tight truncate w-full text-center">
+                                    ${playerName}
+                                </span>
+                            `;
+                            playersList.appendChild(card);
+                        });
+                    } else {
+                        fetchMinetoolsPlayers();
+                    }
                 } else {
                     statusIndicator.className = "w-4 h-4 rounded-full bg-[#ff5555] shadow-[0_0_15px_#ff5555]";
                     statusText.innerText = "Serveur hors ligne";
                     statusText.className = "text-[#ff5555] font-black uppercase tracking-widest text-xs";
                     serverMotd.innerText = "Maintenance en cours";
-                    serverVersion.innerText = "Le serveur est éteint";
+                    playersOnline.innerText = "0";
+                    playersSection.classList.add('hidden');
                 }
-            } catch (error) {
-                console.error("Impossible de joindre l'API:", error);
-                statusText.innerText = "Erreur de connexion API";
+            } catch (e) {
+                console.error("Erreur de statut:", e);
+                statusText.innerText = "Erreur de connexion";
+            }
+        }
+
+        async function fetchMinetoolsPlayers() {
+            const playersSection = document.getElementById('players-section');
+            const playersList = document.getElementById('players-list');
+            
+            try {
+                const response = await fetch(`https://api.minetools.eu/query/${SERVER_IP}/${SERVER_PORT}`);
+                const data = await response.json();
+                
+                if (data.Playerlist && data.Playerlist.length > 0) {
+                    playersSection.classList.remove('hidden');
+                    playersList.innerHTML = '';
+                    
+                    data.Playerlist.forEach(playerName => {
+                        const card = document.createElement('div');
+                        card.className = "player-card rounded-2xl p-4 flex flex-col items-center gap-3";
+                        
+                        card.innerHTML = `
+                            <img src="https://crafatar.com/avatars/${playerName}?size=128&overlay" 
+                                 class="player-head w-16 h-16 rounded-xl block" 
+                                 alt="${playerName}"
+                                 onerror="this.onerror=null; this.src='${DEFAULT_HEAD}'">
+                            <span class="text-[11px] font-bold text-white tracking-tight truncate w-full text-center">
+                                ${playerName}
+                            </span>
+                        `;
+                        playersList.appendChild(card);
+                    });
+                }
+            } catch (e) {
+                console.log("Minetools fallback failed or no players.");
             }
         }
 
@@ -245,9 +329,7 @@
 
             const feedback = document.getElementById('copy-' + id);
             feedback.style.display = 'block';
-            setTimeout(() => {
-                feedback.style.display = 'none';
-            }, 2000);
+            setTimeout(() => feedback.style.display = 'none', 2000);
         }
 
         updateStatus();
