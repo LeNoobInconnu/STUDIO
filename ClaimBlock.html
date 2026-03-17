@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BlockClaim</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #0f172a;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            touch-action: manipulation;
+            user-select: none;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #game-board-wrapper {
+            transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            width: 90vmin;
+            height: 90vmin;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #1e293b;
+            border-radius: 24px;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+            padding: 12px;
+            position: relative;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 6px;
+            width: 100%;
+            height: 100%;
+        }
+
+        .cell {
+            background-color: #334155;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: white;
+            font-size: 1.2rem;
+            position: relative;
+        }
+
+        .player-area {
+            position: absolute;
+            width: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 50;
+        }
+
+        .player-button {
+            width: 70px;
+            height: 70px;
+            border-radius: 20px;
+            color: white;
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            font-size: 0.8rem;
+            border: 4px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .status-tag {
+            background: rgba(0,0,0,0.6);
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-top: 6px;
+            font-size: 0.65rem;
+            color: white;
+        }
+
+        .area-p1 { top: 15px; left: 15px; transform: rotate(135deg); }
+        .area-p2 { top: 15px; right: 15px; transform: rotate(-135deg); }
+        .area-p3 { bottom: 15px; right: 15px; transform: rotate(-45deg); }
+        .area-p4 { bottom: 15px; left: 15px; transform: rotate(45deg); }
+
+        .active-player .player-button {
+            border-color: white;
+            transform: scale(1.15);
+            filter: brightness(1.2);
+        }
+
+        .prison-effect {
+            filter: grayscale(1) opacity(0.5);
+        }
+
+        #event-popup {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: white;
+            padding: 25px;
+            border-radius: 24px;
+            z-index: 200;
+            text-align: center;
+            box-shadow: 0 0 100px rgba(0,0,0,1);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .show-popup { transform: translate(-50%, -50%) scale(1.1) !important; }
+
+        .choice-btn {
+            padding: 10px 20px;
+            border-radius: 12px;
+            margin: 5px;
+            font-weight: bold;
+            color: white;
+            border: none;
+        }
+
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+        }
+        .shake-board { animation: shake 0.5s; }
+    </style>
+</head>
+<body>
+
+    <!-- Overlay de démarrage -->
+    <div id="setup-overlay" class="fixed inset-0 bg-slate-950 z-[100] flex flex-col items-center justify-center text-white text-center">
+        <h1 class="text-slate-4000 mb-8 px- text-sm">BlockClaim</h1>
+        <p class="text-slate-400 mb-8 px-6 text-sm">by LeNoobInconnu STUDIO</p>
+        <div class="flex gap-4 mb-10">
+            <button onclick="startGame(2)" class="w-16 h-16 bg-slate-800 rounded-2xl text-2xl font-bold">2</button>
+            <button onclick="startGame(3)" class="w-16 h-16 bg-slate-800 rounded-2xl text-2xl font-bold">3</button>
+            <button onclick="startGame(4)" class="w-16 h-16 bg-slate-800 rounded-2xl text-2xl font-bold">4</button>
+        </div>
+        <div class="bg-slate-900 p-4 rounded-xl text-[10px] text-left max-w-xs grid grid-cols-2 gap-2">
+        </div>
+    </div>
+
+    <!-- Popup d'événements -->
+    <div id="event-popup">
+        <div id="event-icon" class="text-5xl mb-2">❓</div>
+        <div id="event-title" class="font-bold text-xl text-slate-900 mb-4">SURPRISE !</div>
+        <div id="choice-container" class="flex flex-wrap justify-center hidden">
+            <!-- Les boutons de choix s'afficheront ici -->
+        </div>
+    </div>
+
+    <div id="game-container">
+        <!-- Zones Joueurs -->
+        <div id="player-0" class="player-area area-p1">
+            <div class="player-button" style="background-color: #ef4444;">J1</div>
+            <div class="status-tag">NRJ: 0</div>
+        </div>
+        <div id="player-1" class="player-area area-p2">
+            <div class="player-button" style="background-color: #3b82f6;">J2</div>
+            <div class="status-tag">NRJ: 0</div>
+        </div>
+        <div id="player-2" class="player-area area-p3">
+            <div class="player-button" style="background-color: #10b981;">J3</div>
+            <div class="status-tag">NRJ: 0</div>
+        </div>
+        <div id="player-3" class="player-area area-p4">
+            <div class="player-button" style="background-color: #f59e0b;">J4</div>
+            <div class="status-tag">NRJ: 0</div>
+        </div>
+
+        <div id="game-board-wrapper">
+            <div id="turn-info" class="mb-2 text-xs font-bold text-slate-400 uppercase tracking-widest">Tours restants: 100</div>
+            <div id="grid" class="grid"></div>
+            <div id="power-bar" class="mt-3 flex gap-2">
+                <button id="p-normal" onclick="setPower('normal')" class="bg-white text-black text-[10px] px-3 py-2 rounded-lg font-bold">NORMAL</button>
+                <button id="p-burst" onclick="setPower('burst')" class="bg-slate-700 text-white text-[10px] px-3 py-2 rounded-lg font-bold">ZONE (3)</button>
+                <button id="p-laser" onclick="setPower('laser')" class="bg-slate-700 text-white text-[10px] px-3 py-2 rounded-lg font-bold">CROIX (5)</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const players = [
+            { id: 0, name: "Joueur 1", color: "#ef4444", rot: 180, energy: 0, prison: 0 },
+            { id: 1, name: "Joueur 2", color: "#3b82f6", rot: 90, energy: 0, prison: 0 },
+            { id: 2, name: "Joueur 3", color: "#10b981", rot: 0, energy: 0, prison: 0 },
+            { id: 3, name: "Joueur 4", color: "#f59e0b", rot: -90, energy: 0, prison: 0 }
+        ];
+
+        let playerCount = 2;
+        let curIdx = 0;
+        let board = [];
+        let totalTurns = 100; // Augmenté par 2 (initialement 50)
+        const size = 6;
+        let activePower = 'normal';
+        let isProcessing = false;
+
+        function startGame(n) {
+            playerCount = n;
+            document.getElementById('setup-overlay').style.display = 'none';
+            for (let i=0; i<4; i++) if (i >= n) document.getElementById(`player-${i}`).style.display = 'none';
+            init();
+        }
+
+        function init() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            board = [];
+            for (let i=0; i<size*size; i++) {
+                let cell = { id: i, owner: null, isMystery: Math.random() < 0.18, el: document.createElement('div') };
+                cell.el.className = 'cell';
+                cell.el.onclick = () => handleClick(i);
+                grid.appendChild(cell.el);
+                board.push(cell);
+            }
+            const corners = [0, size-1, size*size-1, size*size-size];
+            for (let i=0; i<playerCount; i++) {
+                board[corners[i]].isMystery = false;
+                capture(corners[i], i, false);
+            }
+            updateUI();
+        }
+
+        function handleClick(idx) {
+            if (isProcessing) return;
+            const p = players[curIdx];
+
+            // RÈGLE : Impossible de cliquer sur son propre territoire
+            if (board[idx].owner === curIdx) return;
+
+            if (activePower === 'normal') {
+                if (isAdj(idx, curIdx)) {
+                    processCell(idx);
+                }
+            } else if (activePower === 'burst') {
+                useBurst(idx);
+                p.energy -= 3;
+                next();
+            } else if (activePower === 'laser') {
+                useLaser(idx);
+                p.energy -= 5;
+                next();
+            }
+        }
+
+        function processCell(idx) {
+            if (board[idx].isMystery) {
+                isProcessing = true;
+                triggerMystery(idx);
+            } else {
+                capture(idx, curIdx, true);
+                next();
+            }
+        }
+
+        function triggerMystery(idx) {
+            const p = players[curIdx];
+            const effects = ['prison', 'energy', 'energy', 'bomb', 'reverse'];
+            const effect = effects[Math.floor(Math.random() * effects.length)];
+            
+            board[idx].isMystery = false;
+            document.getElementById('game-board-wrapper').classList.add('shake-board');
+            setTimeout(() => document.getElementById('game-board-wrapper').classList.remove('shake-board'), 500);
+
+            if (effect === 'reverse') {
+                showReverseChoice();
+                capture(idx, curIdx, false);
+            } else {
+                let icon = '❓', title = 'PIÈGE !';
+                if (effect === 'prison') { p.prison = 1; icon = '⛓️'; title = 'PRISON !'; }
+                else if (effect === 'energy') { p.energy += 5; icon = '🔋'; title = 'MAX NRJ !'; }
+                else if (effect === 'bomb') { bombArea(idx); icon = '💣'; title = 'BOOM !'; }
+
+                showPopup(icon, title);
+                setTimeout(() => {
+                    capture(idx, curIdx, false);
+                    isProcessing = false;
+                    next();
+                }, 1600);
+            }
+        }
+
+        function showReverseChoice() {
+            const pop = document.getElementById('event-popup');
+            const container = document.getElementById('choice-container');
+            document.getElementById('event-icon').innerText = '🔄';
+            document.getElementById('event-title').innerText = 'CHOISIS TA CIBLE !';
+            
+            container.innerHTML = '';
+            container.classList.remove('hidden');
+            
+            players.forEach((p, i) => {
+                if (i !== curIdx && i < playerCount && isAlive(i)) {
+                    const btn = document.createElement('button');
+                    btn.className = 'choice-btn';
+                    btn.style.backgroundColor = p.color;
+                    btn.innerText = p.name;
+                    btn.onclick = () => {
+                        performReverse(i);
+                        pop.classList.remove('show-popup');
+                        container.classList.add('hidden');
+                        isProcessing = false;
+                        next();
+                    };
+                    container.appendChild(btn);
+                }
+            });
+
+            if (container.children.length === 0) {
+                 showPopup('🔄', "Personne à échanger !");
+                 setTimeout(() => { isProcessing = false; next(); }, 1000);
+            } else {
+                pop.classList.add('show-popup');
+            }
+        }
+
+        function performReverse(targetId) {
+            board.forEach(c => {
+                if (c.owner === curIdx) c.owner = -1;
+                else if (c.owner === targetId) c.owner = curIdx;
+            });
+            board.forEach(c => { if(c.owner === -1) c.owner = targetId; });
+            board.forEach(c => {
+                if (c.owner !== null) c.el.style.backgroundColor = players[c.owner].color;
+            });
+        }
+
+        function showPopup(icon, title) {
+            const pop = document.getElementById('event-popup');
+            document.getElementById('event-icon').innerText = icon;
+            document.getElementById('event-title').innerText = title;
+            pop.classList.add('show-popup');
+            setTimeout(() => pop.classList.remove('show-popup'), 1400);
+        }
+
+        function bombArea(idx) {
+            const r = Math.floor(idx/size), c = idx%size;
+            for(let i=r-1; i<=r+1; i++) for(let j=c-1; j<=c+1; j++) {
+                if(i>=0 && i<size && j>=0 && j<size) {
+                    const t = i*size+j;
+                    board[t].owner = null;
+                    board[t].el.style.backgroundColor = '#334155';
+                }
+            }
+        }
+
+        function capture(idx, pid, addE) {
+            board[idx].owner = pid;
+            board[idx].el.style.backgroundColor = players[pid].color;
+            if(addE) players[pid].energy = Math.min(players[pid].energy + 1, 10);
+        }
+
+        function useBurst(idx) {
+            const r = Math.floor(idx/size), c = idx%size;
+            for(let i=r-1; i<=r+1; i++) for(let j=c-1; j<=c+1; j++) {
+                if(i>=0 && i<size && j>=0 && j<size) {
+                    if (board[i*size+j].isMystery) board[i*size+j].isMystery = false; 
+                    capture(i*size+j, curIdx, false);
+                }
+            }
+        }
+
+        function useLaser(idx) {
+            const r = Math.floor(idx/size), c = idx%size;
+            for(let i=0; i<size; i++) {
+                capture(r*size+i, curIdx, false);
+                capture(i*size+c, curIdx, false);
+            }
+        }
+
+        function isAdj(idx, pid) {
+            const r = Math.floor(idx/size), c = idx%size;
+            return [{r:r-1,c}, {r:r+1,c}, {r,c:c-1}, {r,c:c+1}].some(n => 
+                n.r>=0 && n.r<size && n.c>=0 && n.c<size && board[n.r*size+n.c].owner === pid
+            );
+        }
+
+        function next() {
+            activePower = 'normal';
+            totalTurns--;
+            
+            let nextIdx = (curIdx + 1) % playerCount;
+            
+            if (players[nextIdx].prison > 0) {
+                players[nextIdx].prison--;
+                showPopup('⛓️', players[nextIdx].name + ' est bloqué !');
+                setTimeout(() => { curIdx = nextIdx; next(); }, 1200);
+                return;
+            }
+
+            curIdx = nextIdx;
+            
+            if (Math.random() < 0.12 && board.filter(c => c.isMystery).length < 5) {
+                let empty = board.filter(c => c.owner === null && !c.isMystery);
+                if (empty.length > 0) empty[Math.floor(Math.random()*empty.length)].isMystery = true;
+            }
+
+            updateUI();
+            checkEnd();
+        }
+
+        function setPower(type) {
+            const p = players[curIdx];
+            if (type==='burst' && p.energy < 3) return;
+            if (type==='laser' && p.energy < 5) return;
+            activePower = type;
+            updateUI();
+        }
+
+        function isAlive(pid) {
+            return board.some(c => c.owner === pid);
+        }
+
+        function updateUI() {
+            const p = players[curIdx];
+            document.getElementById('game-board-wrapper').style.transform = `rotate(${p.rot}deg)`;
+            document.getElementById('turn-info').innerText = `Tours restants: ${totalTurns}`;
+            
+            players.forEach((p, i) => {
+                const area = document.getElementById(`player-${i}`);
+                if (!area) return;
+                area.className = 'player-area area-p' + (i+1) + (i === curIdx ? ' active-player' : '');
+                area.querySelector('.status-tag').innerText = `NRJ: ${p.energy}`;
+                area.style.opacity = isAlive(i) ? "1" : "0.3";
+            });
+
+            ['normal', 'burst', 'laser'].forEach(b => {
+                const el = document.getElementById(`p-${b}`);
+                el.className = (activePower === b ? 'bg-white text-black' : 'bg-slate-700 text-white') + ' text-[10px] px-3 py-2 rounded-lg font-bold transition-all';
+            });
+        }
+
+        function checkEnd() {
+            const scores = players.map((p, i) => ({name:p.name, color:p.color, count:board.filter(c=>c.owner===i).length}));
+            const alive = scores.filter(s => s.count > 0);
+
+            if (totalTurns <= 0 || (alive.length === 1 && totalTurns < 90)) {
+                scores.sort((a,b) => b.count - a.count);
+                const win = scores[0];
+                document.getElementById('setup-overlay').style.display = 'flex';
+                document.getElementById('setup-overlay').innerHTML = `
+                    <h1 class="text-4xl font-black mb-4" style="color:${win.color}">${win.name.toUpperCase()} DOMINE !</h1>
+                    <p class="mb-8">Score final : ${win.count} cases</p>
+                    <button onclick="location.reload()" class="bg-white text-black px-10 py-4 rounded-xl font-bold">REVANCHE</button>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
