@@ -26,7 +26,7 @@
         }
 
         #game-board-wrapper {
-            transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            /* Rotation supprimée ici */
             width: 90vmin;
             height: 90vmin;
             display: flex;
@@ -43,9 +43,11 @@
         .grid {
             display: grid;
             grid-template-columns: repeat(6, 1fr);
+            grid-template-rows: repeat(6, 1fr); /* Force les lignes à avoir la même taille */
             gap: 6px;
             width: 100%;
             height: 100%;
+            aspect-ratio: 1 / 1; /* Garantit que la grille reste parfaitement carrée */
         }
 
         .cell {
@@ -59,6 +61,8 @@
             color: white;
             font-size: 1.2rem;
             position: relative;
+            width: 100%;
+            height: 100%;
         }
 
         .player-area {
@@ -95,19 +99,17 @@
             color: white;
         }
 
-        .area-p1 { top: 15px; left: 15px; transform: rotate(135deg); }
-        .area-p2 { top: 15px; right: 15px; transform: rotate(-135deg); }
-        .area-p3 { bottom: 15px; right: 15px; transform: rotate(-45deg); }
-        .area-p4 { bottom: 15px; left: 15px; transform: rotate(45deg); }
+        /* Positions fixes des joueurs sans rotation */
+        .area-p1 { top: 15px; left: 15px; }
+        .area-p2 { top: 15px; right: 15px; }
+        .area-p3 { bottom: 15px; right: 15px; }
+        .area-p4 { bottom: 15px; left: 15px; }
 
         .active-player .player-button {
             border-color: white;
-            transform: scale(1.15);
+            transform: scale(1.1);
             filter: brightness(1.2);
-        }
-
-        .prison-effect {
-            filter: grayscale(1) opacity(0.5);
+            box-shadow: 0 0 20px rgba(255,255,255,0.4);
         }
 
         #event-popup {
@@ -133,15 +135,17 @@
             font-weight: bold;
             color: white;
             border: none;
+            cursor: pointer;
         }
 
         @keyframes shake {
-            0% { transform: translate(1px, 1px) rotate(0deg); }
-            10% { transform: translate(-1px, -2px) rotate(-1deg); }
-            20% { transform: translate(-3px, 0px) rotate(1deg); }
-            30% { transform: translate(3px, 2px) rotate(0deg); }
-            40% { transform: translate(1px, -1px) rotate(1deg); }
-            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            0% { transform: translate(1px, 1px); }
+            10% { transform: translate(-1px, -2px); }
+            20% { transform: translate(-3px, 0px); }
+            30% { transform: translate(3px, 2px); }
+            40% { transform: translate(1px, -1px); }
+            50% { transform: translate(-1px, 2px); }
+            100% { transform: translate(0, 0); }
         }
         .shake-board { animation: shake 0.5s; }
     </style>
@@ -150,14 +154,16 @@
 
     <!-- Overlay de démarrage -->
     <div id="setup-overlay" class="fixed inset-0 bg-slate-950 z-[100] flex flex-col items-center justify-center text-white text-center">
-        <h1 class="text-slate-4000 mb-8 px- text-sm">BlockClaim</h1>
+        <h1 class="text-4xl font-black mb-2 italic text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 text-sm">BLOCKCLAIM</h1>
         <p class="text-slate-400 mb-8 px-6 text-sm">by LeNoobInconnu STUDIO</p>
         <div class="flex gap-4 mb-10">
             <button onclick="startGame(2)" class="w-16 h-16 bg-slate-800 rounded-2xl text-2xl font-bold">2</button>
             <button onclick="startGame(3)" class="w-16 h-16 bg-slate-800 rounded-2xl text-2xl font-bold">3</button>
             <button onclick="startGame(4)" class="w-16 h-16 bg-slate-800 rounded-2xl text-2xl font-bold">4</button>
         </div>
-        <div class="bg-slate-900 p-4 rounded-xl text-[10px] text-left max-w-xs grid grid-cols-2 gap-2">
+        <div class="bg-slate-900 p-4 rounded-xl text-[10px] text-left max-w-xs grid grid-cols-2 gap-2 text-slate-500">
+            <div>🎭 Cases mystères invisibles</div>
+            <div>⏱️ 100 tours max</div>
         </div>
     </div>
 
@@ -165,9 +171,7 @@
     <div id="event-popup">
         <div id="event-icon" class="text-5xl mb-2">❓</div>
         <div id="event-title" class="font-bold text-xl text-slate-900 mb-4">SURPRISE !</div>
-        <div id="choice-container" class="flex flex-wrap justify-center hidden">
-            <!-- Les boutons de choix s'afficheront ici -->
-        </div>
+        <div id="choice-container" class="flex flex-wrap justify-center hidden"></div>
     </div>
 
     <div id="game-container">
@@ -190,9 +194,9 @@
         </div>
 
         <div id="game-board-wrapper">
-            <div id="turn-info" class="mb-2 text-xs font-bold text-slate-400 uppercase tracking-widest">Tours restants: 100</div>
+            <div id="turn-info" class="mb-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Tours restants: 100</div>
             <div id="grid" class="grid"></div>
-            <div id="power-bar" class="mt-3 flex gap-2">
+            <div id="power-bar" class="mt-6 flex gap-2">
                 <button id="p-normal" onclick="setPower('normal')" class="bg-white text-black text-[10px] px-3 py-2 rounded-lg font-bold">NORMAL</button>
                 <button id="p-burst" onclick="setPower('burst')" class="bg-slate-700 text-white text-[10px] px-3 py-2 rounded-lg font-bold">ZONE (3)</button>
                 <button id="p-laser" onclick="setPower('laser')" class="bg-slate-700 text-white text-[10px] px-3 py-2 rounded-lg font-bold">CROIX (5)</button>
@@ -202,16 +206,16 @@
 
     <script>
         const players = [
-            { id: 0, name: "Joueur 1", color: "#ef4444", rot: 180, energy: 0, prison: 0 },
-            { id: 1, name: "Joueur 2", color: "#3b82f6", rot: 90, energy: 0, prison: 0 },
-            { id: 2, name: "Joueur 3", color: "#10b981", rot: 0, energy: 0, prison: 0 },
-            { id: 3, name: "Joueur 4", color: "#f59e0b", rot: -90, energy: 0, prison: 0 }
+            { id: 0, name: "Joueur 1", color: "#ef4444", energy: 0, prison: 0 },
+            { id: 1, name: "Joueur 2", color: "#3b82f6", energy: 0, prison: 0 },
+            { id: 2, name: "Joueur 3", color: "#10b981", energy: 0, prison: 0 },
+            { id: 3, name: "Joueur 4", color: "#f59e0b", energy: 0, prison: 0 }
         ];
 
         let playerCount = 2;
         let curIdx = 0;
         let board = [];
-        let totalTurns = 100; // Augmenté par 2 (initialement 50)
+        let totalTurns = 100;
         const size = 6;
         let activePower = 'normal';
         let isProcessing = false;
@@ -246,7 +250,6 @@
             if (isProcessing) return;
             const p = players[curIdx];
 
-            // RÈGLE : Impossible de cliquer sur son propre territoire
             if (board[idx].owner === curIdx) return;
 
             if (activePower === 'normal') {
@@ -305,7 +308,7 @@
             const pop = document.getElementById('event-popup');
             const container = document.getElementById('choice-container');
             document.getElementById('event-icon').innerText = '🔄';
-            document.getElementById('event-title').innerText = 'CHOISIS TA CIBLE !';
+            document.getElementById('event-title').innerText = 'ÉCHANGE AVEC :';
             
             container.innerHTML = '';
             container.classList.remove('hidden');
@@ -328,7 +331,7 @@
             });
 
             if (container.children.length === 0) {
-                 showPopup('🔄', "Personne à échanger !");
+                 showPopup('🔄', "Pas d'ennemi !");
                  setTimeout(() => { isProcessing = false; next(); }, 1000);
             } else {
                 pop.classList.add('show-popup');
@@ -375,8 +378,9 @@
             const r = Math.floor(idx/size), c = idx%size;
             for(let i=r-1; i<=r+1; i++) for(let j=c-1; j<=c+1; j++) {
                 if(i>=0 && i<size && j>=0 && j<size) {
-                    if (board[i*size+j].isMystery) board[i*size+j].isMystery = false; 
-                    capture(i*size+j, curIdx, false);
+                    const t = i*size+j;
+                    if (board[t].isMystery) board[t].isMystery = false; 
+                    capture(t, curIdx, false);
                 }
             }
         }
@@ -404,7 +408,7 @@
             
             if (players[nextIdx].prison > 0) {
                 players[nextIdx].prison--;
-                showPopup('⛓️', players[nextIdx].name + ' est bloqué !');
+                showPopup('⛓️', players[nextIdx].name + ' bloqué !');
                 setTimeout(() => { curIdx = nextIdx; next(); }, 1200);
                 return;
             }
@@ -433,8 +437,6 @@
         }
 
         function updateUI() {
-            const p = players[curIdx];
-            document.getElementById('game-board-wrapper').style.transform = `rotate(${p.rot}deg)`;
             document.getElementById('turn-info').innerText = `Tours restants: ${totalTurns}`;
             
             players.forEach((p, i) => {
@@ -460,9 +462,9 @@
                 const win = scores[0];
                 document.getElementById('setup-overlay').style.display = 'flex';
                 document.getElementById('setup-overlay').innerHTML = `
-                    <h1 class="text-4xl font-black mb-4" style="color:${win.color}">${win.name.toUpperCase()} DOMINE !</h1>
+                    <h1 class="text-4xl font-black mb-4" style="color:${win.color}">${win.name.toUpperCase()} GAGNE !</h1>
                     <p class="mb-8">Score final : ${win.count} cases</p>
-                    <button onclick="location.reload()" class="bg-white text-black px-10 py-4 rounded-xl font-bold">REVANCHE</button>
+                    <button onclick="location.reload()" class="bg-white text-black px-10 py-4 rounded-xl font-bold">REJOUER</button>
                 `;
             }
         }
