@@ -154,7 +154,7 @@
 
     <!-- Overlay de démarrage -->
     <div id="setup-overlay" class="fixed inset-0 bg-slate-950 z-[100] flex flex-col items-center justify-center text-white text-center">
-        <h1 class="text-4xl font-black mb-2 italic text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 text-sm">BLOCKCLAIM</h1>
+        <h1 class="text-4xl font-black mb-2 italic text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">BLOCKCLAIM</h1>
         <p class="text-slate-400 mb-8 px-6 text-sm">by LeNoobInconnu STUDIO</p>
         <div class="flex gap-4 mb-10">
             <button onclick="startGame(2)" class="w-16 h-16 bg-slate-800 rounded-2xl text-2xl font-bold">2</button>
@@ -404,12 +404,33 @@
             activePower = 'normal';
             totalTurns--;
             
+            // On vérifie si la partie est finie avant de chercher le prochain joueur
+            if (totalTurns <= 0) {
+                checkEnd();
+                return;
+            }
+
             let nextIdx = (curIdx + 1) % playerCount;
             
+            // RECOURS : On boucle pour trouver un joueur qui a encore des cases (est en vie)
+            let attempts = 0;
+            while (!isAlive(nextIdx) && attempts < playerCount) {
+                nextIdx = (nextIdx + 1) % playerCount;
+                attempts++;
+            }
+
+            // Si tout le monde est mort (cas rare) ou qu'un seul reste
+            if (attempts >= playerCount) {
+                checkEnd();
+                return;
+            }
+
+            // Vérification de la prison pour le joueur valide trouvé
             if (players[nextIdx].prison > 0) {
                 players[nextIdx].prison--;
                 showPopup('⛓️', players[nextIdx].name + ' bloqué !');
-                setTimeout(() => { curIdx = nextIdx; next(); }, 1200);
+                curIdx = nextIdx; // On met à jour l'index quand même pour le tour suivant
+                setTimeout(() => next(), 1200);
                 return;
             }
 
@@ -457,7 +478,8 @@
             const scores = players.map((p, i) => ({name:p.name, color:p.color, count:board.filter(c=>c.owner===i).length}));
             const alive = scores.filter(s => s.count > 0);
 
-            if (totalTurns <= 0 || (alive.length === 1 && totalTurns < 90)) {
+            // Fin si plus de tours ou s'il ne reste qu'un survivant
+            if (totalTurns <= 0 || (alive.length <= 1 && totalTurns < 95)) {
                 scores.sort((a,b) => b.count - a.count);
                 const win = scores[0];
                 document.getElementById('setup-overlay').style.display = 'flex';
@@ -471,3 +493,4 @@
     </script>
 </body>
 </html>
+
