@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Overlay Stream Pro</title>
+    <title>Overlay Stream Fin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -37,7 +37,7 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            pointer-events: none; /* Permet de ne pas bloquer les clics si besoin */
+            pointer-events: none;
         }
 
         .main-title {
@@ -45,16 +45,23 @@
             font-weight: 900;
             letter-spacing: -0.05em;
             text-transform: uppercase;
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
             animation: fadeInDown 1.5s ease-out;
             text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            opacity: 0.8;
+            margin-bottom: 3rem;
+            animation: fadeIn 2s ease-out 0.5s both;
         }
 
         .socials-container {
             display: flex;
             gap: 2rem;
-            animation: fadeInUp 1.5s ease-out 0.5s both;
-            pointer-events: auto; /* Réactive les clics sur les réseaux sociaux */
+            animation: fadeInUp 1.5s ease-out 1s both;
+            pointer-events: auto;
         }
 
         .social-item {
@@ -82,6 +89,11 @@
         .tag {
             font-weight: 700;
             font-size: 1.1rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 0.8; }
         }
 
         @keyframes fadeInDown {
@@ -118,29 +130,30 @@
     <canvas id="canvas"></canvas>
 
     <div class="content">
-        <h1 class="main-title">Le stream va <span class="text-white">commencer</span></h1>
+        <h1 class="main-title">Fin du <span class="text-white">stream</span></h1>
+        <p class="subtitle">Merci d'avoir regardé !</p>
         
         <div class="socials-container">
             <!-- YouTube -->
             <div class="social-item">
                 <i class="fab fa-youtube text-red-500"></i>
-                <span class="tag">VotreNomYT</span>
+                <span class="tag">LeNoobInconnu</span>
             </div>
 
             <!-- X (Twitter) -->
             <div class="social-item">
                 <i class="fab fa-x-twitter text-white"></i>
-                <span class="tag">@VotreCompteX</span>
+                <span class="tag">@LeNoobInconnu</span>
             </div>
 
-            <!-- Discord -->
+            <!-- Twitch -->
             <div class="social-item">
-                <i class="fab fa-discord text-indigo-400"></i>
-                <span class="tag">discord.gg/invit</span>
+                <i class="fab fa-twitch text-purple-500"></i>
+                <span class="tag">LeNoobInconnu</span>
             </div>
         </div>
 
-        <div class="footer-status pulse">Préparation de la session</div>
+        <div class="footer-status pulse">À bientôt pour le prochain live</div>
     </div>
 
     <script>
@@ -148,7 +161,7 @@
         const ctx = canvas.getContext('2d');
 
         let particles = [];
-        const particleCount = 80; // Légèrement moins pour plus de clarté
+        const particleCount = 80;
         const connectionDistance = 160;
         
         function init() {
@@ -165,9 +178,8 @@
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
                 this.size = Math.random() * 1.5 + 0.5;
-                // VITESSE RÉDUITE : 0.4 au lieu de 1.5
-                this.speedX = (Math.random() - 0.5) * 0.5;
-                this.speedY = (Math.random() - 0.5) * 0.5;
+                this.speedX = (Math.random() - 0.5) * 0.4; // Vitesse lente confirmée
+                this.speedY = (Math.random() - 0.5) * 0.4;
             }
 
             update() {
@@ -181,7 +193,7 @@
             }
 
             draw() {
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.5)'; // Points plus discrets
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                 ctx.fill();
@@ -199,8 +211,7 @@
                     const distance = Math.sqrt(dx * dx + dy * dy);
 
                     if (distance < connectionDistance) {
-                        // LIGNES PLUS CLAIRES/SUBTILES : Opacité max réduite
-                        const opacity = (1 - distance / connectionDistance) * 0.15;
+                        const opacity = (1 - distance / connectionDistance) * 0.12; // Traits très discrets
                         ctx.beginPath();
                         ctx.strokeStyle = `rgba(255, 255, 255, ${opacity})`;
                         ctx.lineWidth = 0.8;
