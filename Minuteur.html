@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minuteur Animé sur Fond Vert</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            /* Vert plus vif (Pure Green) */
+            background-color: #00ff00; 
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .timer-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            color: white;
+            /* Ombre portée plus marquée pour compenser le vert vif */
+            text-shadow: 2px 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .timer-display {
+            font-size: 15rem; /* Taille augmentée */
+            font-weight: 900;
+            font-variant-numeric: tabular-nums;
+            line-height: 1;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Groupes de chiffres sans cadre noir */
+        .digit-group {
+            position: relative;
+            background: transparent;
+            padding: 0;
+        }
+
+        .label {
+            font-size: 1.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.4em;
+            font-weight: bold;
+            opacity: 0.9;
+            margin-top: 1rem;
+        }
+
+        /* Suppression des animations de pulsation */
+        .active {
+            animation: none;
+        }
+
+        .controls {
+            position: absolute;
+            bottom: 40px;
+            display: flex;
+            gap: 15px;
+        }
+
+        button {
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        button:hover {
+            background: rgba(0, 0, 0, 0.7);
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="timer-container">
+        <div class="timer-display" id="display">
+            <div class="digit-group">
+                <span id="minutes">05</span>
+            </div>
+            <div style="align-self: center; margin-top: -1.5rem;">:</div>
+            <div class="digit-group">
+                <span id="seconds">00</span>
+            </div>
+        </div>
+        <div class="label" id="status-text"></div>
+
+        <div class="controls">
+            <button onclick="resetTimer()">Réinitialiser</button>
+            <button onclick="toggleTimer()" id="btn-toggle">Pause</button>
+        </div>
+    </div>
+
+    <script>
+        let timeLeft = 300; // 5 minutes en secondes
+        let timerId = null;
+        let isRunning = true;
+
+        const minutesElement = document.getElementById('minutes');
+        const secondsElement = document.getElementById('seconds');
+        const statusText = document.getElementById('status-text');
+        const btnToggle = document.getElementById('btn-toggle');
+
+        function updateDisplay() {
+            const mins = Math.floor(timeLeft / 60);
+            const secs = timeLeft % 60;
+
+            minutesElement.textContent = mins.toString().padStart(2, '0');
+            secondsElement.textContent = secs.toString().padStart(2, '0');
+
+            if (timeLeft <= 0) {
+                clearInterval(timerId);
+                statusText.textContent = "TERMINÉ !";
+                isRunning = false;
+                btnToggle.textContent = "Démarrer";
+            }
+        }
+
+        function startTimer() {
+            if (timerId) clearInterval(timerId);
+            
+            timerId = setInterval(() => {
+                if (timeLeft > 0) {
+                    timeLeft--;
+                    updateDisplay();
+                }
+            }, 1000);
+        }
+
+        function toggleTimer() {
+            if (isRunning) {
+                clearInterval(timerId);
+                btnToggle.textContent = "Démarrer";
+            } else {
+                if (timeLeft <= 0) {
+                    timeLeft = 300; // Relance à 5min si terminé
+                    statusText.textContent = "Compte à rebours";
+                }
+                startTimer();
+                btnToggle.textContent = "Pause";
+            }
+            isRunning = !isRunning;
+        }
+
+        function resetTimer() {
+            timeLeft = 300;
+            statusText.textContent = "Compte à rebours";
+            updateDisplay();
+            if (!isRunning) {
+                toggleTimer();
+            }
+        }
+
+        // Démarrage automatique au chargement
+        window.onload = () => {
+            updateDisplay();
+            startTimer();
+        };
+    </script>
+</body>
+</html>
