@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stream Starting Soon - Overlay</title>
+    <style>
+        /* =========================================
+           1. RÉINITIALISATION ET CONFIGURATION DE BASE
+           ========================================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            width: 1920px;
+            height: 1080px;
+            background-color: #000; /* Fond noir par défaut */
+            overflow: hidden; /* Empêche tout scroll */
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            cursor: none; /* Cache le curseur de la souris (Overlay) */
+            user-select: none; /* Empêche la sélection du texte */
+            color: #fff;
+        }
+
+        /* Conteneur principal (résolution fixe OBS) */
+        #stream-overlay {
+            position: relative;
+            width: 1920px;
+            height: 1080px;
+            background: radial-gradient(circle at center, #0a0b1e 0%, #020205 100%);
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        /* =========================================
+           2. FOND ANIMÉ (CANVAS & EFFETS)
+           ========================================= */
+        #bg-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            opacity: 0.8;
+        }
+
+        /* Effet scanline subtil par-dessus le canvas pour un look "écran/stream" */
+        .scanlines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.1),
+                rgba(0, 0, 0, 0.1) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        /* =========================================
+           3. TEXTE "STARTING SOON"
+           ========================================= */
+        .title-container {
+            position: absolute;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            text-align: center;
+        }
+
+        .main-title {
+            font-size: 85px;
+            font-weight: 800;
+            letter-spacing: 12px;
+            text-transform: uppercase;
+            /* Animation de respiration et de lueur (Glow) */
+            animation: pulseGlow 4s ease-in-out infinite alternate;
+            background: linear-gradient(90deg, #fff, #b3e5fc, #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 15px rgba(0, 210, 255, 0.4));
+        }
+
+        .subtitle {
+            font-size: 20px;
+            font-weight: 300;
+            letter-spacing: 20px;
+            margin-top: 15px;
+            color: #8ab4f8;
+            opacity: 0.8;
+            text-transform: uppercase;
+            animation: fadeInOut 6s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+            0% {
+                filter: drop-shadow(0 0 10px rgba(0, 210, 255, 0.2));
+                transform: scale(1);
+            }
+            100% {
+                filter: drop-shadow(0 0 25px rgba(0, 210, 255, 0.8)) drop-shadow(0 0 5px rgba(255, 0, 255, 0.5));
+                transform: scale(1.02);
+            }
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.9; }
+        }
+
+        /* =========================================
+           4. RÉSEAUX SOCIAUX DYNAMIQUES
+           ========================================= */
+        .socials-wrapper {
+            position: absolute;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 60px;
+        }
+
+        .social-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: absolute;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s cubic-bezier(0.2, 0.8, 0.2, 1), transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .social-item.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .social-item.exit {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+
+        .social-icon {
+            width: 35px;
+            height: 35px;
+            fill: #00d2ff;
+            filter: drop-shadow(0 0 8px rgba(0, 210, 255, 0.6));
+        }
+
+        .social-text {
+            font-size: 26px;
+            font-weight: 500;
+            letter-spacing: 3px;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 210, 255, 0.4);
+        }
+
+        /* =========================================
+           5. ANIMATION DES DÉS 3D
+           ========================================= */
+        .dice-wrapper {
+            position: absolute;
+            top: 20%;
+            left: -100px; /* Commence en dehors de l'écran */
+            z-index: 5;
+            perspective: 1000px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .cube {
+            width: 60px;
+            height: 60px;
+            position: relative;
+            transform-style: preserve-3d;
+            /* La rotation sera gérée dynamiquement par JS */
+        }
+
+        /* Faces du dé (design minimaliste verre/néon) */
+        .face {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: rgba(10, 15, 40, 0.6);
+            border: 2px solid #00d2ff;
+            border-radius: 8px;
+            box-shadow: inset 0 0 15px rgba(0, 210, 255, 0.3), 0 0 10px rgba(0, 210, 255, 0.2);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-evenly;
+            align-content: space-evenly;
+            padding: 8px;
+            backdrop-filter: blur(4px);
+        }
+
+        /* Positionnement 3D des faces */
+        .front  { transform: translateZ(30px); }
+        .back   { transform: rotateY(180deg) translateZ(30px); }
+        .right  { transform: rotateY(90deg) translateZ(30px); }
+        .left   { transform: rotateY(-90deg) translateZ(30px); }
+        .top    { transform: rotateX(90deg) translateZ(30px); }
+        .bottom { transform: rotateX(-90deg) translateZ(30px); }
+
+        /* Points sur les dés */
+        .dot {
+            width: 10px;
+            height: 10px;
+            background-color: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 5px #fff, 0 0 10px #00d2ff;
+        }
+
+        /* Disposition spécifique des points (Flexbox astucieux) */
+        .face.one { justify-content: center; align-items: center; }
+        .face.two { justify-content: space-between; flex-direction: column; }
+        .face.two .dot:nth-child(2) { align-self: flex-end; }
+        .face.three { justify-content: space-between; flex-direction: column; }
+        .face.three .dot:nth-child(2) { align-self: center; }
+        .face.three .dot:nth-child(3) { align-self: flex-end; }
+        .face.four { flex-direction: column; justify-content: space-between; align-content: space-between; }
+        .face.four .column { display: flex; justify-content: space-between; width: 100%; }
+        .face.five { flex-direction: column; justify-content: space-between; align-content: space-between; }
+        .face.five .column { display: flex; justify-content: space-between; width: 100%; }
+        .face.five .center-dot { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .face.six { flex-direction: column; justify-content: space-between; align-content: space-between; }
+        .face.six .column { display: flex; justify-content: space-between; width: 100%; height: 100%; flex-direction: column; }
+    </style>
+</head>
+<body>
+
+    <div id="stream-overlay">
+        <!-- 1. Fond animé -->
+        <canvas id="bg-canvas"></canvas>
+        <div class="scanlines"></div>
+
+        <!-- 2. Animation de Dé -->
+        <div class="dice-wrapper" id="dice">
+            <div class="cube" id="cube">
+                <div class="face front one"><div class="dot"></div></div>
+                <div class="face back six">
+                    <div class="column"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                    <div class="column"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                </div>
+                <div class="face right two"><div class="dot"></div><div class="dot"></div></div>
+                <div class="face left five">
+                    <div class="column"><div class="dot"></div><div class="dot"></div></div>
+                    <div class="dot center-dot"></div>
+                    <div class="column"><div class="dot"></div><div class="dot"></div></div>
+                </div>
+                <div class="face top three"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                <div class="face bottom four">
+                    <div class="column"><div class="dot"></div><div class="dot"></div></div>
+                    <div class="column"><div class="dot"></div><div class="dot"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Zone Centrale (Starting Soon) -->
+        <div class="title-container">
+            <div class="main-title">Démarrage du stream</div>
+            <div class="subtitle">Préparez-vous</div>
+        </div>
+
+        <!-- 4. Réseaux Sociaux -->
+        <div class="socials-wrapper" id="socials-container">
+            <!-- Injecté via JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        /* =========================================
+           1. GESTION DU FOND ANIMÉ (CANVAS)
+           Création de particules fluides et connectées
+           ========================================= */
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Fixation de la résolution pour OBS
+        canvas.width = 1920;
+        canvas.height = 1080;
+
+        let particlesArray = [];
+        const numberOfParticles = 80;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                // Vitesse lente et fluide
+                this.speedX = (Math.random() - 0.5) * 0.8;
+                this.speedY = (Math.random() - 0.5) * 0.8;
+                this.size = Math.random() * 3 + 1;
+                // Palette de couleurs : cyans et violets
+                const colors = ['rgba(0, 210, 255, 0.6)', 'rgba(138, 43, 226, 0.4)', 'rgba(255, 255, 255, 0.3)'];
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                // Rebond fluide sur les bords invisibles
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                // Effet de lueur (glow) natif canvas
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = this.color;
+                ctx.fill();
+                ctx.shadowBlur = 0; // Reset pour la performance
+            }
+        }
+
+        function initParticles() {
+            particlesArray = [];
+            for (let i = 0; i < numberOfParticles; i++) {
+                particlesArray.push(new Particle());
+            }
+        }
+
+        function animateParticles() {
+            // Effacement avec une légère opacité pour créer des traînées douces
+            ctx.fillStyle = 'rgba(10, 11, 30, 0.2)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+                particlesArray[i].draw();
+
+                // Connexion des particules proches par des lignes subtiles
+                for (let j = i; j < particlesArray.length; j++) {
+                    const dx = particlesArray[i].x - particlesArray[j].x;
+                    const dy = particlesArray[i].y - particlesArray[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 150) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(0, 210, 255, ${0.15 - distance / 1000})`;
+                        ctx.lineWidth = 1;
+                        ctx.moveTo(particlesArray[i].x, particlesArray[i].y);
+                        ctx.lineTo(particlesArray[j].x, particlesArray[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animateParticles);
+        }
+
+        initParticles();
+        animateParticles();
+
+        /* =========================================
+           2. GESTION DES RÉSEAUX SOCIAUX
+           Rotation automatique sans interface web
+           ========================================= */
+        const socials = [
+            {
+                name: "@MonTwitch",
+                // Icône Twitch SVG
+                svg: '<path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/>'
+            },
+            {
+                name: "@MonYouTube",
+                // Icône YouTube SVG
+                svg: '<path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.5 12 3.5 12 3.5s-7.505 0-9.377.55a3.016 3.016 0 0 0-2.122 2.136C0 8.084 0 12 0 12s0 3.916.501 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.55 9.377.55 9.377.55s7.505 0 9.377-.55a3.016 3.016 0 0 0 2.122-2.136C24 15.916 24 12 24 12s0-3.916-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>'
+            },
+            {
+                name: "@MonTwitter",
+                // Icône X (Twitter) SVG
+                svg: '<path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>'
+            },
+            {
+                name: "MonServeurDiscord",
+                // Icône Discord SVG (Simplifiée)
+                svg: '<path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.05.05 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>'
+            }
+        ];
+
+        const socialsContainer = document.getElementById('socials-container');
+        let currentSocialIndex = 0;
+
+        function renderSocial() {
+            const data = socials[currentSocialIndex];
+            
+            // Création de l'élément hors du flux
+            const el = document.createElement('div');
+            el.className = 'social-item';
+            el.innerHTML = `
+                <svg viewBox="0 0 24 24" class="social-icon">${data.svg}</svg>
+                <div class="social-text">${data.name}</div>
+            `;
+            
+            // Vidage et injection
+            socialsContainer.innerHTML = '';
+            socialsContainer.appendChild(el);
+
+            // Déclenchement de l'animation d'entrée (petit délai pour laisser le DOM s'actualiser)
+            requestAnimationFrame(() => {
+                setTimeout(() => el.classList.add('active'), 50);
+            });
+
+            // Préparation de l'animation de sortie
+            setTimeout(() => {
+                el.classList.remove('active');
+                el.classList.add('exit');
+            }, 4000); // Reste affiché 4 secondes
+
+            // Passage au suivant
+            currentSocialIndex = (currentSocialIndex + 1) % socials.length;
+        }
+
+        // Lancement de la boucle des réseaux sociaux
+        renderSocial();
+        setInterval(renderSocial, 5000); // Change toutes les 5 secondes
+
+
+        /* =========================================
+           3. ANIMATION ALÉATOIRE DES DÉS
+           Déclenchée sans interaction
+           ========================================= */
+        const diceWrapper = document.getElementById('dice');
+        const cube = document.getElementById('cube');
+
+        function triggerDiceRoll() {
+            // Position de départ aléatoire sur la gauche ou la droite
+            const startLeft = Math.random() > 0.5;
+            const startY = Math.random() * 60 + 10; // Entre 10% et 70% de hauteur
+            
+            diceWrapper.style.top = `${startY}%`;
+            diceWrapper.style.left = startLeft ? '-100px' : '2020px'; // Hors écran
+            diceWrapper.style.opacity = '1';
+            
+            // Retirer l'ancienne transition le temps de replacer l'élément
+            cube.style.transition = 'none';
+            diceWrapper.style.transition = 'none';
+            cube.style.transform = `rotateX(0deg) rotateY(0deg) rotateZ(0deg)`;
+
+            // Force reflow
+            void cube.offsetWidth;
+
+            // Ajout des transitions pour le lancer
+            cube.style.transition = 'transform 4s cubic-bezier(0.1, 0.8, 0.2, 1)';
+            diceWrapper.style.transition = 'left 4s linear, opacity 0.5s ease';
+
+            // Paramètres de rotation extrêmes aléatoires
+            const rotX = Math.floor(Math.random() * 2160) + 1080; // 3 à 6 tours
+            const rotY = Math.floor(Math.random() * 2160) + 1080;
+            const rotZ = Math.floor(Math.random() * 1080);
+            
+            // Translation opposée pour traverser une partie de l'écran
+            const targetX = startLeft ? (Math.random() * 400 + 300) : (1920 - (Math.random() * 400 + 300));
+            
+            // Lancement de l'animation
+            diceWrapper.style.left = `${targetX}px`;
+            cube.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg) rotateZ(${rotZ}deg)`;
+
+            // Disparition en douceur après la fin du roulement
+            setTimeout(() => {
+                diceWrapper.style.opacity = '0';
+            }, 3500);
+
+            // Reprogrammer le prochain lancer (entre 12 et 25 secondes)
+            const nextRollDelay = Math.random() * 13000 + 12000;
+            setTimeout(triggerDiceRoll, nextRollDelay);
+        }
+
+        // Premier lancer après 5 secondes
+        setTimeout(triggerDiceRoll, 5000);
+
+    </script>
+</body>
+</html>
