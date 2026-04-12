@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Boutique Minecraft</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b1120;
+            background-image: radial-gradient(circle at 50% 0%, #1e293b 0%, #0b1120 70%);
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(56, 189, 248, 0.4);
+            background: rgba(30, 41, 59, 0.7);
+        }
+
+        .item-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .input-pro {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.2s ease;
+        }
+
+        .input-pro:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+            outline: none;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-card {
+            animation: fadeUp 0.4s ease-out forwards;
+            opacity: 0;
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <header class="mb-8">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 border-b border-slate-800 pb-6">
+                <div>
+                    <h1 class="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-sky-400 to-indigo-400 flex items-center gap-3">
+                        <i data-lucide="store" class="w-10 h-10 text-sky-400"></i>
+                        Marché du Serveur
+                    </h1>
+                    <p class="text-slate-400 mt-2 text-sm">Liste complète des objets et tarifs</p>
+                </div>
+                
+                <div class="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 min-w-[120px]">
+                    <div class="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-1 flex items-center gap-2">
+                        <i data-lucide="package" class="w-4 h-4"></i> Total Objets
+                    </div>
+                    <div class="text-2xl font-bold text-white font-mono" id="stat-total">0</div>
+                </div>
+            </div>
+
+            <!-- Toolbar -->
+            <div class="sticky top-4 z-50 glass-card rounded-2xl p-4 flex flex-col md:flex-row gap-4 items-center shadow-2xl">
+                <div class="relative flex-grow w-full">
+                    <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"></i>
+                    <input type="text" id="searchInput" class="input-pro w-full pl-12 pr-4 py-3 rounded-xl text-sm" placeholder="Rechercher un objet..." onkeyup="updateGallery()">
+                </div>
+
+                <div class="flex items-center gap-3 w-full md:w-auto">
+                    <select id="sortSelect" class="input-pro pl-4 pr-8 py-3 rounded-xl text-sm appearance-none w-full md:w-48 cursor-pointer" onchange="updateGallery()">
+                        <option value="name_asc">Trier par Nom</option>
+                        <option value="buy_asc">Prix : Croissant</option>
+                        <option value="buy_desc">Prix : Décroissant</option>
+                    </select>
+                    
+                    <button id="sellOnlyBtn" onclick="toggleSellOnly()" class="input-pro px-4 py-3 rounded-xl text-sm flex items-center gap-2 whitespace-nowrap" title="Afficher uniquement ce qui peut être vendu">
+                        <i data-lucide="filter" class="w-4 h-4"></i>
+                        <span class="hidden sm:inline">Vente Uniquement</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Grid -->
+        <main id="shopContent">
+            <!-- Items injected here -->
+        </main>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-300 bg-emerald-500 text-white px-6 py-3 rounded-xl shadow-lg flex items-center gap-3 z-50 pointer-events-none">
+        <i data-lucide="check-circle" class="w-5 h-5"></i>
+        <span id="toast-msg" class="font-medium">Copié !</span>
+    </div>
+
+    <script>
+        const shopConfig = `
+      copper_block:
+        buy: 3.86
+        sell: 0.97
+      redstone_block:
+        buy: 33.08
+        sell: 8.27
+      iron_block:
+        buy: 52.1
+        sell: 13.03
+      gold_block:
+        buy: 78.14
+        sell: 19.54
+      diamond_block:
+        buy: 496.13
+        sell: 124.04
+      emerald_block:
+        buy: 372.1
+        sell: 93.03
+      netherite_block:
+        buy: 22374
+        sell: 5593.5
+      copper_ingot:
+        buy: 8.28
+        sell: 2.07
+        stack-size: 9
+      redstone:
+        buy: 31.5
+        sell: 7.92
+        stack-size: 9
+      iron_ingot:
+        buy: 49.68
+        sell: 12.42
+        stack-size: 9
+      gold_ingot:
+        buy: 74.43
+        sell: 18.63
+        stack-size: 9
+      diamond:
+        buy: 52.5
+        sell: 13.13
+        stack-size: 9
+      emerald:
+        buy: 39.38
+        sell: 9.85
+        stack-size: 9
+      netherite_ingot:
+        buy: 2367.62
+        sell: 591.91
+        stack-size: 9
+      copper_ore:
+        buy: 15
+        sell: -1
+      redstone_ore:
+        buy: 20
+        sell: -1
+      iron_ore:
+        buy: 20
+        sell: -1
+      gold_ore:
+        buy: 30
+        sell: -1
+      diamond_ore:
+        buy: 1000
+        sell: -1
+      emerald_ore:
+        buy: 150
+        sell: -1
+      ancient_debris:
+        buy: 529
+        sell: 132.25
+      quartz_block:
+        buy: 34.73
+        sell: 8.69
+      coal_block:
+        buy: 49.62
+        sell: 12.41
+      lapis_block:
+        buy: 68.22
+        sell: 17.06
+      amethyst_cluster:
+        buy: 5
+        sell: 1.25
+      resin_block:
+        buy: 36
+        sell: 3.6
+      quartz:
+        buy: 74.43
+        sell: 18.63
+        stack-size: 9
+      coal:
+        buy: 47.25
+        sell: 11.88
+        stack-size: 9
+      lapis_lazuli:
+        buy: 64.98
+        sell: 16.29
+        stack-size: 9
+      amethyst_shard:
+        buy: 11.88
+        sell: 2.97
+        stack-size: 9
+      resin_brick:
+        buy: 36.36
+        sell: 3.6
+        stack-size: 9
+      nether_quartz_ore:
+        buy: 31.5
+        sell: -1
+      coal_ore:
+        buy: 7.53
+        sell: 1.93
+      lapis_ore:
+        buy: 55
+        sell: -1
+      amethyst_block:
+        buy: 5.52
+        sell: 1.38
+      resin_clump:
+        buy: 4
+        sell: 0.4`;
+
+        let cachedItems = [];
+        let sellOnlyActive = false;
+
+        function detectIcon(id) {
+            if (id.includes('block')) return 'box';
+            if (id.includes('ore')) return 'mountain-snow';
+            if (id.includes('ingot')) return 'component';
+            if (id.includes('diamond') || id.includes('emerald') || id.includes('amethyst')) return 'gem';
+            return 'sparkles';
+        }
+
+        function parseItems(text) {
+            const lines = text.split('\n');
+            const items = [];
+            let currentItem = null;
+
+            lines.forEach(line => {
+                const indent = line.search(/\S/);
+                const content = line.trim();
+                if (!content || content.startsWith('#')) return;
+
+                const [key, value] = content.split(':').map(s => s.trim());
+
+                if (indent === 6) { 
+                    if (currentItem) items.push(currentItem);
+                    currentItem = { 
+                        id: key, 
+                        name: key.replace(/_/g, ' '),
+                        icon: detectIcon(key)
+                    };
+                } else if (indent > 6 && currentItem) {
+                    currentItem[key] = isNaN(value) ? value : parseFloat(value);
+                }
+            });
+            if (currentItem) items.push(currentItem);
+            return items;
+        }
+
+        function toggleSellOnly() {
+            sellOnlyActive = !sellOnlyActive;
+            const btn = document.getElementById('sellOnlyBtn');
+            btn.classList.toggle('border-emerald-500', sellOnlyActive);
+            btn.classList.toggle('text-emerald-400', sellOnlyActive);
+            updateGallery();
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const toast = document.getElementById('toast');
+                document.getElementById('toast-msg').innerText = `ID "${text}" copié !`;
+                toast.classList.remove('translate-y-20', 'opacity-0');
+                setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 2000);
+            });
+        }
+
+        function updateGallery() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const sortBy = document.getElementById('sortSelect').value;
+            
+            let filtered = cachedItems.filter(item => {
+                const matchesSearch = item.name.toLowerCase().includes(query);
+                const matchesSell = !sellOnlyActive || item.sell !== -1;
+                return matchesSearch && matchesSell;
+            });
+
+            document.getElementById('stat-total').innerText = filtered.length;
+
+            filtered.sort((a, b) => {
+                switch(sortBy) {
+                    case 'name_asc': return a.name.localeCompare(b.name);
+                    case 'buy_asc': return (a.buy || 0) - (b.buy || 0);
+                    case 'buy_desc': return (b.buy || 0) - (a.buy || 0);
+                    default: return 0;
+                }
+            });
+
+            renderGrid(filtered);
+        }
+
+        function renderGrid(items) {
+            const shopContent = document.getElementById('shopContent');
+            if (items.length === 0) {
+                shopContent.innerHTML = `<div class="py-20 text-center text-slate-500 italic">Aucun objet trouvé.</div>`;
+                return;
+            }
+
+            let html = '<div class="item-grid">';
+            items.forEach((item, index) => {
+                const buy = item.buy || 0;
+                const sell = item.sell || 0;
+                const stack = item['stack-size'] || 1;
+                const delay = (index % 12) * 0.05;
+
+                html += `
+                    <div class="glass-card rounded-2xl p-5 flex flex-col animate-card" style="animation-delay: ${delay}s">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex gap-4 items-center">
+                                <div class="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center border border-slate-700 shadow-inner">
+                                    <i data-lucide="${item.icon}" class="w-5 h-5 text-sky-400"></i>
+                                </div>
+                                <h3 class="font-bold text-white capitalize text-md">${item.name}</h3>
+                            </div>
+                            <button onclick="copyToClipboard('${item.id}')" class="text-slate-500 hover:text-white p-1.5 rounded-md hover:bg-slate-800 transition-colors">
+                                <i data-lucide="copy" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+
+                        <div class="space-y-2 mb-4">
+                            <div class="flex justify-between items-center p-3 bg-slate-900/40 rounded-xl border border-slate-800">
+                                <span class="text-[10px] font-bold text-slate-500 uppercase">Achat</span>
+                                <span class="text-emerald-400 font-mono font-bold">${buy.toLocaleString('en-US', {minimumFractionDigits: 2})} $</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-slate-900/40 rounded-xl border border-slate-800">
+                                <span class="text-[10px] font-bold text-slate-500 uppercase">Vente</span>
+                                <span class="${sell === -1 ? 'text-red-400/50' : 'text-orange-400'} font-mono font-bold">
+                                    ${sell === -1 ? 'N/A' : sell.toLocaleString('en-US', {minimumFractionDigits: 2}) + ' $'}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="mt-auto pt-3 border-t border-slate-800 flex justify-end">
+                            <span class="text-[10px] font-mono text-slate-500">Lot de ${stack}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            shopContent.innerHTML = html;
+            lucide.createIcons();
+        }
+
+        window.onload = () => {
+            cachedItems = parseItems(shopConfig);
+            updateGallery();
+        };
+    </script>
+</body>
+</html>
