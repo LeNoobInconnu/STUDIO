@@ -576,6 +576,39 @@
     votes:{}, voteVoterIndex:0, voterRemaining:[]
   };
 
+  /* ---------------- Save & restore (localStorage) ---------------- */
+  const STORAGE_KEY = 'imposteur_save_v1';
+  function persist(){
+    try{
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        cfg: Object.assign({}, cfg, { categories: Array.from(cfg.categories) }),
+        players: players
+      }));
+    }catch(e){}
+  }
+  (function loadSaved(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const data = JSON.parse(raw);
+      if (data.cfg){
+        Object.assign(cfg, data.cfg);
+        cfg.categories = new Set(Array.isArray(data.cfg.categories) && data.cfg.categories.length ? data.cfg.categories : CATEGORY_KEYS);
+        if (!Array.isArray(cfg.customWords)) cfg.customWords = [];
+      }
+      if (Array.isArray(data.players) && data.players.length){
+        players = data.players.map(p => ({
+          name: (p && p.name) || '',
+          avatar: (p && p.avatar) || AVATARS[0],
+          games: (p && p.games) || 0,
+          imp: (p && p.imp) || 0,
+          wins: (p && p.wins) || 0
+        }));
+      }
+    }catch(e){}
+  })();
+  document.documentElement.setAttribute('data-theme', cfg.theme);
+
   function showScreen(id){
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
@@ -1228,7 +1261,27 @@
   }
   document.getElementById('statsLink').addEventListener('click', () => { renderStats(); showScreen('screen-stats'); });
   document.getElementById('statsBackBtn').addEventListener('click', () => showScreen('screen-setup'));
-  document.getElementById('resetStatsBtn').addEventListener('click', () => { players.forEach(p => { p.games=0; p.imp=0; p.wins=0; }); renderStats(); });
+  document.getElementById('resetStatsBtn').addEventListener('click', () => { players.forEach(p => { p.games=0; p.imp=0; p.wins=0; }); renderStats(); persist(); });
+
+  /* ---------------- Reflect any loaded state visually, then autosave ---------------- */
+  renderCustomList();
+  document.getElementById('vibSwitch').classList.toggle('on', cfg.vibration);
+  document.getElementById('soundSwitch').classList.toggle('on', cfg.sound);
+  document.getElementById('motionSwitch').classList.toggle('on', cfg.reduceMotion);
+  document.body.classList.toggle('reduce-motion', cfg.reduceMotion);
+  document.getElementById('challengeSwitch').classList.toggle('on', cfg.challengeMode);
+  document.getElementById('impKnowSwitch').classList.toggle('on', cfg.impostorsKnow);
+  document.getElementById('phasesSwitch').classList.toggle('on', cfg.timedPhases);
+  document.getElementById('justifySwitch').classList.toggle('on', cfg.voteJustify);
+  document.getElementById('justifyField').style.display = cfg.voteMode === 'secret' ? 'block' : 'none';
+  document.getElementById('singleDurationField').style.display = cfg.timedPhases ? 'none' : 'block';
+  document.getElementById('phaseDurationFields').style.display = cfg.timedPhases ? 'block' : 'none';
+  document.querySelectorAll('#orderModeRow .toggle-opt').forEach(o => o.classList.toggle('selected', o.dataset.mode === cfg.orderMode));
+  document.getElementById('designatedSelectWrap').style.display = cfg.orderMode === 'designated' ? 'block' : 'none';
+
+  setInterval(persist, 1500);
+  window.addEventListener('beforeunload', persist);
+  document.addEventListener('visibilitychange', () => { if (document.hidden) persist(); });
 })();
 </script>
 
