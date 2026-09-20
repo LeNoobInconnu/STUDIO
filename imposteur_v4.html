@@ -1,1236 +1,311 @@
 <!DOCTYPE html>
-<html lang="fr" data-theme="spot">
+<html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>L'Imposteur</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mise à jour de l'application</title>
 <style>
-  :root{
-    --void:#14121f; --surface:#1e1b2e; --surface-alt:#262238; --line:#38334c;
-    --accent:#e8b94b; --accent2:#d1526d; --text:#f3f0e8; --text-dim:#9c97b3;
-    --font-display:'Space Grotesk', sans-serif; --font-body:'Inter', sans-serif;
+  :root {
+    --paper: #e9edf2;
+    --surface: #f7f9fb;
+    --ink: #16213a;
+    --muted: #55607a;
+    --line: #c5cddb;
+    --signal: #d4f03c;
+    --signal-ink: #16213a;
+    --danger: #a8281c;
+    --ok: #1c6b3f;
+    box-sizing: border-box;
   }
-  html[data-theme="neon"]{ --void:#0a0a12; --surface:#131126; --surface-alt:#1b1830; --line:#2a2748; --accent:#ff3d8b; --accent2:#35e0d8; --text:#f4f1ff; --text-dim:#837cad; }
-  html[data-theme="braise"]{ --void:#180f0c; --surface:#241713; --surface-alt:#2e1c17; --line:#4a2c22; --accent:#f0a23a; --accent2:#d1483f; --text:#f7ece1; --text-dim:#b08b76; }
-  html[data-theme="glacial"]{ --void:#0b1416; --surface:#101c1f; --surface-alt:#16262a; --line:#23383c; --accent:#49d2c2; --accent2:#3e93c9; --text:#e7f3f3; --text-dim:#7fa3a6; }
-  html[data-theme="clair"]{ --void:#f2efe7; --surface:#ffffff; --surface-alt:#ece7db; --line:#ddd6c4; --accent:#b5872a; --accent2:#ab3a4e; --text:#2a2620; --text-dim:#7a7364; }
-
-  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
-  html,body{height:100%;}
-  body{
-    margin:0; background:radial-gradient(circle at 50% -10%, color-mix(in srgb, var(--surface) 70%, white 3%) 0%, var(--void) 55%);
-    color:var(--text); font-family:var(--font-body);
-    display:flex; align-items:center; justify-content:center; min-height:100vh;
-    padding:20px; overflow-x:hidden; transition:background .3s ease;
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #0d1324; --surface: #151d33; --ink: #e8ecf5; --muted: #97a3bd;
+      --line: #2b3652; --danger: #ff8f84; --ok: #7fd9a3;
+    }
   }
-  body.reduce-motion *{animation:none !important; transition:none !important;}
-  @media (prefers-reduced-motion: reduce){ *{animation-duration:.01ms !important; transition-duration:.01ms !important;} }
+  :root[data-theme="dark"] {
+    --paper: #0d1324; --surface: #151d33; --ink: #e8ecf5; --muted: #97a3bd;
+    --line: #2b3652; --danger: #ff8f84; --ok: #7fd9a3;
+  }
 
-  .stage{width:100%; max-width:420px; position:relative;}
+  *, *::before, *::after { box-sizing: inherit; }
+  html { height: 100%; }
+  body {
+    margin: 0;
+    min-height: 100%;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Avenir Next", "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, sans-serif;
+    line-height: 1.55;
+    padding: 2.5rem 1.25rem 4rem;
+  }
+  main { max-width: 640px; margin: 0 auto; }
 
-  .topbar{position:fixed; top:16px; right:16px; z-index:40;}
-  .gear-btn{width:46px; height:46px; border-radius:14px; border:1px solid var(--line); background:var(--surface); color:var(--text-dim); display:flex; align-items:center; justify-content:center; cursor:pointer;}
-  .gear-btn svg{width:21px; height:21px; stroke:currentColor;}
-  .gear-btn:active{color:var(--accent); border-color:var(--accent);}
+  h1 { font-size: 1.05rem; font-weight: 600; margin: 0 0 2rem; letter-spacing: 0.01em; color: var(--muted); }
+  h1 strong { color: var(--ink); font-weight: 700; }
 
-  .screen{display:none;}
-  .screen.active{display:block; animation:rise .35s ease both;}
-  @keyframes rise{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);}}
+  .versions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border: 1.5px solid var(--ink);
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--surface);
+  }
+  .version { padding: 1.25rem 1.4rem 1.5rem; min-width: 0; }
+  .version + .version { background: var(--ink); color: var(--paper); }
+  .version .label { font-size: 0.9rem; margin: 0 0 0.35rem; opacity: 0.75; }
+  .version .number {
+    font-size: clamp(1.9rem, 8vw, 3.1rem);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.05;
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+    margin: 0;
+  }
+  .version .when { font-size: 0.85rem; margin: 0.5rem 0 0; opacity: 0.7; }
 
-  .brand{text-align:center; margin-bottom:22px;}
-  .brand h1{font-family:var(--font-display); font-weight:700; font-size:2rem; letter-spacing:.5px; margin:0;}
-  .brand h1 span{color:var(--accent);}
-  .brand p{color:var(--text-dim); font-size:.9rem; margin:6px 0 0;}
+  .status { margin: 1.6rem 0 1.2rem; font-size: 1.15rem; font-weight: 600; min-height: 1.7em; }
+  .status.ok { color: var(--ok); }
+  .status.error { color: var(--danger); }
+  .hint { margin: -0.6rem 0 1.2rem; color: var(--danger); font-size: 0.95rem; }
+  .hint[hidden] { display: none; }
 
-  .card{background:var(--surface); border:1px solid var(--line); border-radius:20px; padding:24px 20px; margin-bottom:16px;}
-  .card:last-child{margin-bottom:0;}
+  .actions { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
+  button, .btn {
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 10px;
+    padding: 0.8rem 1.3rem;
+    border: 1.5px solid var(--ink);
+    background: var(--signal);
+    color: var(--signal-ink);
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+  }
+  button.secondary, .btn.secondary { background: transparent; color: var(--ink); font-weight: 600; }
+  .btn[aria-disabled="true"] { opacity: 0.5; pointer-events: none; }
+  :focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) :focus-visible { outline-color: var(--signal); }
+  }
+  :root[data-theme="dark"] :focus-visible { outline-color: var(--signal); }
 
-  .field{margin-bottom:22px;}
-  .field:last-child{margin-bottom:0;}
-  .field label{display:block; font-size:.85rem; color:var(--text-dim); margin-bottom:10px;}
+  .install-steps { margin: 1.6rem 0 0; padding: 1rem 1.2rem 1rem 1.3rem; background: var(--surface); border-left: 4px solid var(--signal); border-radius: 4px 10px 10px 4px; }
+  .install-steps[hidden] { display: none; }
+  .install-steps p { margin: 0 0 0.5rem; font-weight: 700; }
+  .install-steps ol { margin: 0; padding-left: 1.2rem; }
+  .install-steps li { margin: 0.25rem 0; }
+  .install-steps .actions { margin-top: 1rem; }
 
-  .stepper{display:flex; align-items:center; justify-content:space-between; background:var(--surface-alt); border-radius:14px; padding:6px;}
-  .stepper button{width:44px; height:44px; border-radius:10px; border:none; background:transparent; color:var(--text); font-family:var(--font-display); font-size:1.4rem; cursor:pointer;}
-  .stepper button:active{background:var(--line);}
-  .stepper .count{font-family:var(--font-display); font-size:1.15rem; font-weight:600;}
+  dl { margin: 2.2rem 0 0; border-top: 1px solid var(--line); }
+  dl div { display: grid; grid-template-columns: 9rem 1fr; gap: 1rem; padding: 0.7rem 0; border-bottom: 1px solid var(--line); }
+  dt { color: var(--muted); font-size: 0.92rem; }
+  dd { margin: 0; overflow-wrap: anywhere; font-size: 0.95rem; }
+  dl[hidden] { display: none; }
 
-  .hint{font-size:.78rem; color:var(--text-dim); margin-top:8px; line-height:1.5;}
-  .error-msg{color:var(--accent2); font-size:.82rem; margin-top:-8px; margin-bottom:14px; min-height:1em;}
-
-  .chip-row{display:flex; flex-wrap:wrap; gap:8px;}
-  .chip{padding:9px 14px; border-radius:999px; border:1px solid var(--line); background:var(--surface-alt); color:var(--text-dim); font-size:.85rem; cursor:pointer; user-select:none;}
-  .chip.selected{border-color:var(--accent); color:var(--accent); background:color-mix(in srgb, var(--accent) 12%, transparent);}
-  .chip.all-chip{font-weight:600;}
-
-  .toggle-row{display:flex; background:var(--surface-alt); border-radius:14px; padding:4px;}
-  .toggle-opt{flex:1; text-align:center; padding:10px 6px; border-radius:11px; font-size:.83rem; color:var(--text-dim); cursor:pointer;}
-  .toggle-opt.selected{background:var(--surface); color:var(--text); font-weight:600;}
-
-  .btn{display:block; width:100%; padding:16px; border-radius:14px; border:none; font-family:var(--font-display); font-weight:600; font-size:1rem; letter-spacing:.3px; cursor:pointer; text-align:center;}
-  .btn-primary{background:var(--accent); color:#1a1508;}
-  .btn-primary:active{filter:brightness(.92);}
-  .btn-ghost{background:transparent; color:var(--text-dim); border:1px solid var(--line); margin-top:12px;}
-  .btn-ghost:active{background:var(--surface-alt);}
-  .btn-solid{background:var(--text); color:var(--void);}
-  .btn-solid:active{filter:brightness(.92);}
-  .btn-small{padding:11px; font-size:.85rem; border-radius:12px;}
-  .btn[disabled]{opacity:.4; pointer-events:none;}
-  .btn-row{display:flex; gap:10px;}
-  .btn-row .btn{margin:0; flex:1;}
-
-  .link-btn{display:block; width:100%; text-align:center; background:none; border:none; color:var(--text-dim); font-size:.82rem; padding:10px; cursor:pointer; text-decoration:underline;}
-
-  /* player rows */
-  .player-row{display:flex; align-items:center; gap:10px; background:var(--surface-alt); border-radius:14px; padding:6px 8px; margin-bottom:10px;}
-  .avatar-btn{width:36px; height:36px; border-radius:50%; border:none; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:1rem; font-weight:700; color:#1a1508; cursor:pointer;}
-  .player-row input{flex:1; background:none; border:none; color:var(--text); font-family:var(--font-body); font-size:.95rem; padding:10px 0; outline:none; min-width:0;}
-  .player-row input::placeholder{color:var(--text-dim);}
-  .player-row .rm{width:32px; height:32px; border-radius:10px; border:none; background:transparent; color:var(--text-dim); font-size:1.1rem; cursor:pointer; flex-shrink:0;}
-  .player-row .rm:active{background:var(--line); color:var(--accent2);}
-
-  .add-player{width:100%; padding:14px; border-radius:14px; border:1px dashed var(--line); background:transparent; color:var(--accent); font-family:var(--font-display); font-weight:600; font-size:.9rem; cursor:pointer;}
-  .add-player:active{background:var(--surface-alt);}
-
-  /* radio cards */
-  .radio-card-list{display:flex; flex-direction:column; gap:8px;}
-  .radio-card{border:1px solid var(--line); border-radius:14px; padding:12px 14px; cursor:pointer; background:var(--surface-alt);}
-  .radio-card.selected{border-color:var(--accent); background:color-mix(in srgb, var(--accent) 10%, var(--surface-alt));}
-  .radio-card .rc-title{font-size:.9rem; font-weight:600; margin-bottom:2px;}
-  .radio-card.selected .rc-title{color:var(--accent);}
-  .radio-card .rc-desc{font-size:.76rem; color:var(--text-dim); line-height:1.4;}
-
-  /* pass / reveal */
-  .pass-wrap{text-align:center;}
-  .pass-wrap .to{color:var(--text-dim); font-size:.9rem; margin-bottom:4px;}
-  .pass-wrap .player-name{font-family:var(--font-display); font-size:1.7rem; font-weight:700; margin:0 0 26px;}
-
-  .peephole{position:relative; aspect-ratio:1/1; max-width:250px; margin:0 auto 26px; border-radius:50%; background:radial-gradient(circle, var(--surface-alt) 0%, var(--void) 100%); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; overflow:hidden;}
-  .peephole .idle-label{font-size:.85rem; color:var(--text-dim); padding:0 20px; text-align:center;}
-  .peephole .reveal-content{display:none; flex-direction:column; align-items:center; justify-content:center; padding:0 16px; text-align:center;}
-  .peephole.revealed .idle-label{display:none;}
-  .peephole.revealed .reveal-content{display:flex;}
-  .reveal-tag{font-size:.75rem; letter-spacing:1px; color:var(--text-dim); margin-bottom:8px;}
-  .reveal-word{font-family:var(--font-display); font-size:1.45rem; font-weight:700; line-height:1.2;}
-  .reveal-sub{font-size:.72rem; color:var(--text-dim); margin-top:8px;}
-  .peephole.is-impostor .reveal-word{color:var(--accent2);}
-  .peephole:not(.is-impostor) .reveal-word{color:var(--accent);}
-
-  .hold-btn{display:block; width:100%; padding:18px; border-radius:14px; border:1px solid var(--line); background:var(--surface-alt); color:var(--text); font-family:var(--font-display); font-weight:600; font-size:.95rem; text-align:center; user-select:none; cursor:pointer;}
-  .hold-btn.pressed{background:var(--accent); color:#1a1508; border-color:var(--accent);}
-
-  .progress-dots{display:flex; justify-content:center; gap:6px; margin-top:20px;}
-  .progress-dots span{width:6px; height:6px; border-radius:50%; background:var(--line);}
-  .progress-dots span.done{background:var(--accent);}
-  .progress-dots span.current{background:var(--text);}
-
-  /* discussion */
-  .timer-display{font-family:var(--font-display); font-size:3rem; font-weight:700; text-align:center; margin:6px 0 6px; letter-spacing:1px;}
-  .timer-phase-label{text-align:center; font-size:.78rem; color:var(--text-dim); margin-bottom:16px;}
-  .order-list{list-style:none; margin:14px 0 0; padding:0;}
-  .order-list li{display:flex; align-items:center; gap:14px; padding:12px 14px; border-radius:12px; background:var(--surface-alt); margin-bottom:8px; font-size:.95rem;}
-  .order-list li .n{font-family:var(--font-display); color:var(--accent); width:20px; font-weight:700;}
-  .turn-name{font-family:var(--font-display); font-size:1.4rem; font-weight:700; text-align:center; margin:10px 0 4px;}
-  .turn-prompt{text-align:center; color:var(--text-dim); font-size:.88rem; margin-bottom:18px;}
-
-  .roster{list-style:none; margin:0 0 6px; padding:0;}
-  .roster li{display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid var(--line); font-size:.95rem;}
-  .roster li:last-child{border-bottom:none;}
-  .roster .role{font-size:.8rem; color:var(--text-dim);}
-  .roster li.imp .role{color:var(--accent2); font-weight:600;}
-  .roster .word{color:var(--accent); font-weight:600; font-size:.85rem;}
-  .blurred .roster .role, .blurred .roster .word{filter:blur(5px); user-select:none;}
-
-  .result-banner{text-align:center; padding:14px; border-radius:14px; margin-bottom:16px; font-family:var(--font-display); font-weight:700;}
-  .result-banner.win{background:color-mix(in srgb, var(--accent) 18%, transparent); color:var(--accent);}
-  .result-banner.lose{background:color-mix(in srgb, var(--accent2) 18%, transparent); color:var(--accent2);}
-
-  /* vote */
-  .vote-list{list-style:none; margin:0; padding:0;}
-  .vote-row{display:flex; align-items:center; justify-content:space-between; background:var(--surface-alt); border-radius:14px; padding:10px 14px; margin-bottom:8px;}
-  .vote-row .vname{font-size:.92rem;}
-  .vote-row .vtap{border:none; background:var(--surface); color:var(--text); border-radius:10px; padding:8px 14px; font-family:var(--font-display); font-weight:600; cursor:pointer;}
-  .vote-row .vcount{font-family:var(--font-display); font-weight:700; color:var(--accent); min-width:22px; text-align:center;}
-  .bar-row{margin-bottom:12px;}
-  .bar-row .bar-label{display:flex; justify-content:space-between; font-size:.85rem; margin-bottom:5px;}
-  .bar-track{height:8px; border-radius:4px; background:var(--surface-alt); overflow:hidden;}
-  .bar-fill{height:100%; background:var(--accent); border-radius:4px;}
-  .justify-input{width:100%; background:var(--surface-alt); border:1px solid var(--line); border-radius:12px; padding:12px; color:var(--text); font-family:var(--font-body); font-size:.9rem; margin-top:12px;}
-
-  /* stats */
-  .stat-row{display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid var(--line);}
-  .stat-row:last-child{border-bottom:none;}
-  .stat-name{flex:1; font-size:.92rem;}
-  .stat-figs{display:flex; gap:14px; font-size:.75rem; color:var(--text-dim); text-align:center;}
-  .stat-figs b{display:block; font-family:var(--font-display); font-size:1rem; color:var(--text); font-weight:700;}
-
-  /* settings sheet */
-  .overlay{position:fixed; inset:0; background:rgba(0,0,0,.55); opacity:0; pointer-events:none; transition:opacity .3s ease; z-index:50;}
-  .overlay.open{opacity:1; pointer-events:auto;}
-  .sheet{position:fixed; left:0; right:0; bottom:0; max-height:88vh; overflow-y:auto; background:var(--surface); border-radius:24px 24px 0 0; border:1px solid var(--line); border-bottom:none; padding:10px 20px 34px; transform:translateY(100%); transition:transform .32s ease; z-index:51; margin:0 auto; max-width:420px;}
-  .sheet.open{transform:translateY(0);}
-  .sheet-handle{width:40px; height:4px; border-radius:2px; background:var(--line); margin:8px auto 18px;}
-  .sheet-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
-  .sheet-head h2{font-family:var(--font-display); font-size:1.15rem; margin:0;}
-  .close-btn{width:34px; height:34px; border-radius:10px; border:none; background:var(--surface-alt); color:var(--text); font-size:1.1rem; cursor:pointer;}
-  .section-divider{border:none; border-top:1px solid var(--line); margin:20px 0;}
-
-  .theme-row{display:flex; gap:12px; flex-wrap:wrap;}
-  .theme-opt{display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;}
-  .swatch{width:36px; height:36px; border-radius:12px; border:1px solid var(--line);}
-  .theme-opt span{font-size:.7rem; color:var(--text-dim);}
-  .theme-opt.selected span{color:var(--text); font-weight:600;}
-  .theme-opt.selected .swatch{outline:2px solid var(--accent); outline-offset:3px;}
-
-  .switch-row{display:flex; align-items:center; justify-content:space-between;}
-  .switch-row span.lbl{font-size:.88rem;}
-  .switch{width:46px; height:26px; border-radius:999px; background:var(--surface-alt); border:1px solid var(--line); position:relative; cursor:pointer; flex-shrink:0;}
-  .switch .knob{position:absolute; top:2px; left:2px; width:20px; height:20px; border-radius:50%; background:var(--text-dim); transition:transform .2s ease, background .2s ease;}
-  .switch.on{background:color-mix(in srgb, var(--accent) 25%, var(--surface-alt)); border-color:var(--accent);}
-  .switch.on .knob{transform:translateX(20px); background:var(--accent);}
-
-  .custom-words-input{width:100%; min-height:64px; background:var(--surface-alt); border:1px solid var(--line); border-radius:14px; padding:12px; color:var(--text); font-family:var(--font-body); font-size:.9rem; resize:vertical;}
-  .custom-list{display:flex; flex-wrap:wrap; gap:6px; margin-top:10px;}
-  .custom-tag{display:flex; align-items:center; gap:6px; background:var(--surface-alt); border-radius:999px; padding:6px 6px 6px 12px; font-size:.8rem;}
-  .custom-tag button{border:none; background:none; color:var(--text-dim); cursor:pointer; font-size:.9rem; padding:2px 6px;}
-  .file-label{display:inline-block; margin-top:10px; padding:9px 14px; border-radius:10px; border:1px dashed var(--line); color:var(--text-dim); font-size:.8rem; cursor:pointer;}
-
-  select.native-select{width:100%; background:var(--surface-alt); border:1px solid var(--line); border-radius:12px; padding:12px; color:var(--text); font-family:var(--font-body); font-size:.9rem;}
-
-  .alarm-flash{position:fixed; inset:0; background:var(--accent2); opacity:0; pointer-events:none; z-index:100;}
-  .alarm-flash.go{animation:alarmPulse .9s ease;}
-  @keyframes alarmPulse{0%{opacity:0;} 15%{opacity:.55;} 30%{opacity:0;} 45%{opacity:.4;} 60%{opacity:0;}}
+  @media (max-width: 480px) {
+    .versions { grid-template-columns: 1fr; }
+    dl div { grid-template-columns: 1fr; gap: 0.1rem; }
+    .actions > * { flex: 1 1 100%; }
+  }
 </style>
 </head>
 <body>
+<main>
+  <h1>Mise à jour de <strong id="app-name">l'application</strong></h1>
 
-<div class="alarm-flash" id="alarmFlash"></div>
-
-<div class="topbar">
-  <button class="gear-btn" id="openSettings" aria-label="Paramètres">
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="12" r="3"></circle>
-      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-    </svg>
-  </button>
-</div>
-
-<div class="stage">
-  <div class="brand">
-    <h1>L'<span>Imposteur</span></h1>
-    <p>Un jeu à mots secrets, un téléphone, tout le monde autour</p>
-  </div>
-
-  <!-- SETUP -->
-  <div class="screen active" id="screen-setup">
-    <div class="card">
-      <div class="field">
-        <label>Joueurs</label>
-        <div id="playerList"></div>
-        <button class="add-player" id="addPlayerBtn">+ Ajouter un joueur</button>
-      </div>
-      <div class="error-msg" id="setupError"></div>
-      <button class="btn btn-primary" id="startBtn">Distribuer les rôles</button>
-      <button class="link-btn" id="statsLink">Voir les statistiques</button>
+  <section class="versions" aria-label="Versions">
+    <div class="version">
+      <p class="label">Installée</p>
+      <p class="number" id="installed">–</p>
     </div>
+    <div class="version">
+      <p class="label">Disponible</p>
+      <p class="number" id="latest">…</p>
+      <p class="when" id="latest-date"></p>
+    </div>
+  </section>
+
+  <p class="status" id="status" role="status" aria-live="polite">Recherche de mises à jour…</p>
+  <p class="hint" id="hint" hidden>Cette page est prévue pour un téléphone Android. Sur cet appareil, le fichier .apk sera téléchargé mais ne pourra pas s'installer.</p>
+
+  <div class="actions">
+    <a class="btn" id="btn-download" aria-disabled="true" rel="noopener">Télécharger et installer</a>
+    <button type="button" id="btn-check" class="secondary">Vérifier à nouveau</button>
   </div>
 
-  <!-- PASSING / REVEAL -->
-  <div class="screen" id="screen-pass">
-    <div class="card pass-wrap">
-      <div class="to">Passe le téléphone à</div>
-      <div class="player-name" id="currentPlayerName">—</div>
-
-      <div class="peephole" id="peephole">
-        <div class="idle-label">Maintiens le cercle appuyé pour découvrir ton rôle en secret</div>
-        <div class="reveal-content">
-          <div class="reveal-tag" id="revealTag">MOT SECRET</div>
-          <div class="reveal-word" id="revealWord">—</div>
-          <div class="reveal-sub" id="revealSub"></div>
-        </div>
-      </div>
-
-      <div class="hold-btn" id="holdBtn">Maintenir pour regarder</div>
-      <div class="progress-dots" id="progressDots"></div>
+  <div class="install-steps" id="after" hidden>
+    <p>Pour terminer l'installation :</p>
+    <ol>
+      <li>Ouvrez le fichier .apk depuis la notification de téléchargement ou le dossier Téléchargements.</li>
+      <li>Si Android le demande, autorisez ce navigateur à installer des applications inconnues.</li>
+      <li>Appuyez sur Installer.</li>
+    </ol>
+    <div class="actions">
+      <button type="button" id="btn-mark">Marquer comme installée</button>
     </div>
   </div>
 
-  <!-- ROUND / DISCUSSION -->
-  <div class="screen" id="screen-play">
-    <div class="card" id="timedSection">
-      <div class="timer-phase-label" id="timerPhaseLabel">DISCUSSION</div>
-      <div class="timer-display" id="timerDisplay">03:00</div>
-      <div class="btn-row">
-        <button class="btn btn-ghost" id="timerToggle" style="margin:0;">Démarrer</button>
-        <button class="btn btn-ghost" id="timerReset" style="margin:0;">Réinitialiser</button>
-      </div>
-    </div>
-
-    <div class="card" id="orderSection" style="display:none;">
-      <label style="display:block; font-size:.85rem; color:var(--text-dim); margin-bottom:14px;">Ordre de parole</label>
-      <button class="btn btn-ghost" id="drawOrderBtn" style="margin-top:0;">Tirer l'ordre au sort</button>
-      <div id="designatedDisplay" style="display:none; text-align:center; font-family:var(--font-display); font-size:1.2rem; padding:10px 0;"></div>
-      <ul class="order-list" id="orderList"></ul>
-    </div>
-
-    <div class="card" id="freeSection" style="display:none;">
-      <label style="display:block; font-size:.85rem; color:var(--text-dim); margin-bottom:4px;">Discussion libre</label>
-      <div class="hint">Aucune limite de temps — débattez, puis votez quand vous êtes prêts.</div>
-    </div>
-
-    <div class="card" id="turnsSection" style="display:none;">
-      <div class="turn-prompt" id="turnPrompt">—</div>
-      <div class="turn-name" id="turnName">—</div>
-      <button class="btn btn-ghost" id="turnNextBtn" style="margin-top:14px;">Joueur suivant</button>
-    </div>
-
-    <div class="card" id="challengeHint" style="display:none;">
-      <div class="hint">🎯 Mode défi : interdiction de dire le mot secret, un synonyme évident, ou de le mimer.</div>
-    </div>
-
-    <button class="btn btn-primary" id="goVoteBtn">Passer au vote</button>
-    <button class="btn btn-ghost" id="skipVoteBtn">Sauter le vote (vote à l'oral)</button>
-    <button class="link-btn" id="newRoundBtn">Nouvelle configuration</button>
-  </div>
-
-  <!-- VOTE -->
-  <div class="screen" id="screen-vote">
-    <div class="card" id="votePublicCard">
-      <label style="display:block; font-size:.85rem; color:var(--text-dim); margin-bottom:12px;">Vote public — chacun désigne son suspect à voix haute</label>
-      <ul class="vote-list" id="votePublicList"></ul>
-      <button class="btn btn-primary" id="finishPublicVoteBtn" style="margin-top:6px;">Voir le résultat du vote</button>
-    </div>
-
-    <div class="card" id="voteSecretCard" style="display:none;">
-      <div class="to" style="text-align:center; color:var(--text-dim); font-size:.85rem;">Passe le téléphone à</div>
-      <div class="player-name" style="text-align:center; margin-bottom:16px;" id="voteSecretVoter">—</div>
-      <ul class="vote-list" id="voteSecretList"></ul>
-      <textarea class="justify-input" id="justifyInput" placeholder="Un mot pour justifier ton vote (facultatif)" style="display:none;"></textarea>
-      <button class="btn btn-primary" id="confirmSecretVoteBtn" style="margin-top:14px;" disabled>Confirmer mon vote</button>
-    </div>
-
-    <div class="card" id="voteResultsCard" style="display:none;">
-      <label style="display:block; font-size:.85rem; color:var(--text-dim); margin-bottom:14px;">Résultat du vote</label>
-      <div id="voteBars"></div>
-      <button class="btn btn-solid" id="revealFromVoteBtn" style="margin-top:8px;">Révéler qui était l'imposteur</button>
-    </div>
-  </div>
-
-  <!-- REVEAL ALL -->
-  <div class="screen" id="screen-reveal">
-    <div id="resultBanner"></div>
-    <div class="card blurred" id="revealCard">
-      <label style="display:block; font-size:.85rem; color:var(--text-dim); margin-bottom:10px;">Résultats de la manche</label>
-      <ul class="roster" id="rosterList"></ul>
-      <button class="btn btn-primary" id="unblurBtn" style="margin-top:18px;">Afficher</button>
-    </div>
-    <button class="btn btn-ghost" id="restartBtn">Rejouer avec les mêmes joueurs</button>
-    <button class="link-btn" id="backToSetupBtn">Nouvelle configuration</button>
-  </div>
-
-  <!-- STATS -->
-  <div class="screen" id="screen-stats">
-    <div class="card">
-      <label style="display:block; font-size:.85rem; color:var(--text-dim); margin-bottom:6px;">Statistiques de la session</label>
-      <div class="hint" style="margin-top:0; margin-bottom:14px;">Remises à zéro si tu fermes la page.</div>
-      <div id="statsList"></div>
-    </div>
-    <button class="btn btn-ghost" id="resetStatsBtn">Réinitialiser les statistiques</button>
-    <button class="link-btn" id="statsBackBtn">Retour</button>
-  </div>
-</div>
-
-<!-- SETTINGS SHEET -->
-<div class="overlay" id="overlay"></div>
-<div class="sheet" id="sheet">
-  <div class="sheet-handle"></div>
-  <div class="sheet-head">
-    <h2>Paramètres</h2>
-    <button class="close-btn" id="closeSettings">×</button>
-  </div>
-
-  <div class="field">
-    <label>Modes rapides</label>
-    <div class="chip-row" id="presetRow"></div>
-  </div>
-
-  <hr class="section-divider">
-
-  <div class="field">
-    <label>Thème / éclairage</label>
-    <div class="theme-row" id="themeRow"></div>
-  </div>
-
-  <hr class="section-divider">
-
-  <div class="field">
-    <label>Catégories de mots</label>
-    <div class="chip-row" id="categoryRow"></div>
-  </div>
-
-  <div class="field">
-    <label>Mes mots</label>
-    <textarea class="custom-words-input" id="customWordsInput" placeholder="Ajoute un mot par ligne, puis appuie sur Entrée…"></textarea>
-    <label class="file-label" for="fileImport">Importer un fichier .txt</label>
-    <input type="file" id="fileImport" accept=".txt" style="display:none;">
-    <div class="custom-list" id="customList"></div>
-  </div>
-
-  <hr class="section-divider">
-
-  <div class="field">
-    <label>Nombre d'imposteurs</label>
-    <div class="stepper">
-      <button type="button" id="impDec">−</button>
-      <div class="count" id="impCount">1</div>
-      <button type="button" id="impInc">+</button>
-    </div>
-    <div class="hint" id="impHint"></div>
-  </div>
-
-  <div class="field" id="impKnowField" style="display:none;">
-    <div class="switch-row">
-      <span class="lbl">Les imposteurs se connaissent</span>
-      <div class="switch" id="impKnowSwitch"><div class="knob"></div></div>
-    </div>
-  </div>
-
-  <div class="field">
-    <label>Ce que voit l'imposteur</label>
-    <div class="radio-card-list" id="impostorViewList"></div>
-  </div>
-
-  <hr class="section-divider">
-
-  <div class="field">
-    <label>Déroulé de la manche</label>
-    <div class="radio-card-list" id="roundModeList"></div>
-  </div>
-
-  <div class="field" id="timedOptions">
-    <div class="switch-row" style="margin-bottom:14px;">
-      <span class="lbl">Par phases (réflexion puis discussion)</span>
-      <div class="switch" id="phasesSwitch"><div class="knob"></div></div>
-    </div>
-    <div id="singleDurationField">
-      <label>Durée</label>
-      <div class="stepper">
-        <button type="button" id="durDec">−</button>
-        <div class="count" id="durVal">03:00</div>
-        <button type="button" id="durInc">+</button>
-      </div>
-    </div>
-    <div id="phaseDurationFields" style="display:none;">
-      <label>Réflexion</label>
-      <div class="stepper" style="margin-bottom:12px;">
-        <button type="button" id="reflDec">−</button>
-        <div class="count" id="reflVal">01:00</div>
-        <button type="button" id="reflInc">+</button>
-      </div>
-      <label>Discussion</label>
-      <div class="stepper">
-        <button type="button" id="discDec">−</button>
-        <div class="count" id="discVal">02:00</div>
-        <button type="button" id="discInc">+</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="field" id="orderOptions" style="display:none;">
-    <div class="toggle-row" id="orderModeRow">
-      <div class="toggle-opt selected" data-mode="random">Aléatoire</div>
-      <div class="toggle-opt" data-mode="designated">Désigné</div>
-    </div>
-    <div id="designatedSelectWrap" style="display:none; margin-top:12px;">
-      <select class="native-select" id="designatedSelect"></select>
-    </div>
-  </div>
-
-  <div class="field">
-    <div class="switch-row">
-      <span class="lbl">Mode défi (règle affichée en discussion)</span>
-      <div class="switch" id="challengeSwitch"><div class="knob"></div></div>
-    </div>
-  </div>
-
-  <hr class="section-divider">
-
-  <div class="field">
-    <label>Vote</label>
-    <div class="radio-card-list" id="voteModeList"></div>
-  </div>
-  <div class="field" id="justifyField" style="display:none;">
-    <div class="switch-row">
-      <span class="lbl">Demander un mot de justification</span>
-      <div class="switch" id="justifySwitch"><div class="knob"></div></div>
-    </div>
-  </div>
-
-  <hr class="section-divider">
-
-  <div class="field">
-    <div class="switch-row" style="margin-bottom:14px;">
-      <span class="lbl">Vibration au tirage au sort</span>
-      <div class="switch" id="vibSwitch"><div class="knob"></div></div>
-    </div>
-    <div class="switch-row" style="margin-bottom:14px;">
-      <span class="lbl">Son au moment du mot</span>
-      <div class="switch" id="soundSwitch"><div class="knob"></div></div>
-    </div>
-    <div class="switch-row">
-      <span class="lbl">Réduire les animations</span>
-      <div class="switch" id="motionSwitch"><div class="knob"></div></div>
-    </div>
-  </div>
-</div>
+  <dl id="details" hidden>
+    <div><dt>Fichier</dt><dd id="d-file"></dd></div>
+    <div><dt>Taille</dt><dd id="d-size"></dd></div>
+  </dl>
+</main>
 
 <script>
-(function(){
-  /* ---------------- Word bank ---------------- */
-  const WORD_BANK = {
-    "Quotidien": ["Parapluie","Frigo","Chaussette","Brosse à dents","Oreiller","Clé USB","Savon","Miroir","Balai","Réveil","Ceinture","Lampe de poche","Trousseau de clés","Éponge"],
-    "Nourriture": ["Pizza","Croissant","Sushi","Fondue","Ratatouille","Crêpe","Kebab","Popcorn","Raclette","Churros","Lasagnes","Tacos","Falafel","Risotto"],
-    "Lieux": ["Plage","Aéroport","Hôpital","Bibliothèque","Camping","Cinéma","Marché","Piscine","Montagne","Gare","Musée","Stade","Forêt","Désert"],
-    "Films & Séries": ["Titanic","Matrix","Friends","Le Roi Lion","Squid Game","Star Wars","Naruto","Harry Potter","La Casa de Papel","Avatar","Breaking Bad","Jurassic Park","Le Seigneur des Anneaux","Stranger Things"],
-    "Métiers": ["Boulanger","Pompier","Astronaute","Dentiste","Fleuriste","Plombier","Vétérinaire","Pilote","Facteur","Chirurgien","Architecte","Journaliste","Menuisier","Traducteur"],
-    "Sport": ["Football","Judo","Escalade","Natation","Tennis","Ski","Boxe","Surf","Basket","Rugby","Golf","Escrime","Bowling","Aviron"],
-    "Animaux": ["Éléphant","Girafe","Pingouin","Kangourou","Requin","Hibou","Renard","Panda","Dauphin","Chameau","Hérisson","Perroquet","Crocodile","Koala"],
-    "Nature": ["Volcan","Cascade","Glacier","Récif corallien","Tornade","Arc-en-ciel","Éclipse","Aurore boréale","Geyser","Falaise","Tempête","Marée"],
-    "Technologie": ["Smartphone","Drone","Robot","Intelligence artificielle","Casque VR","Imprimante 3D","Satellite","Batterie","Console de jeux","Écran tactile","Antivirus","Hologramme"],
-    "Instruments de musique": ["Guitare","Piano","Violon","Batterie","Trompette","Flûte","Saxophone","Harpe","Accordéon","Tambour","Violoncelle","Clarinette"],
-    "Transports": ["Vélo","Trottinette","Sous-marin","Montgolfière","Téléphérique","Fusée","Voilier","Tramway","Hélicoptère","Traîneau","Métro","Scooter","Paquebot"],
-    "Émotions": ["Jalousie","Nostalgie","Fierté","Timidité","Curiosité","Soulagement","Enthousiasme","Méfiance","Gratitude","Embarras","Impatience","Sérénité"],
-    "École": ["Tableau noir","Cartable","Récréation","Cantine","Examen","Cahier","Professeur","Bulletin","Uniforme","Retenue","Trousse","Rentrée"],
-    "Vacances": ["Valise","Passeport","Camping-car","Croisière","Souvenir","Coup de soleil","Carte postale","Randonnée","Bronzage","Décalage horaire","Sable","Piscine gonflable"],
-    "Univers Harry Potter": ["Poudlard","Baguette magique","Quidditch","Sortilège","Moldu","Horcruxe","Patronus","Choixpeau","Balai volant","Potion","Détraqueur","Sorcier"],
-    "Univers Minecraft": ["Bloc","Pioche","Creeper","Diamant","Village","Nether","Enderman","Coffre","Torche","Portail","Redstone","Zombie"]
+/* =====================================================================
+   CONFIGURATION — à modifier
+   ===================================================================== */
+const CONFIG = {
+  appName: "Mon application",
+
+  // Chemin du fichier .apk, relatif à cette page
+  // (par exemple "mon-app.apk" s'il est dans le même dossier).
+  apkFile: "mon-app.apk",
+
+  // Numéro de la dernière version. À changer à chaque nouvel .apk publié.
+  // Si vous le laissez vide (""), la page utilise la date de modification du fichier.
+  version: "1.0.0",
+
+  // Version installée par défaut. Priorité :
+  // ?installed=1.2.0 dans l'URL > valeur mémorisée > cette valeur.
+  installedVersion: "0.0.0",
+};
+
+/* =====================================================================
+   Code
+   ===================================================================== */
+const $ = (id) => document.getElementById(id);
+const STORE_KEY = "updater:installed:" + location.pathname;
+
+let latest = null; // { version, date, size }
+
+function readStored() {
+  try { return localStorage.getItem(STORE_KEY); } catch (e) { return null; }
+}
+function writeStored(v) {
+  try { localStorage.setItem(STORE_KEY, v); } catch (e) { /* stockage indisponible */ }
+}
+function installedVersion() {
+  const fromUrl = new URLSearchParams(location.search).get("installed");
+  return fromUrl || readStored() || CONFIG.installedVersion;
+}
+
+function parts(v) {
+  return String(v).replace(/^v/i, "").split(/[^0-9]+/).filter(Boolean).map(Number);
+}
+function isNewer(remote, local) {
+  if (!CONFIG.version) return String(remote) !== String(local);
+  const a = parts(remote), b = parts(local);
+  for (let i = 0; i < Math.max(a.length, b.length); i++) {
+    const x = a[i] || 0, y = b[i] || 0;
+    if (x !== y) return x > y;
+  }
+  return false;
+}
+
+function formatSize(bytes) {
+  if (!bytes) return "inconnue";
+  const units = ["o", "Ko", "Mo", "Go"];
+  let i = 0, n = bytes;
+  while (n >= 1024 && i < units.length - 1) { n /= 1024; i++; }
+  return n.toFixed(i === 0 ? 0 : 1).replace(".", ",") + " " + units[i];
+}
+function formatDate(d) {
+  return d.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+}
+function setStatus(text, kind) {
+  const el = $("status");
+  el.textContent = text;
+  el.className = "status" + (kind ? " " + kind : "");
+}
+
+async function fetchLatest() {
+  const res = await fetch(CONFIG.apkFile, { method: "HEAD", cache: "no-store" });
+  if (res.status === 404) {
+    throw new Error("Le fichier « " + CONFIG.apkFile + " » est introuvable sur le site.");
+  }
+  if (!res.ok) throw new Error("Le site a répondu avec l'erreur " + res.status + ".");
+
+  const lastModified = res.headers.get("last-modified");
+  const date = lastModified ? new Date(lastModified) : null;
+  return {
+    version: CONFIG.version || (date ? date.toISOString().slice(0, 10) : "dernière"),
+    date: date,
+    size: Number(res.headers.get("content-length")) || 0,
   };
-  const CATEGORY_KEYS = Object.keys(WORD_BANK);
-  const TURN_PROMPTS = [
-    "Décris ton mot en un seul mot.",
-    "Utilise ton mot dans une phrase sans le prononcer.",
-    "Donne une association d'idée liée à ton mot.",
-    "Mime un geste lié à ton mot.",
-    "Cite un endroit où on peut trouver ton mot."
-  ];
-  const AVATARS = ["#e8b94b","#d1526d","#49d2c2","#3e93c9","#f0a23a","🎭","🕵️","🦊","🐱","⚡","🔥","🌙","👑","🐸"];
-  const isColorAvatar = a => typeof a === 'string' && a.startsWith('#');
+}
 
-  const THEMES = [
-    {id:'spot', name:'Spot', color:'#e8b94b'},
-    {id:'neon', name:'Néon', color:'#ff3d8b'},
-    {id:'braise', name:'Braise', color:'#f0a23a'},
-    {id:'glacial', name:'Glacial', color:'#49d2c2'},
-    {id:'clair', name:'Clair', color:'#b5872a'}
-  ];
-
-  const IMPOSTOR_VIEWS = [
-    {id:'blind', title:'Aveugle', desc:"Ne voit rien du tout, doit deviner en écoutant."},
-    {id:'theme', title:'Thème seulement', desc:"Voit le nom de la catégorie, pas le mot."},
-    {id:'close', title:'Mot proche', desc:"Voit un autre mot de la même catégorie."},
-    {id:'trap', title:'Mot piège', desc:"Voit un mot d'une autre catégorie, présenté avec assurance."},
-    {id:'random', title:'Mot totalement aléatoire', desc:"Voit un mot pioché au hasard dans tout le jeu."}
-  ];
-  const ROUND_MODES = [
-    {id:'timed', title:'Chronométrée', desc:"Un compte à rebours cadre la discussion."},
-    {id:'order', title:'Ordre de parole', desc:"Aléatoire ou désigné, pas de chrono."},
-    {id:'free', title:'Libre', desc:"Aucune limite, vous votez quand vous voulez."},
-    {id:'turns', title:'Tour par tour', desc:"Chaque joueur répond à une consigne à son tour."}
-  ];
-  const VOTE_MODES = [
-    {id:'public', title:'Public', desc:"Un tap par joueur, tout le monde voit le score en direct."},
-    {id:'secret', title:'Secret', desc:"Le téléphone passe, chacun vote sans que les autres voient."}
-  ];
-
-  let cfg = {
-    theme:'spot',
-    categories: new Set(CATEGORY_KEYS),
-    customWords: [],
-    numImpostors: 1,
-    impostorsKnow: false,
-    impostorView: 'blind',
-    roundMode: 'timed',
-    timedPhases: false,
-    timedSeconds: 180,
-    reflectionSeconds: 60,
-    discussionSeconds: 120,
-    orderMode: 'random',
-    designatedIndex: 0,
-    challengeMode: false,
-    voteMode: 'public',
-    voteJustify: false,
-    vibration: false,
-    sound: false,
-    reduceMotion: false
-  };
-
-  let players = [0,1,2].map(i => ({name:'', avatar:AVATARS[i % AVATARS.length], games:0, imp:0, wins:0}));
-
-  let round = {
-    names:[], avatars:[], categoryOfWord:'', secretWord:'',
-    impostorSet:new Set(), currentIndex:0,
-    timerHandle:null, timerRunning:false, timerPhase:'discussion', timerSecondsLeft:0,
-    turnIndex:0, turnPrompt:'',
-    speakingOrder:[],
-    votes:{}, voteVoterIndex:0, voterRemaining:[]
-  };
-
-  function showScreen(id){
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
+function setDownloadEnabled(enabled, secondary) {
+  const btn = $("btn-download");
+  if (enabled) {
+    // Le paramètre ?v= évite qu'une ancienne copie en cache soit téléchargée.
+    btn.href = CONFIG.apkFile + "?v=" + encodeURIComponent(latest.version);
+    btn.setAttribute("download", CONFIG.apkFile.split("/").pop());
+    btn.removeAttribute("aria-disabled");
+  } else {
+    btn.removeAttribute("href");
+    btn.setAttribute("aria-disabled", "true");
   }
+  btn.classList.toggle("secondary", !!secondary);
+}
 
-  function fmt(s){ const m=Math.floor(s/60).toString().padStart(2,'0'); const ss=(s%60).toString().padStart(2,'0'); return m+':'+ss; }
+function render() {
+  const local = installedVersion();
+  $("installed").textContent = local;
+  $("latest").textContent = latest.version;
+  $("latest-date").textContent = latest.date ? "Publiée le " + formatDate(latest.date) : "";
+  $("d-file").textContent = CONFIG.apkFile.split("/").pop();
+  $("d-size").textContent = formatSize(latest.size);
+  $("details").hidden = false;
 
-  function beep(){
-    if (!cfg.sound) return;
-    try{
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'sine'; osc.frequency.value = 720;
-      gain.gain.setValueAtTime(0.08, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18);
-      osc.connect(gain); gain.connect(ctx.destination);
-      osc.start(); osc.stop(ctx.currentTime + 0.2);
-    }catch(e){}
+  const btn = $("btn-download");
+  if (isNewer(latest.version, local)) {
+    setStatus("Une mise à jour est disponible.");
+    btn.textContent = "Télécharger et installer";
+    setDownloadEnabled(true, false);
+  } else {
+    setStatus("Votre application est à jour.", "ok");
+    btn.textContent = "Réinstaller cette version";
+    setDownloadEnabled(true, true);
   }
+}
 
-  /* ---------------- Player list ---------------- */
-  const playerListEl = document.getElementById('playerList');
-  function renderAvatarBtn(btn, avatar){
-    if (isColorAvatar(avatar)){ btn.style.background = avatar; btn.textContent=''; }
-    else { btn.style.background = 'var(--surface)'; btn.textContent = avatar; }
+async function check() {
+  setDownloadEnabled(false, false);
+  $("after").hidden = true;
+  $("latest").textContent = "…";
+  setStatus("Recherche de mises à jour…");
+  try {
+    latest = await fetchLatest();
+    render();
+  } catch (err) {
+    const offline = !navigator.onLine || err instanceof TypeError;
+    setStatus(offline ? "Impossible de joindre le site. Vérifiez votre connexion." : err.message, "error");
   }
-  function renderPlayerList(){
-    playerListEl.innerHTML = '';
-    players.forEach((p, i) => {
-      const row = document.createElement('div');
-      row.className = 'player-row';
-      row.innerHTML =
-        '<button type="button" class="avatar-btn"></button>' +
-        '<input type="text" placeholder="Joueur ' + (i+1) + '" value="' + p.name.replace(/"/g,'&quot;') + '">' +
-        (players.length > 3 ? '<button class="rm" aria-label="Retirer">×</button>' : '');
-      renderAvatarBtn(row.querySelector('.avatar-btn'), p.avatar);
-      row.querySelector('.avatar-btn').addEventListener('click', () => {
-        const idx = AVATARS.indexOf(p.avatar);
-        p.avatar = AVATARS[(idx + 1) % AVATARS.length];
-        renderAvatarBtn(row.querySelector('.avatar-btn'), p.avatar);
-      });
-      row.querySelector('input').addEventListener('input', e => { p.name = e.target.value; });
-      const rm = row.querySelector('.rm');
-      if (rm) rm.addEventListener('click', () => { players.splice(i,1); renderPlayerList(); clampImpostors(); refreshDesignatedSelect(); });
-      playerListEl.appendChild(row);
-    });
-  }
-  document.getElementById('addPlayerBtn').addEventListener('click', () => {
-    if (players.length >= 20) return;
-    players.push({name:'', avatar:AVATARS[players.length % AVATARS.length], games:0, imp:0, wins:0});
-    renderPlayerList(); clampImpostors(); refreshDesignatedSelect();
-    const inputs = playerListEl.querySelectorAll('input');
-    inputs[inputs.length - 1].focus();
-  });
-  renderPlayerList();
+}
 
-  /* ---------------- Presets ---------------- */
-  const PRESETS = {
-    standard: {numImpostors:1, impostorView:'blind', roundMode:'timed', timedPhases:false, timedSeconds:180, challengeMode:false},
-    chaos: {numImpostors:2, impostorsKnow:false, impostorView:'random', roundMode:'timed', timedPhases:false, timedSeconds:60, challengeMode:false},
-    expert: {numImpostors:1, impostorView:'blind', roundMode:'timed', timedPhases:false, timedSeconds:120, challengeMode:false},
-    speedrun: {numImpostors:1, impostorView:'blind', roundMode:'timed', timedPhases:false, timedSeconds:30, challengeMode:false},
-    defi: {numImpostors:1, impostorView:'blind', roundMode:'free', challengeMode:true}
-  };
-  const presetRow = document.getElementById('presetRow');
-  [['standard','Standard'],['chaos','Chaos'],['expert','Expert'],['speedrun','Speedrun'],['defi','Défi']].forEach(([id,label]) => {
-    const chip = document.createElement('div');
-    chip.className = 'chip';
-    chip.textContent = label;
-    chip.addEventListener('click', () => { Object.assign(cfg, PRESETS[id]); syncSettingsUI(); });
-    presetRow.appendChild(chip);
-  });
+$("app-name").textContent = CONFIG.appName;
+$("hint").hidden = /Android/i.test(navigator.userAgent);
+$("btn-check").addEventListener("click", check);
+$("btn-download").addEventListener("click", () => {
+  if (!latest) return;
+  setStatus("Téléchargement lancé. Suivez la notification de votre téléphone.");
+  $("after").hidden = false;
+});
+$("btn-mark").addEventListener("click", () => {
+  writeStored(latest.version);
+  $("after").hidden = true;
+  render();
+  setStatus("Version " + latest.version + " marquée comme installée.", "ok");
+});
 
-  /* ---------------- Theme ---------------- */
-  const themeRow = document.getElementById('themeRow');
-  THEMES.forEach(t => {
-    const opt = document.createElement('div');
-    opt.className = 'theme-opt' + (t.id === cfg.theme ? ' selected' : '');
-    opt.innerHTML = '<div class="swatch" style="background:' + t.color + '"></div><span>' + t.name + '</span>';
-    opt.addEventListener('click', () => {
-      cfg.theme = t.id;
-      document.documentElement.setAttribute('data-theme', t.id);
-      document.querySelectorAll('.theme-opt').forEach(o => o.classList.remove('selected'));
-      opt.classList.add('selected');
-    });
-    themeRow.appendChild(opt);
-  });
-
-  /* ---------------- Categories + custom words ---------------- */
-  const categoryRow = document.getElementById('categoryRow');
-  function renderCategoryChips(){
-    categoryRow.innerHTML = '';
-    const allChip = document.createElement('div');
-    allChip.className = 'chip all-chip' + (cfg.categories.size === CATEGORY_KEYS.length ? ' selected' : '');
-    allChip.textContent = 'Toutes';
-    allChip.addEventListener('click', () => {
-      if (cfg.categories.size === CATEGORY_KEYS.length) cfg.categories.clear();
-      else CATEGORY_KEYS.forEach(k => cfg.categories.add(k));
-      renderCategoryChips();
-    });
-    categoryRow.appendChild(allChip);
-    CATEGORY_KEYS.forEach(cat => {
-      const chip = document.createElement('div');
-      chip.className = 'chip' + (cfg.categories.has(cat) ? ' selected' : '');
-      chip.textContent = cat;
-      chip.addEventListener('click', () => {
-        if (cfg.categories.has(cat)) cfg.categories.delete(cat); else cfg.categories.add(cat);
-        renderCategoryChips();
-      });
-      categoryRow.appendChild(chip);
-    });
-  }
-  renderCategoryChips();
-
-  const customWordsInput = document.getElementById('customWordsInput');
-  const customList = document.getElementById('customList');
-  function renderCustomList(){
-    customList.innerHTML = '';
-    cfg.customWords.forEach((w, i) => {
-      const tag = document.createElement('div');
-      tag.className = 'custom-tag';
-      tag.innerHTML = '<span>' + w + '</span><button type="button">×</button>';
-      tag.querySelector('button').addEventListener('click', () => { cfg.customWords.splice(i,1); renderCustomList(); });
-      customList.appendChild(tag);
-    });
-  }
-  customWordsInput.addEventListener('keydown', e => {
-    if (e.key === 'Enter'){
-      e.preventDefault();
-      const val = customWordsInput.value.trim();
-      if (val){ val.split(/\n|,/).map(s=>s.trim()).filter(Boolean).forEach(w => cfg.customWords.push(w)); }
-      customWordsInput.value = '';
-      renderCustomList();
-    }
-  });
-  document.getElementById('fileImport').addEventListener('change', e => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      String(reader.result).split(/\r?\n/).map(s=>s.trim()).filter(Boolean).forEach(w => cfg.customWords.push(w));
-      renderCustomList();
-    };
-    reader.readAsText(file);
-    e.target.value = '';
-  });
-
-  /* ---------------- Number of impostors ---------------- */
-  const impCountEl = document.getElementById('impCount');
-  const impKnowField = document.getElementById('impKnowField');
-  function maxImpostors(){ return Math.max(1, players.length - 2); }
-  function clampImpostors(){
-    cfg.numImpostors = Math.min(cfg.numImpostors, maxImpostors());
-    impCountEl.textContent = cfg.numImpostors;
-    document.getElementById('impHint').textContent = cfg.numImpostors === 1
-      ? 'Un seul imposteur parmi le groupe.'
-      : cfg.numImpostors + ' imposteurs se partagent le secret.';
-    impKnowField.style.display = cfg.numImpostors > 1 ? 'block' : 'none';
-  }
-  document.getElementById('impDec').addEventListener('click', () => { cfg.numImpostors = Math.max(1, cfg.numImpostors - 1); clampImpostors(); });
-  document.getElementById('impInc').addEventListener('click', () => { cfg.numImpostors = Math.min(maxImpostors(), cfg.numImpostors + 1); clampImpostors(); });
-  clampImpostors();
-
-  const impKnowSwitch = document.getElementById('impKnowSwitch');
-  impKnowSwitch.addEventListener('click', () => { cfg.impostorsKnow = !cfg.impostorsKnow; impKnowSwitch.classList.toggle('on', cfg.impostorsKnow); });
-
-  /* ---------------- Generic radio-card renderer ---------------- */
-  function renderRadioCards(container, options, getSelected, onSelect){
-    container.innerHTML = '';
-    options.forEach(opt => {
-      const card = document.createElement('div');
-      card.className = 'radio-card' + (getSelected() === opt.id ? ' selected' : '');
-      card.innerHTML = '<div class="rc-title">' + opt.title + '</div><div class="rc-desc">' + opt.desc + '</div>';
-      card.addEventListener('click', () => { onSelect(opt.id); refreshAllRadioCards(); });
-      container.appendChild(card);
-    });
-  }
-  function refreshAllRadioCards(){
-    renderRadioCards(document.getElementById('impostorViewList'), IMPOSTOR_VIEWS, () => cfg.impostorView, id => { cfg.impostorView = id; });
-    renderRadioCards(document.getElementById('roundModeList'), ROUND_MODES, () => cfg.roundMode, id => { cfg.roundMode = id; syncRoundModeFields(); });
-    renderRadioCards(document.getElementById('voteModeList'), VOTE_MODES, () => cfg.voteMode, id => { cfg.voteMode = id; document.getElementById('justifyField').style.display = id === 'secret' ? 'block' : 'none'; });
-  }
-  refreshAllRadioCards();
-
-  function syncRoundModeFields(){
-    document.getElementById('timedOptions').style.display = cfg.roundMode === 'timed' ? 'block' : 'none';
-    document.getElementById('orderOptions').style.display = cfg.roundMode === 'order' ? 'block' : 'none';
-  }
-  syncRoundModeFields();
-
-  /* ---------------- Timed duration + phases ---------------- */
-  const phasesSwitch = document.getElementById('phasesSwitch');
-  phasesSwitch.addEventListener('click', () => {
-    cfg.timedPhases = !cfg.timedPhases;
-    phasesSwitch.classList.toggle('on', cfg.timedPhases);
-    document.getElementById('singleDurationField').style.display = cfg.timedPhases ? 'none' : 'block';
-    document.getElementById('phaseDurationFields').style.display = cfg.timedPhases ? 'block' : 'none';
-  });
-  function stepSeconds(getVal, setVal, delta, min, max, displayEl){
-    let v = getVal() + delta;
-    v = Math.max(min, Math.min(max, v));
-    setVal(v);
-    displayEl.textContent = fmt(v);
-  }
-  const durVal = document.getElementById('durVal'); durVal.textContent = fmt(cfg.timedSeconds);
-  document.getElementById('durDec').addEventListener('click', () => stepSeconds(()=>cfg.timedSeconds, v=>cfg.timedSeconds=v, -15, 15, 900, durVal));
-  document.getElementById('durInc').addEventListener('click', () => stepSeconds(()=>cfg.timedSeconds, v=>cfg.timedSeconds=v, 15, 15, 900, durVal));
-  const reflVal = document.getElementById('reflVal'); reflVal.textContent = fmt(cfg.reflectionSeconds);
-  document.getElementById('reflDec').addEventListener('click', () => stepSeconds(()=>cfg.reflectionSeconds, v=>cfg.reflectionSeconds=v, -15, 15, 600, reflVal));
-  document.getElementById('reflInc').addEventListener('click', () => stepSeconds(()=>cfg.reflectionSeconds, v=>cfg.reflectionSeconds=v, 15, 15, 600, reflVal));
-  const discVal = document.getElementById('discVal'); discVal.textContent = fmt(cfg.discussionSeconds);
-  document.getElementById('discDec').addEventListener('click', () => stepSeconds(()=>cfg.discussionSeconds, v=>cfg.discussionSeconds=v, -15, 15, 900, discVal));
-  document.getElementById('discInc').addEventListener('click', () => stepSeconds(()=>cfg.discussionSeconds, v=>cfg.discussionSeconds=v, 15, 15, 900, discVal));
-
-  /* ---------------- Order mode ---------------- */
-  document.querySelectorAll('#orderModeRow .toggle-opt').forEach(opt => {
-    opt.addEventListener('click', () => {
-      document.querySelectorAll('#orderModeRow .toggle-opt').forEach(o => o.classList.remove('selected'));
-      opt.classList.add('selected');
-      cfg.orderMode = opt.dataset.mode;
-      document.getElementById('designatedSelectWrap').style.display = cfg.orderMode === 'designated' ? 'block' : 'none';
-    });
-  });
-  function refreshDesignatedSelect(){
-    const sel = document.getElementById('designatedSelect');
-    sel.innerHTML = '';
-    players.forEach((p, i) => {
-      const o = document.createElement('option');
-      o.value = i; o.textContent = p.name.trim() || ('Joueur ' + (i+1));
-      sel.appendChild(o);
-    });
-    sel.value = Math.min(cfg.designatedIndex, players.length - 1);
-  }
-  document.getElementById('designatedSelect').addEventListener('change', e => { cfg.designatedIndex = parseInt(e.target.value, 10); });
-  refreshDesignatedSelect();
-
-  /* ---------------- Challenge / vote justify / tech switches ---------------- */
-  document.getElementById('challengeSwitch').addEventListener('click', function(){ cfg.challengeMode = !cfg.challengeMode; this.classList.toggle('on', cfg.challengeMode); });
-  document.getElementById('justifySwitch').addEventListener('click', function(){ cfg.voteJustify = !cfg.voteJustify; this.classList.toggle('on', cfg.voteJustify); });
-  document.getElementById('vibSwitch').addEventListener('click', function(){ cfg.vibration = !cfg.vibration; this.classList.toggle('on', cfg.vibration); });
-  document.getElementById('soundSwitch').addEventListener('click', function(){ cfg.sound = !cfg.sound; this.classList.toggle('on', cfg.sound); });
-  document.getElementById('motionSwitch').addEventListener('click', function(){
-    cfg.reduceMotion = !cfg.reduceMotion;
-    this.classList.toggle('on', cfg.reduceMotion);
-    document.body.classList.toggle('reduce-motion', cfg.reduceMotion);
-  });
-
-  function syncSettingsUI(){
-    document.documentElement.setAttribute('data-theme', cfg.theme);
-    document.querySelectorAll('.theme-opt').forEach(o => o.classList.remove('selected'));
-    THEMES.forEach((t,i) => { if (t.id === cfg.theme) themeRow.children[i].classList.add('selected'); });
-    clampImpostors();
-    impKnowSwitch.classList.toggle('on', cfg.impostorsKnow);
-    refreshAllRadioCards();
-    syncRoundModeFields();
-    phasesSwitch.classList.toggle('on', cfg.timedPhases);
-    document.getElementById('singleDurationField').style.display = cfg.timedPhases ? 'none' : 'block';
-    document.getElementById('phaseDurationFields').style.display = cfg.timedPhases ? 'block' : 'none';
-    durVal.textContent = fmt(cfg.timedSeconds);
-    reflVal.textContent = fmt(cfg.reflectionSeconds);
-    discVal.textContent = fmt(cfg.discussionSeconds);
-    document.getElementById('challengeSwitch').classList.toggle('on', cfg.challengeMode);
-    document.getElementById('justifyField').style.display = cfg.voteMode === 'secret' ? 'block' : 'none';
-  }
-
-  /* ---------------- Sheet open/close ---------------- */
-  const overlay = document.getElementById('overlay');
-  const sheet = document.getElementById('sheet');
-  function openSheet(){ refreshDesignatedSelect(); overlay.classList.add('open'); sheet.classList.add('open'); }
-  function closeSheet(){ overlay.classList.remove('open'); sheet.classList.remove('open'); }
-  document.getElementById('openSettings').addEventListener('click', openSheet);
-  document.getElementById('closeSettings').addEventListener('click', closeSheet);
-  overlay.addEventListener('click', closeSheet);
-
-  /* ---------------- Word pool helpers ---------------- */
-  function getActiveCategories(){
-    const cats = CATEGORY_KEYS.filter(c => cfg.categories.has(c));
-    if (cfg.customWords.length) cats.push('custom');
-    return cats.length ? cats : CATEGORY_KEYS.slice();
-  }
-  function getPool(catKey){ return catKey === 'custom' ? cfg.customWords : WORD_BANK[catKey]; }
-  function catLabel(catKey){ return catKey === 'custom' ? 'Mes mots' : catKey; }
-  function pickRandom(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
-
-  function pickSecretWord(){
-    const cats = getActiveCategories();
-    const catKey = pickRandom(cats);
-    round.categoryOfWord = catKey;
-    round.secretWord = pickRandom(getPool(catKey));
-  }
-  function getCloseWord(){
-    const pool = getPool(round.categoryOfWord).filter(w => w !== round.secretWord);
-    return pool.length ? pickRandom(pool) : round.secretWord;
-  }
-  function getTrapWord(){
-    const others = getActiveCategories().filter(c => c !== round.categoryOfWord);
-    const cats = others.length ? others : CATEGORY_KEYS.filter(c => c !== round.categoryOfWord);
-    const catKey = pickRandom(cats.length ? cats : CATEGORY_KEYS);
-    return pickRandom(getPool(catKey));
-  }
-  function getRandomAnyWord(){
-    const all = CATEGORY_KEYS.flatMap(c => WORD_BANK[c]).concat(cfg.customWords).filter(w => w !== round.secretWord);
-    return pickRandom(all);
-  }
-  function impostorDisplay(){
-    switch(cfg.impostorView){
-      case 'theme': return { text: 'Thème : ' + catLabel(round.categoryOfWord) };
-      case 'close': return { text: getCloseWord() };
-      case 'trap': return { text: getTrapWord() };
-      case 'random': return { text: getRandomAnyWord() };
-      default: return { text: 'Écoute les autres pour deviner le mot' };
-    }
-  }
-
-  function shuffledIndices(n){
-    const arr = Array.from({length:n}, (_,i) => i);
-    for (let i = arr.length - 1; i > 0; i--){ const j = Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; }
-    return arr;
-  }
-
-  /* ---------------- Start round ---------------- */
-  document.getElementById('startBtn').addEventListener('click', () => {
-    const errorEl = document.getElementById('setupError');
-    errorEl.textContent = '';
-    if (players.length < 3){ errorEl.textContent = 'Il faut au moins 3 joueurs.'; return; }
-
-    pickSecretWord();
-    const shuffled = shuffledIndices(players.length);
-    round.impostorSet = new Set(shuffled.slice(0, Math.min(cfg.numImpostors, maxImpostors())));
-    round.names = players.map((p,i) => p.name.trim() || ('Joueur ' + (i+1)));
-    round.avatars = players.map(p => p.avatar);
-    round.currentIndex = 0;
-    round.turnPrompt = pickRandom(TURN_PROMPTS);
-    round.turnIndex = 0;
-
-    buildDots(round.names.length);
-    renderPassScreen();
-    showScreen('screen-pass');
-  });
-
-  /* ---------------- Pass / reveal ---------------- */
-  const dotsRow = document.getElementById('progressDots');
-  function buildDots(n){ dotsRow.innerHTML = ''; for (let i=0;i<n;i++) dotsRow.appendChild(document.createElement('span')); }
-  function updateDots(){ document.querySelectorAll('#progressDots span').forEach((d,i) => { d.classList.toggle('done', i < round.currentIndex); d.classList.toggle('current', i === round.currentIndex); }); }
-
-  function renderPassScreen(){
-    const idx = round.currentIndex;
-    document.getElementById('currentPlayerName').textContent = round.names[idx];
-    const isImp = round.impostorSet.has(idx);
-    const peephole = document.getElementById('peephole');
-    peephole.classList.remove('revealed');
-    peephole.classList.toggle('is-impostor', isImp);
-    document.getElementById('revealTag').textContent = isImp ? "TU ES L'IMPOSTEUR" : 'MOT SECRET';
-    let sub = '';
-    if (isImp){
-      document.getElementById('revealWord').textContent = impostorDisplay().text;
-      if (cfg.impostorsKnow && round.impostorSet.size > 1){
-        const others = [...round.impostorSet].filter(i => i !== idx).map(i => round.names[i]);
-        sub = 'Tes complices : ' + others.join(', ');
-      }
-    } else {
-      document.getElementById('revealWord').textContent = round.secretWord;
-    }
-    document.getElementById('revealSub').textContent = sub;
-    updateDots();
-    const holdBtn = document.getElementById('holdBtn');
-    holdBtn.classList.remove('pressed');
-    holdBtn.textContent = 'Maintenir pour regarder';
-  }
-
-  const peephole = document.getElementById('peephole');
-  const holdBtn = document.getElementById('holdBtn');
-  function reveal(){ peephole.classList.add('revealed'); holdBtn.classList.add('pressed'); holdBtn.textContent = 'Relâche pour cacher'; beep(); }
-  function hideAndAdvance(){
-    if (!peephole.classList.contains('revealed')) return;
-    peephole.classList.remove('revealed');
-    holdBtn.classList.remove('pressed');
-    round.currentIndex++;
-    if (round.currentIndex >= round.names.length) enterRoundScreen();
-    else renderPassScreen();
-  }
-  ['mousedown','touchstart'].forEach(evt => holdBtn.addEventListener(evt, e => { e.preventDefault(); reveal(); }));
-  ['mouseup','mouseleave','touchend','touchcancel'].forEach(evt => holdBtn.addEventListener(evt, e => { e.preventDefault(); hideAndAdvance(); }));
-
-  /* ---------------- Round screen ---------------- */
-  const timedSection = document.getElementById('timedSection');
-  const orderSection = document.getElementById('orderSection');
-  const freeSection = document.getElementById('freeSection');
-  const turnsSection = document.getElementById('turnsSection');
-  const timerDisplay = document.getElementById('timerDisplay');
-  const timerPhaseLabel = document.getElementById('timerPhaseLabel');
-
-  function resetTimer(){
-    clearInterval(round.timerHandle);
-    round.timerRunning = false;
-    round.timerPhase = cfg.timedPhases ? 'reflection' : 'discussion';
-    round.timerSecondsLeft = cfg.timedPhases ? cfg.reflectionSeconds : cfg.timedSeconds;
-    timerPhaseLabel.textContent = cfg.timedPhases ? 'RÉFLEXION' : 'DISCUSSION';
-    timerDisplay.textContent = fmt(round.timerSecondsLeft);
-    document.getElementById('timerToggle').textContent = 'Démarrer';
-  }
-  function tickTimer(){
-    if (round.timerSecondsLeft > 0){
-      round.timerSecondsLeft--;
-      timerDisplay.textContent = fmt(round.timerSecondsLeft);
-    } else if (cfg.timedPhases && round.timerPhase === 'reflection'){
-      round.timerPhase = 'discussion';
-      round.timerSecondsLeft = cfg.discussionSeconds;
-      timerPhaseLabel.textContent = 'DISCUSSION';
-      beep();
-      if (cfg.vibration && navigator.vibrate) navigator.vibrate(120);
-    } else {
-      clearInterval(round.timerHandle);
-      round.timerRunning = false;
-      document.getElementById('timerToggle').textContent = 'Démarrer';
-    }
-  }
-  document.getElementById('timerToggle').addEventListener('click', () => {
-    round.timerRunning = !round.timerRunning;
-    if (round.timerRunning){ document.getElementById('timerToggle').textContent = 'Pause'; round.timerHandle = setInterval(tickTimer, 1000); }
-    else { document.getElementById('timerToggle').textContent = 'Reprendre'; clearInterval(round.timerHandle); }
-  });
-  document.getElementById('timerReset').addEventListener('click', resetTimer);
-
-  document.getElementById('drawOrderBtn').addEventListener('click', () => {
-    const list = document.getElementById('orderList');
-    let ticks = 0;
-    const spin = setInterval(() => {
-      list.innerHTML = '<li><span class="n">…</span><span>' + pickRandom(round.names) + '</span></li>';
-      ticks++;
-      if (ticks > 8){
-        clearInterval(spin);
-        if (cfg.vibration && navigator.vibrate) navigator.vibrate([40,40,40]);
-        beep();
-        const shuffled = shuffledIndices(round.names.length);
-        round.speakingOrder = shuffled.map(i => round.names[i]);
-        list.innerHTML = '';
-        round.speakingOrder.forEach((name,i) => {
-          const li = document.createElement('li');
-          li.innerHTML = '<span class="n">' + String(i+1).padStart(2,'0') + '</span><span>' + name + '</span>';
-          list.appendChild(li);
-        });
-      }
-    }, 70);
-  });
-
-  function renderTurn(){
-    document.getElementById('turnPrompt').textContent = round.turnPrompt;
-    document.getElementById('turnName').textContent = round.names[round.turnIndex % round.names.length];
-  }
-  document.getElementById('turnNextBtn').addEventListener('click', () => { round.turnIndex++; renderTurn(); });
-
-  function enterRoundScreen(){
-    timedSection.style.display = cfg.roundMode === 'timed' ? 'block' : 'none';
-    orderSection.style.display = cfg.roundMode === 'order' ? 'block' : 'none';
-    freeSection.style.display = cfg.roundMode === 'free' ? 'block' : 'none';
-    turnsSection.style.display = cfg.roundMode === 'turns' ? 'block' : 'none';
-    document.getElementById('challengeHint').style.display = cfg.challengeMode ? 'block' : 'none';
-    document.getElementById('orderList').innerHTML = '';
-    document.getElementById('designatedDisplay').style.display = 'none';
-    document.getElementById('drawOrderBtn').style.display = 'block';
-
-    if (cfg.roundMode === 'timed') resetTimer();
-    if (cfg.roundMode === 'order' && cfg.orderMode === 'designated'){
-      document.getElementById('drawOrderBtn').style.display = 'none';
-      const dEl = document.getElementById('designatedDisplay');
-      const name = round.names[Math.min(cfg.designatedIndex, round.names.length - 1)];
-      dEl.textContent = 'Commence : ' + name;
-      dEl.style.display = 'block';
-    }
-    if (cfg.roundMode === 'turns') renderTurn();
-    showScreen('screen-play');
-  }
-
-  /* ---------------- Vote ---------------- */
-  function startVote(){
-    round.votes = {};
-    round.names.forEach(n => round.votes[n] = 0);
-    if (cfg.voteMode === 'public'){
-      document.getElementById('votePublicCard').style.display = 'block';
-      document.getElementById('voteSecretCard').style.display = 'none';
-      document.getElementById('voteResultsCard').style.display = 'none';
-      const list = document.getElementById('votePublicList');
-      list.innerHTML = '';
-      round.names.forEach(name => {
-        const row = document.createElement('li');
-        row.className = 'vote-row';
-        row.innerHTML = '<span class="vname">' + name + '</span><div style="display:flex; align-items:center; gap:10px;"><span class="vcount">0</span><button class="vtap" type="button">Voter</button></div>';
-        row.querySelector('.vtap').addEventListener('click', () => {
-          round.votes[name]++;
-          row.querySelector('.vcount').textContent = round.votes[name];
-        });
-        list.appendChild(row);
-      });
-    } else {
-      document.getElementById('votePublicCard').style.display = 'none';
-      document.getElementById('voteSecretCard').style.display = 'block';
-      document.getElementById('voteResultsCard').style.display = 'none';
-      round.voterRemaining = round.names.map((_,i) => i);
-      renderSecretVoter();
-    }
-    showScreen('screen-vote');
-  }
-
-  let currentVoterChoice = null;
-  function renderSecretVoter(){
-    currentVoterChoice = null;
-    document.getElementById('confirmSecretVoteBtn').disabled = true;
-    document.getElementById('justifyInput').value = '';
-    document.getElementById('justifyInput').style.display = cfg.voteJustify ? 'block' : 'none';
-    const voterIdx = round.voterRemaining[0];
-    document.getElementById('voteSecretVoter').textContent = round.names[voterIdx];
-    const list = document.getElementById('voteSecretList');
-    list.innerHTML = '';
-    round.names.forEach((name, i) => {
-      if (i === voterIdx) return;
-      const row = document.createElement('li');
-      row.className = 'vote-row';
-      row.innerHTML = '<span class="vname">' + name + '</span><button class="vtap" type="button">Choisir</button>';
-      row.querySelector('.vtap').addEventListener('click', () => {
-        currentVoterChoice = name;
-        list.querySelectorAll('.vote-row').forEach(r => r.style.outline = 'none');
-        row.style.outline = '2px solid var(--accent)';
-        document.getElementById('confirmSecretVoteBtn').disabled = false;
-      });
-      list.appendChild(row);
-    });
-  }
-  document.getElementById('confirmSecretVoteBtn').addEventListener('click', () => {
-    if (!currentVoterChoice) return;
-    round.votes[currentVoterChoice]++;
-    round.voterRemaining.shift();
-    if (round.voterRemaining.length) renderSecretVoter();
-    else showVoteResults();
-  });
-
-  document.getElementById('finishPublicVoteBtn').addEventListener('click', showVoteResults);
-
-  function showVoteResults(){
-    document.getElementById('votePublicCard').style.display = 'none';
-    document.getElementById('voteSecretCard').style.display = 'none';
-    document.getElementById('voteResultsCard').style.display = 'block';
-    const maxVotes = Math.max(0, ...Object.values(round.votes));
-    const bars = document.getElementById('voteBars');
-    bars.innerHTML = '';
-    round.names.forEach(name => {
-      const v = round.votes[name] || 0;
-      const pct = maxVotes ? Math.round((v / maxVotes) * 100) : 0;
-      const row = document.createElement('div');
-      row.className = 'bar-row';
-      row.innerHTML = '<div class="bar-label"><span>' + name + '</span><span>' + v + '</span></div><div class="bar-track"><div class="bar-fill" style="width:' + pct + '%;"></div></div>';
-      bars.appendChild(row);
-    });
-    round._mostVoted = round.names.filter(n => (round.votes[n]||0) === maxVotes && maxVotes > 0);
-  }
-  document.getElementById('goVoteBtn').addEventListener('click', startVote);
-  document.getElementById('skipVoteBtn').addEventListener('click', () => { round._mostVoted = null; showRoles(); });
-  document.getElementById('revealFromVoteBtn').addEventListener('click', showRoles);
-
-  /* ---------------- Reveal all ---------------- */
-  const alarmFlash = document.getElementById('alarmFlash');
-  function showRoles(){
-    clearInterval(round.timerHandle);
-    const list = document.getElementById('rosterList');
-    list.innerHTML = '';
-    round.names.forEach((name, i) => {
-      const isImp = round.impostorSet.has(i);
-      const li = document.createElement('li');
-      li.className = isImp ? 'imp' : '';
-      li.innerHTML = '<span>' + name + '</span><span class="role">' + (isImp ? 'Imposteur' : '<span class="word">' + round.secretWord + '</span>') + '</span>';
-      list.appendChild(li);
-    });
-
-    const banner = document.getElementById('resultBanner');
-    banner.innerHTML = '';
-    if (round._mostVoted && round._mostVoted.length === 1){
-      const votedName = round._mostVoted[0];
-      const votedIdx = round.names.indexOf(votedName);
-      const groupWins = round.impostorSet.has(votedIdx);
-      const div = document.createElement('div');
-      div.className = 'result-banner ' + (groupWins ? 'win' : 'lose');
-      div.textContent = groupWins ? ('Bien joué — ' + votedName + ' était l\'imposteur !') : (votedName + ' n\'était pas l\'imposteur… il s\'en sort !');
-      banner.appendChild(div);
-      updateStats(groupWins);
-    } else if (round._mostVoted && round._mostVoted.length > 1){
-      const div = document.createElement('div');
-      div.className = 'result-banner lose';
-      div.textContent = 'Égalité au vote — personne n\'est démasqué.';
-      banner.appendChild(div);
-      updateStats(false);
-    } else {
-      updateStats(null);
-    }
-
-    document.getElementById('revealCard').classList.add('blurred');
-    document.getElementById('unblurBtn').textContent = 'Afficher';
-    showScreen('screen-reveal');
-  }
-
-  function updateStats(groupWon){
-    round.names.forEach((name, i) => {
-      const p = players.find(pl => (pl.name.trim() || ('Joueur ' + (players.indexOf(pl)+1))) === name);
-      if (!p) return;
-      p.games++;
-      const isImp = round.impostorSet.has(i);
-      if (isImp) p.imp++;
-      if (groupWon === true && !isImp) p.wins++;
-      if (groupWon === false && isImp) p.wins++;
-    });
-  }
-
-  document.getElementById('unblurBtn').addEventListener('click', () => {
-    const blurred = document.getElementById('revealCard').classList.toggle('blurred');
-    document.getElementById('unblurBtn').textContent = blurred ? 'Afficher' : 'Cacher';
-    if (!blurred){
-      alarmFlash.classList.remove('go'); void alarmFlash.offsetWidth; alarmFlash.classList.add('go');
-    }
-  });
-
-  document.getElementById('restartBtn').addEventListener('click', () => {
-    pickSecretWord();
-    const shuffled = shuffledIndices(round.names.length);
-    round.impostorSet = new Set(shuffled.slice(0, Math.min(cfg.numImpostors, Math.max(1, round.names.length - 2))));
-    round.currentIndex = 0;
-    round.turnPrompt = pickRandom(TURN_PROMPTS);
-    round.turnIndex = 0;
-    buildDots(round.names.length);
-    renderPassScreen();
-    showScreen('screen-pass');
-  });
-
-  document.getElementById('newRoundBtn').addEventListener('click', () => showScreen('screen-setup'));
-  document.getElementById('backToSetupBtn').addEventListener('click', () => showScreen('screen-setup'));
-
-  /* ---------------- Stats screen ---------------- */
-  function renderStats(){
-    const list = document.getElementById('statsList');
-    list.innerHTML = '';
-    if (!players.length){ list.innerHTML = '<div class="hint">Aucun joueur pour l\'instant.</div>'; return; }
-    players.forEach((p,i) => {
-      const row = document.createElement('div');
-      row.className = 'stat-row';
-      const name = p.name.trim() || ('Joueur ' + (i+1));
-      row.innerHTML =
-        '<span class="stat-name">' + name + '</span>' +
-        '<div class="stat-figs"><div><b>' + p.games + '</b>parties</div><div><b>' + p.imp + '</b>imposteur</div><div><b>' + p.wins + '</b>victoires</div></div>';
-      list.appendChild(row);
-    });
-  }
-  document.getElementById('statsLink').addEventListener('click', () => { renderStats(); showScreen('screen-stats'); });
-  document.getElementById('statsBackBtn').addEventListener('click', () => showScreen('screen-setup'));
-  document.getElementById('resetStatsBtn').addEventListener('click', () => { players.forEach(p => { p.games=0; p.imp=0; p.wins=0; }); renderStats(); });
-})();
+$("installed").textContent = installedVersion();
+check();
 </script>
-
 </body>
 </html>
