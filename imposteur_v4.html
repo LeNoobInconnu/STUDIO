@@ -3,309 +3,183 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <title>Mise à jour de l'application</title>
+
 <style>
   :root {
     --paper: #e9edf2;
     --surface: #f7f9fb;
     --ink: #16213a;
     --muted: #55607a;
-    --line: #c5cddb;
     --signal: #d4f03c;
     --signal-ink: #16213a;
-    --danger: #a8281c;
-    --ok: #1c6b3f;
+
     box-sizing: border-box;
   }
+
   @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --paper: #0d1324; --surface: #151d33; --ink: #e8ecf5; --muted: #97a3bd;
-      --line: #2b3652; --danger: #ff8f84; --ok: #7fd9a3;
+    :root {
+      --paper: #0d1324;
+      --surface: #151d33;
+      --ink: #e8ecf5;
+      --muted: #97a3bd;
     }
   }
-  :root[data-theme="dark"] {
-    --paper: #0d1324; --surface: #151d33; --ink: #e8ecf5; --muted: #97a3bd;
-    --line: #2b3652; --danger: #ff8f84; --ok: #7fd9a3;
+
+  *, *::before, *::after {
+    box-sizing: inherit;
   }
 
-  *, *::before, *::after { box-sizing: inherit; }
-  html { height: 100%; }
+  html {
+    height: 100%;
+  }
+
   body {
     margin: 0;
     min-height: 100%;
     background: var(--paper);
     color: var(--ink);
-    font-family: "Avenir Next", "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, sans-serif;
-    line-height: 1.55;
-    padding: 2.5rem 1.25rem 4rem;
-  }
-  main { max-width: 640px; margin: 0 auto; }
+    font-family: "Avenir Next", "Segoe UI Variable", "Segoe UI",
+      system-ui, -apple-system, sans-serif;
 
-  h1 { font-size: 1.05rem; font-weight: 600; margin: 0 0 2rem; letter-spacing: 0.01em; color: var(--muted); }
-  h1 strong { color: var(--ink); font-weight: 700; }
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 25px;
+  }
+
+  main {
+    width: 100%;
+    max-width: 600px;
+  }
+
+  h1 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: 0 0 2rem;
+    color: var(--muted);
+  }
+
+  h1 strong {
+    color: var(--ink);
+  }
 
   .versions {
     display: grid;
     grid-template-columns: 1fr 1fr;
+
     border: 1.5px solid var(--ink);
     border-radius: 14px;
     overflow: hidden;
+
     background: var(--surface);
   }
-  .version { padding: 1.25rem 1.4rem 1.5rem; min-width: 0; }
-  .version + .version { background: var(--ink); color: var(--paper); }
-  .version .label { font-size: 0.9rem; margin: 0 0 0.35rem; opacity: 0.75; }
-  .version .number {
+
+  .version {
+    padding: 1.25rem 1.4rem 1.5rem;
+  }
+
+  .version + .version {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .label {
+    font-size: 0.9rem;
+    margin: 0 0 0.35rem;
+    opacity: 0.75;
+  }
+
+  .number {
     font-size: clamp(1.9rem, 8vw, 3.1rem);
     font-weight: 700;
-    letter-spacing: -0.025em;
-    line-height: 1.05;
-    font-variant-numeric: tabular-nums;
-    overflow-wrap: anywhere;
     margin: 0;
   }
-  .version .when { font-size: 0.85rem; margin: 0.5rem 0 0; opacity: 0.7; }
 
-  .status { margin: 1.6rem 0 1.2rem; font-size: 1.15rem; font-weight: 600; min-height: 1.7em; }
-  .status.ok { color: var(--ok); }
-  .status.error { color: var(--danger); }
-  .hint { margin: -0.6rem 0 1.2rem; color: var(--danger); font-size: 0.95rem; }
-  .hint[hidden] { display: none; }
+  .status {
+    margin: 1.6rem 0;
+    font-size: 1.15rem;
+    font-weight: 600;
+  }
 
-  .actions { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
-  button, .btn {
+  .actions {
+    display: flex;
+  }
+
+  .btn {
+    width: 100%;
+
     font: inherit;
     font-weight: 700;
+
     cursor: pointer;
-    border-radius: 10px;
-    padding: 0.8rem 1.3rem;
+
+    border-radius: 12px;
+    padding: 1rem 1.3rem;
+
     border: 1.5px solid var(--ink);
+
     background: var(--signal);
     color: var(--signal-ink);
+
     text-decoration: none;
-    display: inline-block;
     text-align: center;
-  }
-  button.secondary, .btn.secondary { background: transparent; color: var(--ink); font-weight: 600; }
-  .btn[aria-disabled="true"] { opacity: 0.5; pointer-events: none; }
-  :focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) :focus-visible { outline-color: var(--signal); }
-  }
-  :root[data-theme="dark"] :focus-visible { outline-color: var(--signal); }
 
-  .install-steps { margin: 1.6rem 0 0; padding: 1rem 1.2rem 1rem 1.3rem; background: var(--surface); border-left: 4px solid var(--signal); border-radius: 4px 10px 10px 4px; }
-  .install-steps[hidden] { display: none; }
-  .install-steps p { margin: 0 0 0.5rem; font-weight: 700; }
-  .install-steps ol { margin: 0; padding-left: 1.2rem; }
-  .install-steps li { margin: 0.25rem 0; }
-  .install-steps .actions { margin-top: 1rem; }
+    transition: transform 0.15s ease;
+  }
 
-  dl { margin: 2.2rem 0 0; border-top: 1px solid var(--line); }
-  dl div { display: grid; grid-template-columns: 9rem 1fr; gap: 1rem; padding: 0.7rem 0; border-bottom: 1px solid var(--line); }
-  dt { color: var(--muted); font-size: 0.92rem; }
-  dd { margin: 0; overflow-wrap: anywhere; font-size: 0.95rem; }
-  dl[hidden] { display: none; }
+  .btn:active {
+    transform: scale(0.97);
+  }
 
   @media (max-width: 480px) {
-    .versions { grid-template-columns: 1fr; }
-    dl div { grid-template-columns: 1fr; gap: 0.1rem; }
-    .actions > * { flex: 1 1 100%; }
+    .versions {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
 </head>
-<body>
-<main>
-  <h1>Mise à jour de <strong id="app-name">l'application</strong></h1>
 
-  <section class="versions" aria-label="Versions">
+<body>
+
+<main>
+
+  <h1>
+    Mise à jour de <strong>LeNoobInconnu STUDIO</strong>
+  </h1>
+
+  <section class="versions">
+
     <div class="version">
       <p class="label">Installée</p>
-      <p class="number" id="installed">–</p>
+      <p class="number">0.0.0</p>
     </div>
+
     <div class="version">
       <p class="label">Disponible</p>
-      <p class="number" id="latest">…</p>
-      <p class="when" id="latest-date"></p>
+      <p class="number">1.0.0</p>
     </div>
+
   </section>
 
-  <p class="status" id="status" role="status" aria-live="polite">Recherche de mises à jour…</p>
-  <p class="hint" id="hint" hidden>Cette page est prévue pour un téléphone Android. Sur cet appareil, le fichier .apk sera téléchargé mais ne pourra pas s'installer.</p>
+  <p class="status">
+    Une mise à jour est disponible.
+  </p>
 
   <div class="actions">
-    <a class="btn" id="btn-download" aria-disabled="true" rel="noopener">Télécharger et installer</a>
-    <button type="button" id="btn-check" class="secondary">Vérifier à nouveau</button>
+
+    <a
+      class="btn"
+      href="http://lenoobinconnu.github.io/STUDIO/mon-app.apk"
+    >
+      Installer
+    </a>
+
   </div>
 
-  <div class="install-steps" id="after" hidden>
-    <p>Pour terminer l'installation :</p>
-    <ol>
-      <li>Ouvrez le fichier .apk depuis la notification de téléchargement ou le dossier Téléchargements.</li>
-      <li>Si Android le demande, autorisez ce navigateur à installer des applications inconnues.</li>
-      <li>Appuyez sur Installer.</li>
-    </ol>
-    <div class="actions">
-      <button type="button" id="btn-mark">Marquer comme installée</button>
-    </div>
-  </div>
-
-  <dl id="details" hidden>
-    <div><dt>Fichier</dt><dd id="d-file"></dd></div>
-    <div><dt>Taille</dt><dd id="d-size"></dd></div>
-  </dl>
 </main>
 
-<script>
-/* =====================================================================
-   CONFIGURATION — à modifier
-   ===================================================================== */
-const CONFIG = {
-  appName: "Mon application",
-
-  // Chemin du fichier .apk, relatif à cette page
-  // (par exemple "mon-app.apk" s'il est dans le même dossier).
-  apkFile: "mon-app.apk",
-
-  // Numéro de la dernière version. À changer à chaque nouvel .apk publié.
-  // Si vous le laissez vide (""), la page utilise la date de modification du fichier.
-  version: "1.0.0",
-
-  // Version installée par défaut. Priorité :
-  // ?installed=1.2.0 dans l'URL > valeur mémorisée > cette valeur.
-  installedVersion: "0.0.0",
-};
-
-/* =====================================================================
-   Code
-   ===================================================================== */
-const $ = (id) => document.getElementById(id);
-const STORE_KEY = "updater:installed:" + location.pathname;
-
-let latest = null; // { version, date, size }
-
-function readStored() {
-  try { return localStorage.getItem(STORE_KEY); } catch (e) { return null; }
-}
-function writeStored(v) {
-  try { localStorage.setItem(STORE_KEY, v); } catch (e) { /* stockage indisponible */ }
-}
-function installedVersion() {
-  const fromUrl = new URLSearchParams(location.search).get("installed");
-  return fromUrl || readStored() || CONFIG.installedVersion;
-}
-
-function parts(v) {
-  return String(v).replace(/^v/i, "").split(/[^0-9]+/).filter(Boolean).map(Number);
-}
-function isNewer(remote, local) {
-  if (!CONFIG.version) return String(remote) !== String(local);
-  const a = parts(remote), b = parts(local);
-  for (let i = 0; i < Math.max(a.length, b.length); i++) {
-    const x = a[i] || 0, y = b[i] || 0;
-    if (x !== y) return x > y;
-  }
-  return false;
-}
-
-function formatSize(bytes) {
-  if (!bytes) return "inconnue";
-  const units = ["o", "Ko", "Mo", "Go"];
-  let i = 0, n = bytes;
-  while (n >= 1024 && i < units.length - 1) { n /= 1024; i++; }
-  return n.toFixed(i === 0 ? 0 : 1).replace(".", ",") + " " + units[i];
-}
-function formatDate(d) {
-  return d.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
-}
-function setStatus(text, kind) {
-  const el = $("status");
-  el.textContent = text;
-  el.className = "status" + (kind ? " " + kind : "");
-}
-
-async function fetchLatest() {
-  const res = await fetch(CONFIG.apkFile, { method: "HEAD", cache: "no-store" });
-  if (res.status === 404) {
-    throw new Error("Le fichier « " + CONFIG.apkFile + " » est introuvable sur le site.");
-  }
-  if (!res.ok) throw new Error("Le site a répondu avec l'erreur " + res.status + ".");
-
-  const lastModified = res.headers.get("last-modified");
-  const date = lastModified ? new Date(lastModified) : null;
-  return {
-    version: CONFIG.version || (date ? date.toISOString().slice(0, 10) : "dernière"),
-    date: date,
-    size: Number(res.headers.get("content-length")) || 0,
-  };
-}
-
-function setDownloadEnabled(enabled, secondary) {
-  const btn = $("btn-download");
-  if (enabled) {
-    // Le paramètre ?v= évite qu'une ancienne copie en cache soit téléchargée.
-    btn.href = CONFIG.apkFile + "?v=" + encodeURIComponent(latest.version);
-    btn.setAttribute("download", CONFIG.apkFile.split("/").pop());
-    btn.removeAttribute("aria-disabled");
-  } else {
-    btn.removeAttribute("href");
-    btn.setAttribute("aria-disabled", "true");
-  }
-  btn.classList.toggle("secondary", !!secondary);
-}
-
-function render() {
-  const local = installedVersion();
-  $("installed").textContent = local;
-  $("latest").textContent = latest.version;
-  $("latest-date").textContent = latest.date ? "Publiée le " + formatDate(latest.date) : "";
-  $("d-file").textContent = CONFIG.apkFile.split("/").pop();
-  $("d-size").textContent = formatSize(latest.size);
-  $("details").hidden = false;
-
-  const btn = $("btn-download");
-  if (isNewer(latest.version, local)) {
-    setStatus("Une mise à jour est disponible.");
-    btn.textContent = "Télécharger et installer";
-    setDownloadEnabled(true, false);
-  } else {
-    setStatus("Votre application est à jour.", "ok");
-    btn.textContent = "Réinstaller cette version";
-    setDownloadEnabled(true, true);
-  }
-}
-
-async function check() {
-  setDownloadEnabled(false, false);
-  $("after").hidden = true;
-  $("latest").textContent = "…";
-  setStatus("Recherche de mises à jour…");
-  try {
-    latest = await fetchLatest();
-    render();
-  } catch (err) {
-    const offline = !navigator.onLine || err instanceof TypeError;
-    setStatus(offline ? "Impossible de joindre le site. Vérifiez votre connexion." : err.message, "error");
-  }
-}
-
-$("app-name").textContent = CONFIG.appName;
-$("hint").hidden = /Android/i.test(navigator.userAgent);
-$("btn-check").addEventListener("click", check);
-$("btn-download").addEventListener("click", () => {
-  if (!latest) return;
-  setStatus("Téléchargement lancé. Suivez la notification de votre téléphone.");
-  $("after").hidden = false;
-});
-$("btn-mark").addEventListener("click", () => {
-  writeStored(latest.version);
-  $("after").hidden = true;
-  render();
-  setStatus("Version " + latest.version + " marquée comme installée.", "ok");
-});
-
-$("installed").textContent = installedVersion();
-check();
-</script>
 </body>
 </html>
