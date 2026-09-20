@@ -2,257 +2,220 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Mise à jour de l'application</title>
+<title>Installer l'application</title>
 
 <style>
-  :root {
-    --paper: #e9edf2;
-    --surface: #f7f9fb;
-    --ink: #16213a;
-    --muted: #55607a;
-    --signal: #d4f03c;
-    --signal-ink: #16213a;
-
-    box-sizing: border-box;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --paper: #0d1324;
-      --surface: #151d33;
-      --ink: #e8ecf5;
-      --muted: #97a3bd;
+    * {
+        box-sizing: border-box;
     }
-  }
 
-  *,
-  *::before,
-  *::after {
-    box-sizing: inherit;
-  }
+    body {
+        margin: 0;
+        min-height: 100vh;
 
-  html {
-    height: 100%;
-  }
+        display: flex;
+        justify-content: center;
+        align-items: center;
 
-  body {
-    margin: 0;
-    min-height: 100%;
+        padding: 20px;
 
-    background: var(--paper);
-    color: var(--ink);
+        font-family: Arial, sans-serif;
 
-    font-family:
-      "Avenir Next",
-      "Segoe UI Variable",
-      "Segoe UI",
-      system-ui,
-      -apple-system,
-      sans-serif;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    padding: 25px;
-  }
-
-  main {
-    width: 100%;
-    max-width: 600px;
-  }
-
-  h1 {
-    font-size: 1.05rem;
-    font-weight: 600;
-
-    margin: 0 0 2rem;
-
-    color: var(--muted);
-  }
-
-  h1 strong {
-    color: var(--ink);
-    font-weight: 700;
-  }
-
-  .versions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-
-    border: 1.5px solid var(--ink);
-    border-radius: 14px;
-
-    overflow: hidden;
-
-    background: var(--surface);
-  }
-
-  .version {
-    padding: 1.25rem 1.4rem 1.5rem;
-  }
-
-  .version + .version {
-    background: var(--ink);
-    color: var(--paper);
-  }
-
-  .label {
-    font-size: 0.9rem;
-
-    margin: 0 0 0.35rem;
-
-    opacity: 0.75;
-  }
-
-  .number {
-    font-size: clamp(1.9rem, 8vw, 3.1rem);
-
-    font-weight: 700;
-
-    margin: 0;
-
-    line-height: 1.05;
-  }
-
-  .status {
-    margin: 1.6rem 0;
-
-    font-size: 1.15rem;
-
-    font-weight: 600;
-  }
-
-  .actions {
-    display: flex;
-    width: 100%;
-  }
-
-  .btn {
-    width: 100%;
-
-    font: inherit;
-    font-weight: 700;
-
-    cursor: pointer;
-
-    border-radius: 12px;
-
-    padding: 1rem 1.3rem;
-
-    border: 1.5px solid var(--ink);
-
-    background: var(--signal);
-    color: var(--signal-ink);
-
-    text-decoration: none;
-
-    text-align: center;
-
-    transition:
-      transform 0.15s ease,
-      opacity 0.15s ease;
-  }
-
-  .btn:active {
-    transform: scale(0.97);
-  }
-
-  .btn.disabled {
-    opacity: 0.6;
-    pointer-events: none;
-  }
-
-  @media (max-width: 480px) {
-    .versions {
-      grid-template-columns: 1fr;
+        background: #e9edf2;
+        color: #16213a;
     }
-  }
+
+    .container {
+        width: 100%;
+        max-width: 520px;
+
+        background: #f7f9fb;
+
+        border: 1.5px solid #16213a;
+        border-radius: 18px;
+
+        padding: 30px;
+
+        text-align: center;
+    }
+
+    h1 {
+        margin: 0 0 10px;
+
+        font-size: 26px;
+    }
+
+    p {
+        margin: 0 0 25px;
+
+        color: #55607a;
+        line-height: 1.5;
+    }
+
+    .link-box {
+        width: 100%;
+
+        padding: 15px;
+
+        border: 1.5px solid #c5cddb;
+        border-radius: 10px;
+
+        background: white;
+
+        font-size: 14px;
+
+        word-break: break-all;
+
+        margin-bottom: 15px;
+    }
+
+    button {
+        width: 100%;
+
+        border: 1.5px solid #16213a;
+        border-radius: 12px;
+
+        padding: 15px;
+
+        background: #d4f03c;
+        color: #16213a;
+
+        font-size: 16px;
+        font-weight: bold;
+
+        cursor: pointer;
+
+        transition: transform 0.15s ease;
+    }
+
+    button:active {
+        transform: scale(0.97);
+    }
+
+    #message {
+        margin-top: 15px;
+
+        font-size: 14px;
+        font-weight: bold;
+
+        color: #1c6b3f;
+
+        min-height: 20px;
+    }
+
+    .steps {
+        margin-top: 25px;
+
+        padding: 15px;
+
+        border-radius: 10px;
+
+        background: #e9edf2;
+
+        text-align: left;
+
+        font-size: 14px;
+
+        line-height: 1.6;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        body {
+            background: #0d1324;
+            color: #e8ecf5;
+        }
+
+        .container {
+            background: #151d33;
+            border-color: #2b3652;
+        }
+
+        .link-box {
+            background: #0d1324;
+            border-color: #2b3652;
+            color: #e8ecf5;
+        }
+
+        .steps {
+            background: #0d1324;
+        }
+
+        p {
+            color: #97a3bd;
+        }
+    }
 </style>
 </head>
 
 <body>
 
-<main>
+<div class="container">
 
-  <h1>
-    Mise à jour de
-    <strong>LeNoobInconnu STUDIO</strong>
-  </h1>
+    <h1>Installer l'application</h1>
 
-  <section class="versions" aria-label="Versions">
+    <p>
+        Copiez le lien ci-dessous puis ouvrez-le dans
+        <strong>Google Chrome</strong>, <strong>Edge</strong>
+        ou votre navigateur.
+    </p>
 
-    <div class="version">
-      <p class="label">Installée</p>
-      <p class="number">0.0.0</p>
+    <div class="link-box" id="apkLink">
+        https://lenoobinconnu.github.io/STUDIO/mon-app.apk
     </div>
 
-    <div class="version">
-      <p class="label">Disponible</p>
-      <p class="number">1.0.0</p>
+    <button onclick="copierLien()">
+        📋 Copier le lien
+    </button>
+
+    <div id="message"></div>
+
+    <div class="steps">
+        <strong>Comment installer :</strong><br>
+        1. Appuyez sur « Copier le lien ».<br>
+        2. Ouvrez Google Chrome ou votre navigateur.<br>
+        3. Collez le lien dans la barre de recherche.<br>
+        4. Ouvrez le fichier APK téléchargé.
     </div>
 
-  </section>
-
-  <p class="status">
-    Une mise à jour est disponible.
-  </p>
-
-  <div class="actions">
-
-    <a
-      id="installButton"
-      class="btn"
-      href="#"
-    >
-      Installer
-    </a>
-
-  </div>
-
-</main>
+</div>
 
 <script>
 
-const apkUrl =
-  "https://lenoobinconnu.github.io/STUDIO/mon-app.apk";
+function copierLien() {
 
-const button =
-  document.getElementById("installButton");
+    const lien =
+        "https://lenoobinconnu.github.io/STUDIO/mon-app.apk";
 
+    navigator.clipboard.writeText(lien)
+        .then(function() {
 
-button.addEventListener("click", function(event) {
+            document.getElementById("message").textContent =
+                "✓ Lien copié ! Vous pouvez maintenant le coller dans Chrome.";
 
-  event.preventDefault();
+        })
+        .catch(function() {
 
-  /*
-   * Tentative d'ouverture dans Chrome
-   */
-  const chromeIntent =
-    "intent://" +
-    apkUrl.replace("https://", "") +
-    "#Intent;" +
-    "scheme=https;" +
-    "package=com.android.chrome;" +
-    "end";
+            // Solution de secours si le presse-papier est bloqué
+            const textarea = document.createElement("textarea");
 
-  window.location.href = chromeIntent;
+            textarea.value = lien;
 
+            document.body.appendChild(textarea);
 
-  /*
-   * Si Chrome n'est pas disponible,
-   * on ouvre le navigateur par défaut.
-   */
-  setTimeout(function() {
+            textarea.select();
 
-    window.location.href = apkUrl;
+            document.execCommand("copy");
 
-  }, 1200);
+            textarea.remove();
 
-});
+            document.getElementById("message").textContent =
+                "✓ Lien copié ! Vous pouvez maintenant le coller dans Chrome.";
+
+        });
+}
 
 </script>
 
