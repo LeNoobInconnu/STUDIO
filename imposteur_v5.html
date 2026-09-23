@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr" data-theme="spot">
+<html lang="fr" data-theme="spot" data-textsize="normal">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -16,6 +16,8 @@
   html[data-theme="braise"]{ --void:#180f0c; --surface:#241713; --surface-alt:#2e1c17; --line:#4a2c22; --accent:#f0a23a; --accent2:#d1483f; --text:#f7ece1; --text-dim:#b08b76; }
   html[data-theme="glacial"]{ --void:#0b1416; --surface:#101c1f; --surface-alt:#16262a; --line:#23383c; --accent:#49d2c2; --accent2:#3e93c9; --text:#e7f3f3; --text-dim:#7fa3a6; }
   html[data-theme="clair"]{ --void:#f2efe7; --surface:#ffffff; --surface-alt:#ece7db; --line:#ddd6c4; --accent:#b5872a; --accent2:#ab3a4e; --text:#2a2620; --text-dim:#7a7364; }
+  html[data-textsize="small"]{ font-size:91%; }
+  html[data-textsize="large"]{ font-size:113%; }
 
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
   html,body{height:100%;}
@@ -26,10 +28,14 @@
     padding:20px; overflow-x:hidden; transition:background .3s ease;
   }
   body.reduce-motion *{animation:none !important; transition:none !important;}
+  body.high-contrast{ --text-dim:var(--text); }
+  body.big-buttons .btn{padding:20px; font-size:1.06rem;}
+  body.big-buttons .chip{padding:12px 16px;}
+  body.big-buttons .toggle-opt{padding:14px 6px;}
+  body.big-buttons .avatar-btn{width:42px; height:42px;}
   @media (prefers-reduced-motion: reduce){ *{animation-duration:.01ms !important; transition-duration:.01ms !important;} }
 
   .stage{width:100%; max-width:420px; position:relative;}
-
   .topbar{position:fixed; top:16px; right:16px; z-index:40;}
   .gear-btn{width:46px; height:46px; border-radius:14px; border:1px solid var(--line); background:var(--surface); color:var(--text-dim); display:flex; align-items:center; justify-content:center; cursor:pointer;}
   .gear-btn svg{width:21px; height:21px; stroke:currentColor;}
@@ -46,7 +52,6 @@
 
   .card{background:var(--surface); border:1px solid var(--line); border-radius:20px; padding:24px 20px; margin-bottom:16px;}
   .card:last-child{margin-bottom:0;}
-
   .field{margin-bottom:22px;}
   .field:last-child{margin-bottom:0;}
   .field label{display:block; font-size:.85rem; color:var(--text-dim); margin-bottom:10px;}
@@ -54,7 +59,7 @@
   .stepper{display:flex; align-items:center; justify-content:space-between; background:var(--surface-alt); border-radius:14px; padding:6px;}
   .stepper button{width:44px; height:44px; border-radius:10px; border:none; background:transparent; color:var(--text); font-family:var(--font-display); font-size:1.4rem; cursor:pointer;}
   .stepper button:active{background:var(--line);}
-  .stepper .count{font-family:var(--font-display); font-size:1.15rem; font-weight:600;}
+  .stepper .count{font-family:var(--font-display); font-size:1.1rem; font-weight:600;}
 
   .hint{font-size:.78rem; color:var(--text-dim); margin-top:8px; line-height:1.5;}
   .error-msg{color:var(--accent2); font-size:.82rem; margin-top:-8px; margin-bottom:14px; min-height:1em;}
@@ -62,7 +67,6 @@
   .chip-row{display:flex; flex-wrap:wrap; gap:8px;}
   .chip{padding:9px 14px; border-radius:999px; border:1px solid var(--line); background:var(--surface-alt); color:var(--text-dim); font-size:.85rem; cursor:pointer; user-select:none;}
   .chip.selected{border-color:var(--accent); color:var(--accent); background:color-mix(in srgb, var(--accent) 12%, transparent);}
-  .chip.all-chip{font-weight:600;}
 
   .toggle-row{display:flex; background:var(--surface-alt); border-radius:14px; padding:4px;}
   .toggle-opt{flex:1; text-align:center; padding:10px 6px; border-radius:11px; font-size:.83rem; color:var(--text-dim); cursor:pointer;}
@@ -75,25 +79,20 @@
   .btn-ghost:active{background:var(--surface-alt);}
   .btn-solid{background:var(--text); color:var(--void);}
   .btn-solid:active{filter:brightness(.92);}
-  .btn-small{padding:11px; font-size:.85rem; border-radius:12px;}
-  .btn[disabled]{opacity:.4; pointer-events:none;}
+  .btn[disabled]{opacity:.35; pointer-events:none;}
   .btn-row{display:flex; gap:10px;}
   .btn-row .btn{margin:0; flex:1;}
-
   .link-btn{display:block; width:100%; text-align:center; background:none; border:none; color:var(--text-dim); font-size:.82rem; padding:10px; cursor:pointer; text-decoration:underline;}
 
-  /* player rows */
   .player-row{display:flex; align-items:center; gap:10px; background:var(--surface-alt); border-radius:14px; padding:6px 8px; margin-bottom:10px;}
   .avatar-btn{width:36px; height:36px; border-radius:50%; border:none; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:1rem; font-weight:700; color:#1a1508; cursor:pointer;}
   .player-row input{flex:1; background:none; border:none; color:var(--text); font-family:var(--font-body); font-size:.95rem; padding:10px 0; outline:none; min-width:0;}
   .player-row input::placeholder{color:var(--text-dim);}
   .player-row .rm{width:32px; height:32px; border-radius:10px; border:none; background:transparent; color:var(--text-dim); font-size:1.1rem; cursor:pointer; flex-shrink:0;}
   .player-row .rm:active{background:var(--line); color:var(--accent2);}
-
   .add-player{width:100%; padding:14px; border-radius:14px; border:1px dashed var(--line); background:transparent; color:var(--accent); font-family:var(--font-display); font-weight:600; font-size:.9rem; cursor:pointer;}
   .add-player:active{background:var(--surface-alt);}
 
-  /* radio cards */
   .radio-card-list{display:flex; flex-direction:column; gap:8px;}
   .radio-card{border:1px solid var(--line); border-radius:14px; padding:12px 14px; cursor:pointer; background:var(--surface-alt);}
   .radio-card.selected{border-color:var(--accent); background:color-mix(in srgb, var(--accent) 10%, var(--surface-alt));}
@@ -101,31 +100,32 @@
   .radio-card.selected .rc-title{color:var(--accent);}
   .radio-card .rc-desc{font-size:.76rem; color:var(--text-dim); line-height:1.4;}
 
-  /* pass / reveal */
+  /* role reveal card */
   .pass-wrap{text-align:center;}
   .pass-wrap .to{color:var(--text-dim); font-size:.9rem; margin-bottom:4px;}
-  .pass-wrap .player-name{font-family:var(--font-display); font-size:1.7rem; font-weight:700; margin:0 0 26px;}
-
-  .peephole{position:relative; aspect-ratio:1/1; max-width:250px; margin:0 auto 26px; border-radius:50%; background:radial-gradient(circle, var(--surface-alt) 0%, var(--void) 100%); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; overflow:hidden;}
-  .peephole .idle-label{font-size:.85rem; color:var(--text-dim); padding:0 20px; text-align:center;}
-  .peephole .reveal-content{display:none; flex-direction:column; align-items:center; justify-content:center; padding:0 16px; text-align:center;}
-  .peephole.revealed .idle-label{display:none;}
-  .peephole.revealed .reveal-content{display:flex;}
-  .reveal-tag{font-size:.75rem; letter-spacing:1px; color:var(--text-dim); margin-bottom:8px;}
-  .reveal-word{font-family:var(--font-display); font-size:1.45rem; font-weight:700; line-height:1.2;}
-  .reveal-sub{font-size:.72rem; color:var(--text-dim); margin-top:8px;}
-  .peephole.is-impostor .reveal-word{color:var(--accent2);}
-  .peephole:not(.is-impostor) .reveal-word{color:var(--accent);}
-
-  .hold-btn{display:block; width:100%; padding:18px; border-radius:14px; border:1px solid var(--line); background:var(--surface-alt); color:var(--text); font-family:var(--font-display); font-weight:600; font-size:.95rem; text-align:center; user-select:none; cursor:pointer;}
-  .hold-btn.pressed{background:var(--accent); color:#1a1508; border-color:var(--accent);}
+  .pass-wrap .player-name{font-family:var(--font-display); font-size:1.7rem; font-weight:700; margin:0 0 22px;}
+  .role-stage{perspective:1200px; margin-bottom:22px; touch-action:pan-y;}
+  .role-card{position:relative; width:100%; max-width:270px; aspect-ratio:3/4; margin:0 auto; transform-style:preserve-3d; transition:transform .55s cubic-bezier(.2,.8,.2,1);}
+  .role-card.no-anim{transition:none;}
+  .role-card.flipped{transform:rotateY(180deg);}
+  .rcf{position:absolute; inset:0; backface-visibility:hidden; border-radius:20px; border:1px solid var(--line); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:18px; text-align:center;}
+  .rcf-front{background:var(--surface-alt);}
+  .rcf-front .fi{font-size:2.4rem; margin-bottom:10px; opacity:.6;}
+  .rcf-front .ft{font-size:.85rem; color:var(--text-dim);}
+  .rcf-back{background:var(--surface); transform:rotateY(180deg); border-color:var(--role-color, var(--line)); box-shadow:0 0 0 1px var(--role-color, transparent) inset;}
+  .rc-icon{font-size:2.6rem; margin-bottom:6px;}
+  .rc-name{font-family:var(--font-display); font-weight:700; font-size:1.25rem; color:var(--role-color, var(--text));}
+  .rc-summary{font-size:.82rem; color:var(--text-dim); margin:3px 0 12px;}
+  .rc-objective{font-size:.8rem; line-height:1.5; margin-bottom:8px;}
+  .rc-capacity{font-size:.76rem; color:var(--role-color, var(--accent)); margin-bottom:8px; font-weight:600;}
+  .rc-word{font-family:var(--font-display); font-weight:700; font-size:1.05rem; padding-top:10px; border-top:1px solid var(--line); width:100%;}
+  .swipe-hint{text-align:center; font-size:.72rem; color:var(--text-dim); margin-top:14px;}
 
   .progress-dots{display:flex; justify-content:center; gap:6px; margin-top:20px;}
   .progress-dots span{width:6px; height:6px; border-radius:50%; background:var(--line);}
   .progress-dots span.done{background:var(--accent);}
   .progress-dots span.current{background:var(--text);}
 
-  /* discussion */
   .timer-display{font-family:var(--font-display); font-size:3rem; font-weight:700; text-align:center; margin:6px 0 6px; letter-spacing:1px;}
   .timer-phase-label{text-align:center; font-size:.78rem; color:var(--text-dim); margin-bottom:16px;}
   .order-list{list-style:none; margin:14px 0 0; padding:0;}
@@ -137,16 +137,15 @@
   .roster{list-style:none; margin:0 0 6px; padding:0;}
   .roster li{display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid var(--line); font-size:.95rem;}
   .roster li:last-child{border-bottom:none;}
-  .roster .role{font-size:.8rem; color:var(--text-dim);}
-  .roster li.imp .role{color:var(--accent2); font-weight:600;}
-  .roster .word{color:var(--accent); font-weight:600; font-size:.85rem;}
-  .blurred .roster .role, .blurred .roster .word{filter:blur(5px); user-select:none;}
-
+  .roster .role{font-size:.8rem; font-weight:600;}
+  .blurred .roster li{filter:blur(5px); user-select:none;}
+  .blurred #wordReveal{filter:blur(5px); user-select:none;}
   .result-banner{text-align:center; padding:14px; border-radius:14px; margin-bottom:16px; font-family:var(--font-display); font-weight:700;}
   .result-banner.win{background:color-mix(in srgb, var(--accent) 18%, transparent); color:var(--accent);}
   .result-banner.lose{background:color-mix(in srgb, var(--accent2) 18%, transparent); color:var(--accent2);}
+  .result-banner.special{background:color-mix(in srgb, #a463d1 20%, transparent); color:#a463d1;}
+  #wordReveal{text-align:center; font-size:.85rem; color:var(--text-dim); margin-bottom:14px;}
 
-  /* vote */
   .vote-list{list-style:none; margin:0; padding:0;}
   .vote-row{display:flex; align-items:center; justify-content:space-between; background:var(--surface-alt); border-radius:14px; padding:10px 14px; margin-bottom:8px;}
   .vote-row .vname{font-size:.92rem;}
@@ -158,23 +157,27 @@
   .bar-fill{height:100%; background:var(--accent); border-radius:4px;}
   .justify-input{width:100%; background:var(--surface-alt); border:1px solid var(--line); border-radius:12px; padding:12px; color:var(--text); font-family:var(--font-body); font-size:.9rem; margin-top:12px;}
 
-  /* stats */
   .stat-row{display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid var(--line);}
   .stat-row:last-child{border-bottom:none;}
   .stat-name{flex:1; font-size:.92rem;}
   .stat-figs{display:flex; gap:14px; font-size:.75rem; color:var(--text-dim); text-align:center;}
   .stat-figs b{display:block; font-family:var(--font-display); font-size:1rem; color:var(--text); font-weight:700;}
 
-  /* settings sheet */
   .overlay{position:fixed; inset:0; background:rgba(0,0,0,.55); opacity:0; pointer-events:none; transition:opacity .3s ease; z-index:50;}
   .overlay.open{opacity:1; pointer-events:auto;}
   .sheet{position:fixed; left:0; right:0; bottom:0; max-height:88vh; overflow-y:auto; background:var(--surface); border-radius:24px 24px 0 0; border:1px solid var(--line); border-bottom:none; padding:10px 20px 34px; transform:translateY(100%); transition:transform .32s ease; z-index:51; margin:0 auto; max-width:420px;}
   .sheet.open{transform:translateY(0);}
-  .sheet-handle{width:40px; height:4px; border-radius:2px; background:var(--line); margin:8px auto 18px;}
+  .sheet-handle{width:40px; height:4px; border-radius:2px; background:var(--line); margin:8px auto 14px;}
   .sheet-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
   .sheet-head h2{font-family:var(--font-display); font-size:1.15rem; margin:0;}
   .close-btn{width:34px; height:34px; border-radius:10px; border:none; background:var(--surface-alt); color:var(--text); font-size:1.1rem; cursor:pointer;}
   .section-divider{border:none; border-top:1px solid var(--line); margin:20px 0;}
+
+  .tab-bar{display:flex; background:var(--surface-alt); border-radius:14px; padding:4px; margin-bottom:18px; position:sticky; top:0; z-index:5;}
+  .tab-btn{flex:1; text-align:center; padding:11px 4px; border-radius:11px; font-size:.82rem; color:var(--text-dim); cursor:pointer;}
+  .tab-btn.active{background:var(--surface); color:var(--text); font-weight:600;}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block; animation:rise .25s ease both;}
 
   .theme-row{display:flex; gap:12px; flex-wrap:wrap;}
   .theme-opt{display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;}
@@ -195,8 +198,13 @@
   .custom-tag{display:flex; align-items:center; gap:6px; background:var(--surface-alt); border-radius:999px; padding:6px 6px 6px 12px; font-size:.8rem;}
   .custom-tag button{border:none; background:none; color:var(--text-dim); cursor:pointer; font-size:.9rem; padding:2px 6px;}
   .file-label{display:inline-block; margin-top:10px; padding:9px 14px; border-radius:10px; border:1px dashed var(--line); color:var(--text-dim); font-size:.8rem; cursor:pointer;}
-
   select.native-select{width:100%; background:var(--surface-alt); border:1px solid var(--line); border-radius:12px; padding:12px; color:var(--text); font-family:var(--font-body); font-size:.9rem;}
+  input[type="range"]{width:100%; accent-color:var(--accent);}
+
+  .preset-row{display:flex; align-items:center; gap:8px; background:var(--surface-alt); border-radius:14px; padding:10px 12px; margin-bottom:8px;}
+  .preset-row .pname{flex:1; font-size:.9rem;}
+  .preset-row button{border:none; background:var(--surface); color:var(--text-dim); border-radius:9px; padding:8px 10px; font-size:.78rem; cursor:pointer;}
+  .code-box{width:100%; background:var(--surface-alt); border:1px solid var(--line); border-radius:12px; padding:12px; color:var(--text); font-family:monospace; font-size:.75rem; resize:vertical; min-height:56px;}
 
   .alarm-flash{position:fixed; inset:0; background:var(--accent2); opacity:0; pointer-events:none; z-index:100;}
   .alarm-flash.go{animation:alarmPulse .9s ease;}
@@ -236,22 +244,32 @@
     </div>
   </div>
 
-  <!-- PASSING / REVEAL -->
+  <!-- PASSING / ROLE REVEAL -->
   <div class="screen" id="screen-pass">
     <div class="card pass-wrap">
       <div class="to">Passe le téléphone à</div>
       <div class="player-name" id="currentPlayerName">—</div>
 
-      <div class="peephole" id="peephole">
-        <div class="idle-label">Maintiens le cercle appuyé pour découvrir ton rôle en secret</div>
-        <div class="reveal-content">
-          <div class="reveal-tag" id="revealTag">MOT SECRET</div>
-          <div class="reveal-word" id="revealWord">—</div>
-          <div class="reveal-sub" id="revealSub"></div>
+      <div class="role-stage" id="roleStage">
+        <div class="role-card" id="roleCard">
+          <div class="rcf rcf-front">
+            <div class="fi">🎴</div>
+            <div class="ft">Ton rôle t'attend</div>
+          </div>
+          <div class="rcf rcf-back" id="roleBack">
+            <div class="rc-icon" id="rcIcon">🔪</div>
+            <div class="rc-name" id="rcName">—</div>
+            <div class="rc-summary" id="rcSummary">—</div>
+            <div class="rc-objective" id="rcObjective">—</div>
+            <div class="rc-capacity" id="rcCapacity" style="display:none;"></div>
+            <div class="rc-word" id="rcWord">—</div>
+          </div>
         </div>
       </div>
 
-      <div class="hold-btn" id="holdBtn">Maintenir pour regarder</div>
+      <button class="btn btn-primary" id="tapRevealBtn">Voir mon rôle</button>
+      <button class="btn btn-solid" id="nextPlayerBtn" disabled style="margin-top:10px;">Joueur suivant</button>
+      <div class="swipe-hint">Astuce : une fois révélé, glisse vers le haut pour continuer</div>
       <div class="progress-dots" id="progressDots"></div>
     </div>
   </div>
@@ -266,29 +284,24 @@
         <button class="btn btn-ghost" id="timerReset" style="margin:0;">Réinitialiser</button>
       </div>
     </div>
-
     <div class="card" id="orderSection" style="display:none;">
       <label style="display:block; font-size:.85rem; color:var(--text-dim); margin-bottom:14px;">Ordre de parole</label>
       <button class="btn btn-ghost" id="drawOrderBtn" style="margin-top:0;">Tirer l'ordre au sort</button>
       <div id="designatedDisplay" style="display:none; text-align:center; font-family:var(--font-display); font-size:1.2rem; padding:10px 0;"></div>
       <ul class="order-list" id="orderList"></ul>
     </div>
-
     <div class="card" id="freeSection" style="display:none;">
       <label style="display:block; font-size:.85rem; color:var(--text-dim); margin-bottom:4px;">Discussion libre</label>
       <div class="hint">Aucune limite de temps — débattez, puis votez quand vous êtes prêts.</div>
     </div>
-
     <div class="card" id="turnsSection" style="display:none;">
       <div class="turn-prompt" id="turnPrompt">—</div>
       <div class="turn-name" id="turnName">—</div>
       <button class="btn btn-ghost" id="turnNextBtn" style="margin-top:14px;">Joueur suivant</button>
     </div>
-
     <div class="card" id="challengeHint" style="display:none;">
       <div class="hint">🎯 Mode défi : interdiction de dire le mot secret, un synonyme évident, ou de le mimer.</div>
     </div>
-
     <button class="btn btn-primary" id="goVoteBtn">Passer au vote</button>
     <button class="btn btn-ghost" id="skipVoteBtn">Sauter le vote (vote à l'oral)</button>
     <button class="link-btn" id="newRoundBtn">Nouvelle configuration</button>
@@ -301,7 +314,6 @@
       <ul class="vote-list" id="votePublicList"></ul>
       <button class="btn btn-primary" id="finishPublicVoteBtn" style="margin-top:6px;">Voir le résultat du vote</button>
     </div>
-
     <div class="card" id="voteSecretCard" style="display:none;">
       <div class="to" style="text-align:center; color:var(--text-dim); font-size:.85rem;">Passe le téléphone à</div>
       <div class="player-name" style="text-align:center; margin-bottom:16px;" id="voteSecretVoter">—</div>
@@ -309,11 +321,10 @@
       <textarea class="justify-input" id="justifyInput" placeholder="Un mot pour justifier ton vote (facultatif)" style="display:none;"></textarea>
       <button class="btn btn-primary" id="confirmSecretVoteBtn" style="margin-top:14px;" disabled>Confirmer mon vote</button>
     </div>
-
     <div class="card" id="voteResultsCard" style="display:none;">
       <label style="display:block; font-size:.85rem; color:var(--text-dim); margin-bottom:14px;">Résultat du vote</label>
       <div id="voteBars"></div>
-      <button class="btn btn-solid" id="revealFromVoteBtn" style="margin-top:8px;">Révéler qui était l'imposteur</button>
+      <button class="btn btn-solid" id="revealFromVoteBtn" style="margin-top:8px;">Révéler les rôles</button>
     </div>
   </div>
 
@@ -321,7 +332,8 @@
   <div class="screen" id="screen-reveal">
     <div id="resultBanner"></div>
     <div class="card blurred" id="revealCard">
-      <label style="display:block; font-size:.85rem; color:var(--text-dim); margin-bottom:10px;">Résultats de la manche</label>
+      <label style="display:block; font-size:.85rem; color:var(--text-dim); margin-bottom:6px;">Résultats de la manche</label>
+      <div id="wordReveal"></div>
       <ul class="roster" id="rosterList"></ul>
       <button class="btn btn-primary" id="unblurBtn" style="margin-top:18px;">Afficher</button>
     </div>
@@ -333,7 +345,7 @@
   <div class="screen" id="screen-stats">
     <div class="card">
       <label style="display:block; font-size:.85rem; color:var(--text-dim); margin-bottom:6px;">Statistiques de la session</label>
-      <div class="hint" style="margin-top:0; margin-bottom:14px;">Remises à zéro si tu fermes la page.</div>
+      <div class="hint" style="margin-top:0; margin-bottom:14px;">Conservées tant que tu ne les réinitialises pas.</div>
       <div id="statsList"></div>
     </div>
     <button class="btn btn-ghost" id="resetStatsBtn">Réinitialiser les statistiques</button>
@@ -350,137 +362,143 @@
     <button class="close-btn" id="closeSettings">×</button>
   </div>
 
-  <div class="field">
-    <label>Modes rapides</label>
-    <div class="chip-row" id="presetRow"></div>
+  <div class="tab-bar">
+    <div class="tab-btn active" data-tab="partie">Partie</div>
+    <div class="tab-btn" data-tab="presets">Préréglages</div>
+    <div class="tab-btn" data-tab="general">Général</div>
   </div>
 
-  <hr class="section-divider">
-
-  <div class="field">
-    <label>Thème / éclairage</label>
-    <div class="theme-row" id="themeRow"></div>
-  </div>
-
-  <hr class="section-divider">
-
-  <div class="field">
-    <label>Catégories de mots</label>
-    <div class="chip-row" id="categoryRow"></div>
-  </div>
-
-  <div class="field">
-    <label>Mes mots</label>
-    <textarea class="custom-words-input" id="customWordsInput" placeholder="Ajoute un mot par ligne, puis appuie sur Entrée…"></textarea>
-    <label class="file-label" for="fileImport">Importer un fichier .txt</label>
-    <input type="file" id="fileImport" accept=".txt" style="display:none;">
-    <div class="custom-list" id="customList"></div>
-  </div>
-
-  <hr class="section-divider">
-
-  <div class="field">
-    <label>Nombre d'imposteurs</label>
-    <div class="stepper">
-      <button type="button" id="impDec">−</button>
-      <div class="count" id="impCount">1</div>
-      <button type="button" id="impInc">+</button>
+  <!-- TAB: PARTIE -->
+  <div class="tab-panel active" id="tab-partie">
+    <div class="field">
+      <label>Modes rapides</label>
+      <div class="chip-row" id="presetRow"></div>
     </div>
-    <div class="hint" id="impHint"></div>
-  </div>
-
-  <div class="field" id="impKnowField" style="display:none;">
-    <div class="switch-row">
-      <span class="lbl">Les imposteurs se connaissent</span>
-      <div class="switch" id="impKnowSwitch"><div class="knob"></div></div>
+    <hr class="section-divider">
+    <div class="field">
+      <label>Catégories de mots</label>
+      <div class="chip-row" id="categoryRow"></div>
     </div>
-  </div>
-
-  <div class="field">
-    <label>Ce que voit l'imposteur</label>
-    <div class="radio-card-list" id="impostorViewList"></div>
-  </div>
-
-  <hr class="section-divider">
-
-  <div class="field">
-    <label>Déroulé de la manche</label>
-    <div class="radio-card-list" id="roundModeList"></div>
-  </div>
-
-  <div class="field" id="timedOptions">
-    <div class="switch-row" style="margin-bottom:14px;">
-      <span class="lbl">Par phases (réflexion puis discussion)</span>
-      <div class="switch" id="phasesSwitch"><div class="knob"></div></div>
+    <div class="field">
+      <label>Mes mots</label>
+      <textarea class="custom-words-input" id="customWordsInput" placeholder="Ajoute un mot par ligne, puis appuie sur Entrée…"></textarea>
+      <label class="file-label" for="fileImport">Importer un fichier .txt</label>
+      <input type="file" id="fileImport" accept=".txt" style="display:none;">
+      <div class="custom-list" id="customList"></div>
     </div>
-    <div id="singleDurationField">
-      <label>Durée</label>
+    <hr class="section-divider">
+    <div class="field">
+      <label>Rôles activés</label>
+      <div class="hint" style="margin-top:0; margin-bottom:12px;">🔪 Imposteur — tromper et survivre · 🔍 Inspecteur — trouver les menteurs · 🌀 Masochiste — se faire voter</div>
+      <div class="hint" style="margin-top:0;">Imposteurs</div>
+      <div class="stepper" style="margin-bottom:10px;">
+        <button type="button" id="impDec">−</button><div class="count" id="impCount">1</div><button type="button" id="impInc">+</button>
+      </div>
+      <div class="hint" style="margin-top:0;">Inspecteurs</div>
+      <div class="stepper" style="margin-bottom:10px;">
+        <button type="button" id="inspDec">−</button><div class="count" id="inspCount">0</div><button type="button" id="inspInc">+</button>
+      </div>
+      <div class="hint" style="margin-top:0;">Masochistes</div>
       <div class="stepper">
-        <button type="button" id="durDec">−</button>
-        <div class="count" id="durVal">03:00</div>
-        <button type="button" id="durInc">+</button>
+        <button type="button" id="masoDec">−</button><div class="count" id="masoCount">0</div><button type="button" id="masoInc">+</button>
+      </div>
+      <div class="hint" id="rolesHint"></div>
+    </div>
+    <div class="field" id="impKnowField" style="display:none;">
+      <div class="switch-row"><span class="lbl">Les imposteurs se connaissent</span><div class="switch" id="impKnowSwitch"><div class="knob"></div></div></div>
+    </div>
+    <div class="field">
+      <label>Difficulté des mots (vue de l'imposteur)</label>
+      <div class="radio-card-list" id="impostorViewList"></div>
+    </div>
+    <hr class="section-divider">
+    <div class="field">
+      <label>Déroulé de la manche</label>
+      <div class="radio-card-list" id="roundModeList"></div>
+    </div>
+    <div class="field" id="timedOptions">
+      <div class="switch-row" style="margin-bottom:14px;"><span class="lbl">Par phases (réflexion puis discussion)</span><div class="switch" id="phasesSwitch"><div class="knob"></div></div></div>
+      <div id="singleDurationField">
+        <label>Durée</label>
+        <div class="stepper"><button type="button" id="durDec">−</button><div class="count" id="durVal">03:00</div><button type="button" id="durInc">+</button></div>
+      </div>
+      <div id="phaseDurationFields" style="display:none;">
+        <label>Réflexion</label>
+        <div class="stepper" style="margin-bottom:12px;"><button type="button" id="reflDec">−</button><div class="count" id="reflVal">01:00</div><button type="button" id="reflInc">+</button></div>
+        <label>Discussion</label>
+        <div class="stepper"><button type="button" id="discDec">−</button><div class="count" id="discVal">02:00</div><button type="button" id="discInc">+</button></div>
       </div>
     </div>
-    <div id="phaseDurationFields" style="display:none;">
-      <label>Réflexion</label>
-      <div class="stepper" style="margin-bottom:12px;">
-        <button type="button" id="reflDec">−</button>
-        <div class="count" id="reflVal">01:00</div>
-        <button type="button" id="reflInc">+</button>
+    <div class="field" id="orderOptions" style="display:none;">
+      <div class="toggle-row" id="orderModeRow">
+        <div class="toggle-opt selected" data-mode="random">Aléatoire</div>
+        <div class="toggle-opt" data-mode="designated">Désigné</div>
       </div>
-      <label>Discussion</label>
-      <div class="stepper">
-        <button type="button" id="discDec">−</button>
-        <div class="count" id="discVal">02:00</div>
-        <button type="button" id="discInc">+</button>
+      <div id="designatedSelectWrap" style="display:none; margin-top:12px;"><select class="native-select" id="designatedSelect"></select></div>
+    </div>
+    <div class="field">
+      <div class="switch-row"><span class="lbl">Mode défi (règle affichée en discussion)</span><div class="switch" id="challengeSwitch"><div class="knob"></div></div></div>
+    </div>
+    <hr class="section-divider">
+    <div class="field">
+      <label>Vote</label>
+      <div class="radio-card-list" id="voteModeList"></div>
+    </div>
+    <div class="field" id="justifyField" style="display:none;">
+      <div class="switch-row"><span class="lbl">Demander un mot de justification</span><div class="switch" id="justifySwitch"><div class="knob"></div></div></div>
+    </div>
+    <div class="field">
+      <div class="switch-row"><span class="lbl">Animation de révélation (carte qui se retourne)</span><div class="switch" id="revealAnimSwitch"><div class="knob"></div></div></div>
+    </div>
+  </div>
+
+  <!-- TAB: PRESETS -->
+  <div class="tab-panel" id="tab-presets">
+    <div class="field">
+      <label>Mes préréglages</label>
+      <div id="presetsList"></div>
+      <button class="btn btn-ghost" id="savePresetBtn" style="margin-top:4px;">+ Enregistrer les réglages actuels</button>
+    </div>
+    <hr class="section-divider">
+    <div class="field">
+      <label>Importer un code</label>
+      <textarea class="code-box" id="importCodeInput" placeholder="Colle un code de préréglage ici…"></textarea>
+      <button class="btn btn-ghost" id="importCodeBtn" style="margin-top:10px;">Importer</button>
+      <div class="hint" id="importHint"></div>
+    </div>
+  </div>
+
+  <!-- TAB: GENERAL -->
+  <div class="tab-panel" id="tab-general">
+    <div class="field">
+      <label>Thème / couleurs</label>
+      <div class="theme-row" id="themeRow"></div>
+    </div>
+    <hr class="section-divider">
+    <div class="field">
+      <div class="switch-row" style="margin-bottom:12px;"><span class="lbl">Son</span><div class="switch" id="soundSwitch"><div class="knob"></div></div></div>
+      <label>Volume</label>
+      <input type="range" id="volumeRange" min="0" max="100" value="70">
+    </div>
+    <hr class="section-divider">
+    <div class="field">
+      <label>Taille du texte</label>
+      <div class="toggle-row" id="textSizeRow">
+        <div class="toggle-opt" data-size="small">Petit</div>
+        <div class="toggle-opt selected" data-size="normal">Normal</div>
+        <div class="toggle-opt" data-size="large">Grand</div>
       </div>
     </div>
-  </div>
-
-  <div class="field" id="orderOptions" style="display:none;">
-    <div class="toggle-row" id="orderModeRow">
-      <div class="toggle-opt selected" data-mode="random">Aléatoire</div>
-      <div class="toggle-opt" data-mode="designated">Désigné</div>
+    <hr class="section-divider">
+    <div class="field">
+      <label>Accessibilité</label>
+      <div class="switch-row" style="margin-bottom:14px;"><span class="lbl">Contraste élevé</span><div class="switch" id="contrastSwitch"><div class="knob"></div></div></div>
+      <div class="switch-row" style="margin-bottom:14px;"><span class="lbl">Grands boutons</span><div class="switch" id="bigBtnSwitch"><div class="knob"></div></div></div>
+      <div class="switch-row"><span class="lbl">Vibrations (retour haptique)</span><div class="switch" id="vibSwitch"><div class="knob"></div></div></div>
     </div>
-    <div id="designatedSelectWrap" style="display:none; margin-top:12px;">
-      <select class="native-select" id="designatedSelect"></select>
-    </div>
-  </div>
-
-  <div class="field">
-    <div class="switch-row">
-      <span class="lbl">Mode défi (règle affichée en discussion)</span>
-      <div class="switch" id="challengeSwitch"><div class="knob"></div></div>
-    </div>
-  </div>
-
-  <hr class="section-divider">
-
-  <div class="field">
-    <label>Vote</label>
-    <div class="radio-card-list" id="voteModeList"></div>
-  </div>
-  <div class="field" id="justifyField" style="display:none;">
-    <div class="switch-row">
-      <span class="lbl">Demander un mot de justification</span>
-      <div class="switch" id="justifySwitch"><div class="knob"></div></div>
-    </div>
-  </div>
-
-  <hr class="section-divider">
-
-  <div class="field">
-    <div class="switch-row" style="margin-bottom:14px;">
-      <span class="lbl">Vibration au tirage au sort</span>
-      <div class="switch" id="vibSwitch"><div class="knob"></div></div>
-    </div>
-    <div class="switch-row" style="margin-bottom:14px;">
-      <span class="lbl">Son au moment du mot</span>
-      <div class="switch" id="soundSwitch"><div class="knob"></div></div>
-    </div>
-    <div class="switch-row">
-      <span class="lbl">Réduire les animations</span>
-      <div class="switch" id="motionSwitch"><div class="knob"></div></div>
+    <hr class="section-divider">
+    <div class="field">
+      <div class="switch-row"><span class="lbl">Réduire les animations générales</span><div class="switch" id="motionSwitch"><div class="knob"></div></div></div>
     </div>
   </div>
 </div>
@@ -507,26 +525,17 @@
     "Univers Minecraft": ["Bloc","Pioche","Creeper","Diamant","Village","Nether","Enderman","Coffre","Torche","Portail","Redstone","Zombie"]
   };
   const CATEGORY_KEYS = Object.keys(WORD_BANK);
-  const TURN_PROMPTS = [
-    "Décris ton mot en un seul mot.",
-    "Utilise ton mot dans une phrase sans le prononcer.",
-    "Donne une association d'idée liée à ton mot.",
-    "Mime un geste lié à ton mot.",
-    "Cite un endroit où on peut trouver ton mot."
-  ];
+  const TURN_PROMPTS = ["Décris ton mot en un seul mot.","Utilise ton mot dans une phrase sans le prononcer.","Donne une association d'idée liée à ton mot.","Mime un geste lié à ton mot.","Cite un endroit où on peut trouver ton mot."];
   const AVATARS = ["#e8b94b","#d1526d","#49d2c2","#3e93c9","#f0a23a","🎭","🕵️","🦊","🐱","⚡","🔥","🌙","👑","🐸"];
   const isColorAvatar = a => typeof a === 'string' && a.startsWith('#');
 
   const THEMES = [
-    {id:'spot', name:'Spot', color:'#e8b94b'},
-    {id:'neon', name:'Néon', color:'#ff3d8b'},
-    {id:'braise', name:'Braise', color:'#f0a23a'},
-    {id:'glacial', name:'Glacial', color:'#49d2c2'},
+    {id:'spot', name:'Spot', color:'#e8b94b'}, {id:'neon', name:'Néon', color:'#ff3d8b'},
+    {id:'braise', name:'Braise', color:'#f0a23a'}, {id:'glacial', name:'Glacial', color:'#49d2c2'},
     {id:'clair', name:'Clair', color:'#b5872a'}
   ];
-
   const IMPOSTOR_VIEWS = [
-    {id:'blind', title:'Aveugle', desc:"Ne voit rien du tout, doit deviner en écoutant."},
+    {id:'blind', title:'Aveugle', desc:"Ne voit rien, doit deviner en écoutant."},
     {id:'theme', title:'Thème seulement', desc:"Voit le nom de la catégorie, pas le mot."},
     {id:'close', title:'Mot proche', desc:"Voit un autre mot de la même catégorie."},
     {id:'trap', title:'Mot piège', desc:"Voit un mot d'une autre catégorie, présenté avec assurance."},
@@ -542,47 +551,42 @@
     {id:'public', title:'Public', desc:"Un tap par joueur, tout le monde voit le score en direct."},
     {id:'secret', title:'Secret', desc:"Le téléphone passe, chacun vote sans que les autres voient."}
   ];
+  const ROLES = {
+    impostor: {name:'Imposteur', icon:'🔪', color:'#d1526d', summary:'Tromper et survivre', objective:"Fais croire que tu connais le mot et évite d'être démasqué au vote."},
+    inspector: {name:'Inspecteur', icon:'🔍', color:'#3e93c9', summary:'Trouver les menteurs', objective:"Aide le groupe à repérer l'imposteur grâce à ton indice."},
+    masochist: {name:'Masochiste', icon:'🌀', color:'#a463d1', summary:'Se faire voter', objective:"Fais tout pour paraître suspect : tu gagnes si le groupe vote contre toi."},
+    innocent: {name:'Innocent', icon:'🙂', color:'#e8b94b', summary:"Trouver l'imposteur", objective:"Repère les incohérences dans les descriptions des autres joueurs."}
+  };
 
   let cfg = {
-    theme:'spot',
-    categories: new Set(CATEGORY_KEYS),
-    customWords: [],
-    numImpostors: 1,
-    impostorsKnow: false,
-    impostorView: 'blind',
-    roundMode: 'timed',
-    timedPhases: false,
-    timedSeconds: 180,
-    reflectionSeconds: 60,
-    discussionSeconds: 120,
-    orderMode: 'random',
-    designatedIndex: 0,
-    challengeMode: false,
-    voteMode: 'public',
-    voteJustify: false,
-    vibration: false,
-    sound: false,
-    reduceMotion: false
+    categories: new Set(CATEGORY_KEYS), customWords: [],
+    numImpostors: 1, numInspectors: 0, numMasochists: 0, impostorsKnow: false,
+    impostorView: 'blind', roundMode: 'timed', timedPhases: false,
+    timedSeconds: 180, reflectionSeconds: 60, discussionSeconds: 120,
+    orderMode: 'random', designatedIndex: 0, challengeMode: false,
+    voteMode: 'public', voteJustify: false, revealAnimation: true,
+    theme:'spot', sound:false, volume:70, vibration:false, reduceMotion:false,
+    textSize:'normal', highContrast:false, bigButtons:false
   };
+  const GAME_KEYS = ['categories','customWords','numImpostors','numInspectors','numMasochists','impostorsKnow','impostorView','roundMode','timedPhases','timedSeconds','reflectionSeconds','discussionSeconds','orderMode','designatedIndex','challengeMode','voteMode','voteJustify','revealAnimation'];
 
   let players = [0,1,2].map(i => ({name:'', avatar:AVATARS[i % AVATARS.length], games:0, imp:0, wins:0}));
+  let presets = [];
 
   let round = {
-    names:[], avatars:[], categoryOfWord:'', secretWord:'',
-    impostorSet:new Set(), currentIndex:0,
+    names:[], impostorSet:new Set(), inspectorSet:new Set(), masochistSet:new Set(),
+    categoryOfWord:'', secretWord:'', currentIndex:0,
     timerHandle:null, timerRunning:false, timerPhase:'discussion', timerSecondsLeft:0,
-    turnIndex:0, turnPrompt:'',
-    speakingOrder:[],
-    votes:{}, voteVoterIndex:0, voterRemaining:[]
+    turnIndex:0, turnPrompt:'', speakingOrder:[], votes:{}, voterRemaining:[], clues:{}
   };
 
-  /* ---------------- Save & restore (localStorage) ---------------- */
-  const STORAGE_KEY = 'imposteur_save_v1';
+  /* ---------------- Save & restore ---------------- */
+  const STORAGE_KEY = 'imposteur_save_v2';
   function persist(){
     try{
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
         cfg: Object.assign({}, cfg, { categories: Array.from(cfg.categories) }),
-        players: players
+        players: players, presets: presets
       }));
     }catch(e){}
   }
@@ -597,89 +601,90 @@
         if (!Array.isArray(cfg.customWords)) cfg.customWords = [];
       }
       if (Array.isArray(data.players) && data.players.length){
-        players = data.players.map(p => ({
-          name: (p && p.name) || '',
-          avatar: (p && p.avatar) || AVATARS[0],
-          games: (p && p.games) || 0,
-          imp: (p && p.imp) || 0,
-          wins: (p && p.wins) || 0
-        }));
+        players = data.players.map(p => ({ name:(p&&p.name)||'', avatar:(p&&p.avatar)||AVATARS[0], games:(p&&p.games)||0, imp:(p&&p.imp)||0, wins:(p&&p.wins)||0 }));
       }
+      if (Array.isArray(data.presets)) presets = data.presets;
     }catch(e){}
   })();
   document.documentElement.setAttribute('data-theme', cfg.theme);
+  document.documentElement.setAttribute('data-textsize', cfg.textSize);
 
-  function showScreen(id){
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-  }
-
+  function showScreen(id){ document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
   function fmt(s){ const m=Math.floor(s/60).toString().padStart(2,'0'); const ss=(s%60).toString().padStart(2,'0'); return m+':'+ss; }
-
+  function vibrate(pattern){ if (cfg.vibration && navigator.vibrate) navigator.vibrate(pattern); }
   function beep(){
-    if (!cfg.sound) return;
+    if (!cfg.sound || cfg.volume <= 0) return;
     try{
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
+      const osc = ctx.createOscillator(); const gain = ctx.createGain();
       osc.type = 'sine'; osc.frequency.value = 720;
-      gain.gain.setValueAtTime(0.08, ctx.currentTime);
+      const g = 0.02 + (cfg.volume/100)*0.12;
+      gain.gain.setValueAtTime(g, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18);
       osc.connect(gain); gain.connect(ctx.destination);
       osc.start(); osc.stop(ctx.currentTime + 0.2);
     }catch(e){}
   }
-
-  /* ---------------- Player list ---------------- */
-  const playerListEl = document.getElementById('playerList');
-  function renderAvatarBtn(btn, avatar){
-    if (isColorAvatar(avatar)){ btn.style.background = avatar; btn.textContent=''; }
-    else { btn.style.background = 'var(--surface)'; btn.textContent = avatar; }
+  function attachSwipe(el, opts){
+    let startY = null;
+    el.addEventListener('touchstart', e => { startY = e.touches[0].clientY; }, {passive:true});
+    el.addEventListener('touchend', e => {
+      if (startY == null) return;
+      const dy = startY - e.changedTouches[0].clientY;
+      startY = null;
+      if (dy > 55 && opts.up) opts.up();
+      if (dy < -55 && opts.down) opts.down();
+    });
   }
+
+  /* ---------------- Players ---------------- */
+  const playerListEl = document.getElementById('playerList');
+  function renderAvatarBtn(btn, avatar){ if (isColorAvatar(avatar)){ btn.style.background = avatar; btn.textContent=''; } else { btn.style.background = 'var(--surface)'; btn.textContent = avatar; } }
   function renderPlayerList(){
     playerListEl.innerHTML = '';
     players.forEach((p, i) => {
       const row = document.createElement('div');
       row.className = 'player-row';
-      row.innerHTML =
-        '<button type="button" class="avatar-btn"></button>' +
-        '<input type="text" placeholder="Joueur ' + (i+1) + '" value="' + p.name.replace(/"/g,'&quot;') + '">' +
-        (players.length > 3 ? '<button class="rm" aria-label="Retirer">×</button>' : '');
+      row.innerHTML = '<button type="button" class="avatar-btn"></button><input type="text" placeholder="Joueur ' + (i+1) + '" value="' + p.name.replace(/"/g,'&quot;') + '">' + (players.length > 3 ? '<button class="rm" aria-label="Retirer">×</button>' : '');
       renderAvatarBtn(row.querySelector('.avatar-btn'), p.avatar);
-      row.querySelector('.avatar-btn').addEventListener('click', () => {
-        const idx = AVATARS.indexOf(p.avatar);
-        p.avatar = AVATARS[(idx + 1) % AVATARS.length];
-        renderAvatarBtn(row.querySelector('.avatar-btn'), p.avatar);
-      });
+      row.querySelector('.avatar-btn').addEventListener('click', () => { const idx = AVATARS.indexOf(p.avatar); p.avatar = AVATARS[(idx + 1) % AVATARS.length]; renderAvatarBtn(row.querySelector('.avatar-btn'), p.avatar); persist(); });
       row.querySelector('input').addEventListener('input', e => { p.name = e.target.value; });
       const rm = row.querySelector('.rm');
-      if (rm) rm.addEventListener('click', () => { players.splice(i,1); renderPlayerList(); clampImpostors(); refreshDesignatedSelect(); });
+      if (rm) rm.addEventListener('click', () => { players.splice(i,1); renderPlayerList(); clampRoles(); refreshDesignatedSelect(); persist(); });
       playerListEl.appendChild(row);
     });
   }
   document.getElementById('addPlayerBtn').addEventListener('click', () => {
     if (players.length >= 20) return;
     players.push({name:'', avatar:AVATARS[players.length % AVATARS.length], games:0, imp:0, wins:0});
-    renderPlayerList(); clampImpostors(); refreshDesignatedSelect();
-    const inputs = playerListEl.querySelectorAll('input');
-    inputs[inputs.length - 1].focus();
+    renderPlayerList(); clampRoles(); refreshDesignatedSelect(); persist();
+    const inputs = playerListEl.querySelectorAll('input'); inputs[inputs.length - 1].focus();
   });
   renderPlayerList();
 
-  /* ---------------- Presets ---------------- */
+  /* ---------------- Tabs ---------------- */
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  /* ---------------- Quick presets ---------------- */
   const PRESETS = {
-    standard: {numImpostors:1, impostorView:'blind', roundMode:'timed', timedPhases:false, timedSeconds:180, challengeMode:false},
-    chaos: {numImpostors:2, impostorsKnow:false, impostorView:'random', roundMode:'timed', timedPhases:false, timedSeconds:60, challengeMode:false},
-    expert: {numImpostors:1, impostorView:'blind', roundMode:'timed', timedPhases:false, timedSeconds:120, challengeMode:false},
-    speedrun: {numImpostors:1, impostorView:'blind', roundMode:'timed', timedPhases:false, timedSeconds:30, challengeMode:false},
-    defi: {numImpostors:1, impostorView:'blind', roundMode:'free', challengeMode:true}
+    standard: {numImpostors:1, numInspectors:0, numMasochists:0, impostorView:'blind', roundMode:'timed', timedPhases:false, timedSeconds:180, challengeMode:false},
+    chaos: {numImpostors:2, numInspectors:0, numMasochists:0, impostorsKnow:false, impostorView:'random', roundMode:'timed', timedPhases:false, timedSeconds:60, challengeMode:false},
+    expert: {numImpostors:1, numInspectors:0, numMasochists:0, impostorView:'blind', roundMode:'timed', timedPhases:false, timedSeconds:120, challengeMode:false},
+    speedrun: {numImpostors:1, numInspectors:0, numMasochists:0, impostorView:'blind', roundMode:'timed', timedPhases:false, timedSeconds:30, challengeMode:false},
+    enquete: {numImpostors:1, numInspectors:1, numMasochists:0, impostorView:'blind', roundMode:'timed', timedPhases:false, timedSeconds:180, challengeMode:false},
+    defi: {numImpostors:1, numInspectors:0, numMasochists:0, impostorView:'blind', roundMode:'free', challengeMode:true}
   };
   const presetRow = document.getElementById('presetRow');
-  [['standard','Standard'],['chaos','Chaos'],['expert','Expert'],['speedrun','Speedrun'],['defi','Défi']].forEach(([id,label]) => {
-    const chip = document.createElement('div');
-    chip.className = 'chip';
-    chip.textContent = label;
-    chip.addEventListener('click', () => { Object.assign(cfg, PRESETS[id]); syncSettingsUI(); });
+  [['standard','Standard'],['chaos','Chaos'],['expert','Expert'],['speedrun','Speedrun'],['enquete','Enquête'],['defi','Défi']].forEach(([id,label]) => {
+    const chip = document.createElement('div'); chip.className = 'chip'; chip.textContent = label;
+    chip.addEventListener('click', () => { Object.assign(cfg, PRESETS[id]); fullResync(); persist(); });
     presetRow.appendChild(chip);
   });
 
@@ -690,10 +695,9 @@
     opt.className = 'theme-opt' + (t.id === cfg.theme ? ' selected' : '');
     opt.innerHTML = '<div class="swatch" style="background:' + t.color + '"></div><span>' + t.name + '</span>';
     opt.addEventListener('click', () => {
-      cfg.theme = t.id;
-      document.documentElement.setAttribute('data-theme', t.id);
+      cfg.theme = t.id; document.documentElement.setAttribute('data-theme', t.id);
       document.querySelectorAll('.theme-opt').forEach(o => o.classList.remove('selected'));
-      opt.classList.add('selected');
+      opt.classList.add('selected'); persist();
     });
     themeRow.appendChild(opt);
   });
@@ -703,22 +707,18 @@
   function renderCategoryChips(){
     categoryRow.innerHTML = '';
     const allChip = document.createElement('div');
-    allChip.className = 'chip all-chip' + (cfg.categories.size === CATEGORY_KEYS.length ? ' selected' : '');
-    allChip.textContent = 'Toutes';
+    allChip.className = 'chip' + (cfg.categories.size === CATEGORY_KEYS.length ? ' selected' : '');
+    allChip.textContent = 'Toutes'; allChip.style.fontWeight = '600';
     allChip.addEventListener('click', () => {
-      if (cfg.categories.size === CATEGORY_KEYS.length) cfg.categories.clear();
-      else CATEGORY_KEYS.forEach(k => cfg.categories.add(k));
-      renderCategoryChips();
+      if (cfg.categories.size === CATEGORY_KEYS.length) cfg.categories.clear(); else CATEGORY_KEYS.forEach(k => cfg.categories.add(k));
+      renderCategoryChips(); persist();
     });
     categoryRow.appendChild(allChip);
     CATEGORY_KEYS.forEach(cat => {
       const chip = document.createElement('div');
       chip.className = 'chip' + (cfg.categories.has(cat) ? ' selected' : '');
       chip.textContent = cat;
-      chip.addEventListener('click', () => {
-        if (cfg.categories.has(cat)) cfg.categories.delete(cat); else cfg.categories.add(cat);
-        renderCategoryChips();
-      });
+      chip.addEventListener('click', () => { if (cfg.categories.has(cat)) cfg.categories.delete(cat); else cfg.categories.add(cat); renderCategoryChips(); persist(); });
       categoryRow.appendChild(chip);
     });
   }
@@ -729,10 +729,9 @@
   function renderCustomList(){
     customList.innerHTML = '';
     cfg.customWords.forEach((w, i) => {
-      const tag = document.createElement('div');
-      tag.className = 'custom-tag';
+      const tag = document.createElement('div'); tag.className = 'custom-tag';
       tag.innerHTML = '<span>' + w + '</span><button type="button">×</button>';
-      tag.querySelector('button').addEventListener('click', () => { cfg.customWords.splice(i,1); renderCustomList(); });
+      tag.querySelector('button').addEventListener('click', () => { cfg.customWords.splice(i,1); renderCustomList(); persist(); });
       customList.appendChild(tag);
     });
   }
@@ -740,50 +739,53 @@
     if (e.key === 'Enter'){
       e.preventDefault();
       const val = customWordsInput.value.trim();
-      if (val){ val.split(/\n|,/).map(s=>s.trim()).filter(Boolean).forEach(w => cfg.customWords.push(w)); }
-      customWordsInput.value = '';
-      renderCustomList();
+      if (val) val.split(/\n|,/).map(s=>s.trim()).filter(Boolean).forEach(w => cfg.customWords.push(w));
+      customWordsInput.value = ''; renderCustomList(); persist();
     }
   });
   document.getElementById('fileImport').addEventListener('change', e => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const file = e.target.files[0]; if (!file) return;
     const reader = new FileReader();
-    reader.onload = () => {
-      String(reader.result).split(/\r?\n/).map(s=>s.trim()).filter(Boolean).forEach(w => cfg.customWords.push(w));
-      renderCustomList();
-    };
-    reader.readAsText(file);
-    e.target.value = '';
+    reader.onload = () => { String(reader.result).split(/\r?\n/).map(s=>s.trim()).filter(Boolean).forEach(w => cfg.customWords.push(w)); renderCustomList(); persist(); };
+    reader.readAsText(file); e.target.value = '';
   });
 
-  /* ---------------- Number of impostors ---------------- */
-  const impCountEl = document.getElementById('impCount');
-  const impKnowField = document.getElementById('impKnowField');
-  function maxImpostors(){ return Math.max(1, players.length - 2); }
-  function clampImpostors(){
-    cfg.numImpostors = Math.min(cfg.numImpostors, maxImpostors());
-    impCountEl.textContent = cfg.numImpostors;
-    document.getElementById('impHint').textContent = cfg.numImpostors === 1
-      ? 'Un seul imposteur parmi le groupe.'
-      : cfg.numImpostors + ' imposteurs se partagent le secret.';
-    impKnowField.style.display = cfg.numImpostors > 1 ? 'block' : 'none';
+  /* ---------------- Roles counts ---------------- */
+  function budget(){ return Math.max(1, players.length - 1); }
+  function clampRoles(){
+    const b = budget();
+    cfg.numImpostors = Math.max(1, Math.min(cfg.numImpostors, b));
+    let rem = b - cfg.numImpostors;
+    cfg.numInspectors = Math.max(0, Math.min(cfg.numInspectors, rem)); rem -= cfg.numInspectors;
+    cfg.numMasochists = Math.max(0, Math.min(cfg.numMasochists, rem));
+    document.getElementById('impCount').textContent = cfg.numImpostors;
+    document.getElementById('inspCount').textContent = cfg.numInspectors;
+    document.getElementById('masoCount').textContent = cfg.numMasochists;
+    document.getElementById('impKnowField').style.display = cfg.numImpostors > 1 ? 'block' : 'none';
+    const totalSpecial = cfg.numImpostors + cfg.numInspectors + cfg.numMasochists;
+    document.getElementById('rolesHint').textContent = totalSpecial >= players.length
+      ? "Attention : il ne reste plus d'innocent parmi le groupe."
+      : (players.length - totalSpecial) + ' innocent(s) restant(s).';
   }
-  document.getElementById('impDec').addEventListener('click', () => { cfg.numImpostors = Math.max(1, cfg.numImpostors - 1); clampImpostors(); });
-  document.getElementById('impInc').addEventListener('click', () => { cfg.numImpostors = Math.min(maxImpostors(), cfg.numImpostors + 1); clampImpostors(); });
-  clampImpostors();
+  document.getElementById('impDec').addEventListener('click', () => { cfg.numImpostors--; clampRoles(); persist(); });
+  document.getElementById('impInc').addEventListener('click', () => { cfg.numImpostors++; clampRoles(); persist(); });
+  document.getElementById('inspDec').addEventListener('click', () => { cfg.numInspectors = Math.max(0, cfg.numInspectors-1); clampRoles(); persist(); });
+  document.getElementById('inspInc').addEventListener('click', () => { cfg.numInspectors++; clampRoles(); persist(); });
+  document.getElementById('masoDec').addEventListener('click', () => { cfg.numMasochists = Math.max(0, cfg.numMasochists-1); clampRoles(); persist(); });
+  document.getElementById('masoInc').addEventListener('click', () => { cfg.numMasochists++; clampRoles(); persist(); });
+  clampRoles();
 
   const impKnowSwitch = document.getElementById('impKnowSwitch');
-  impKnowSwitch.addEventListener('click', () => { cfg.impostorsKnow = !cfg.impostorsKnow; impKnowSwitch.classList.toggle('on', cfg.impostorsKnow); });
+  impKnowSwitch.addEventListener('click', () => { cfg.impostorsKnow = !cfg.impostorsKnow; impKnowSwitch.classList.toggle('on', cfg.impostorsKnow); persist(); });
 
-  /* ---------------- Generic radio-card renderer ---------------- */
+  /* ---------------- Radio cards ---------------- */
   function renderRadioCards(container, options, getSelected, onSelect){
     container.innerHTML = '';
     options.forEach(opt => {
       const card = document.createElement('div');
       card.className = 'radio-card' + (getSelected() === opt.id ? ' selected' : '');
       card.innerHTML = '<div class="rc-title">' + opt.title + '</div><div class="rc-desc">' + opt.desc + '</div>';
-      card.addEventListener('click', () => { onSelect(opt.id); refreshAllRadioCards(); });
+      card.addEventListener('click', () => { onSelect(opt.id); refreshAllRadioCards(); persist(); });
       container.appendChild(card);
     });
   }
@@ -793,27 +795,21 @@
     renderRadioCards(document.getElementById('voteModeList'), VOTE_MODES, () => cfg.voteMode, id => { cfg.voteMode = id; document.getElementById('justifyField').style.display = id === 'secret' ? 'block' : 'none'; });
   }
   refreshAllRadioCards();
-
   function syncRoundModeFields(){
     document.getElementById('timedOptions').style.display = cfg.roundMode === 'timed' ? 'block' : 'none';
     document.getElementById('orderOptions').style.display = cfg.roundMode === 'order' ? 'block' : 'none';
   }
   syncRoundModeFields();
 
-  /* ---------------- Timed duration + phases ---------------- */
+  /* ---------------- Durations ---------------- */
+  function stepSeconds(getVal, setVal, delta, min, max, displayEl){ let v = Math.max(min, Math.min(max, getVal()+delta)); setVal(v); displayEl.textContent = fmt(v); persist(); }
   const phasesSwitch = document.getElementById('phasesSwitch');
   phasesSwitch.addEventListener('click', () => {
-    cfg.timedPhases = !cfg.timedPhases;
-    phasesSwitch.classList.toggle('on', cfg.timedPhases);
+    cfg.timedPhases = !cfg.timedPhases; phasesSwitch.classList.toggle('on', cfg.timedPhases);
     document.getElementById('singleDurationField').style.display = cfg.timedPhases ? 'none' : 'block';
     document.getElementById('phaseDurationFields').style.display = cfg.timedPhases ? 'block' : 'none';
+    persist();
   });
-  function stepSeconds(getVal, setVal, delta, min, max, displayEl){
-    let v = getVal() + delta;
-    v = Math.max(min, Math.min(max, v));
-    setVal(v);
-    displayEl.textContent = fmt(v);
-  }
   const durVal = document.getElementById('durVal'); durVal.textContent = fmt(cfg.timedSeconds);
   document.getElementById('durDec').addEventListener('click', () => stepSeconds(()=>cfg.timedSeconds, v=>cfg.timedSeconds=v, -15, 15, 900, durVal));
   document.getElementById('durInc').addEventListener('click', () => stepSeconds(()=>cfg.timedSeconds, v=>cfg.timedSeconds=v, 15, 15, 900, durVal));
@@ -824,175 +820,241 @@
   document.getElementById('discDec').addEventListener('click', () => stepSeconds(()=>cfg.discussionSeconds, v=>cfg.discussionSeconds=v, -15, 15, 900, discVal));
   document.getElementById('discInc').addEventListener('click', () => stepSeconds(()=>cfg.discussionSeconds, v=>cfg.discussionSeconds=v, 15, 15, 900, discVal));
 
-  /* ---------------- Order mode ---------------- */
   document.querySelectorAll('#orderModeRow .toggle-opt').forEach(opt => {
     opt.addEventListener('click', () => {
       document.querySelectorAll('#orderModeRow .toggle-opt').forEach(o => o.classList.remove('selected'));
-      opt.classList.add('selected');
-      cfg.orderMode = opt.dataset.mode;
+      opt.classList.add('selected'); cfg.orderMode = opt.dataset.mode;
       document.getElementById('designatedSelectWrap').style.display = cfg.orderMode === 'designated' ? 'block' : 'none';
+      persist();
     });
   });
   function refreshDesignatedSelect(){
-    const sel = document.getElementById('designatedSelect');
-    sel.innerHTML = '';
-    players.forEach((p, i) => {
-      const o = document.createElement('option');
-      o.value = i; o.textContent = p.name.trim() || ('Joueur ' + (i+1));
-      sel.appendChild(o);
-    });
+    const sel = document.getElementById('designatedSelect'); sel.innerHTML = '';
+    players.forEach((p, i) => { const o = document.createElement('option'); o.value = i; o.textContent = p.name.trim() || ('Joueur ' + (i+1)); sel.appendChild(o); });
     sel.value = Math.min(cfg.designatedIndex, players.length - 1);
   }
-  document.getElementById('designatedSelect').addEventListener('change', e => { cfg.designatedIndex = parseInt(e.target.value, 10); });
+  document.getElementById('designatedSelect').addEventListener('change', e => { cfg.designatedIndex = parseInt(e.target.value, 10); persist(); });
   refreshDesignatedSelect();
 
-  /* ---------------- Challenge / vote justify / tech switches ---------------- */
-  document.getElementById('challengeSwitch').addEventListener('click', function(){ cfg.challengeMode = !cfg.challengeMode; this.classList.toggle('on', cfg.challengeMode); });
-  document.getElementById('justifySwitch').addEventListener('click', function(){ cfg.voteJustify = !cfg.voteJustify; this.classList.toggle('on', cfg.voteJustify); });
-  document.getElementById('vibSwitch').addEventListener('click', function(){ cfg.vibration = !cfg.vibration; this.classList.toggle('on', cfg.vibration); });
-  document.getElementById('soundSwitch').addEventListener('click', function(){ cfg.sound = !cfg.sound; this.classList.toggle('on', cfg.sound); });
-  document.getElementById('motionSwitch').addEventListener('click', function(){
-    cfg.reduceMotion = !cfg.reduceMotion;
-    this.classList.toggle('on', cfg.reduceMotion);
-    document.body.classList.toggle('reduce-motion', cfg.reduceMotion);
+  document.getElementById('challengeSwitch').addEventListener('click', function(){ cfg.challengeMode = !cfg.challengeMode; this.classList.toggle('on', cfg.challengeMode); persist(); });
+  document.getElementById('justifySwitch').addEventListener('click', function(){ cfg.voteJustify = !cfg.voteJustify; this.classList.toggle('on', cfg.voteJustify); persist(); });
+  document.getElementById('revealAnimSwitch').addEventListener('click', function(){ cfg.revealAnimation = !cfg.revealAnimation; this.classList.toggle('on', cfg.revealAnimation); persist(); });
+  document.getElementById('vibSwitch').addEventListener('click', function(){ cfg.vibration = !cfg.vibration; this.classList.toggle('on', cfg.vibration); persist(); });
+  document.getElementById('soundSwitch').addEventListener('click', function(){ cfg.sound = !cfg.sound; this.classList.toggle('on', cfg.sound); persist(); });
+  document.getElementById('volumeRange').addEventListener('input', e => { cfg.volume = parseInt(e.target.value,10); persist(); });
+  document.getElementById('contrastSwitch').addEventListener('click', function(){ cfg.highContrast = !cfg.highContrast; this.classList.toggle('on', cfg.highContrast); document.body.classList.toggle('high-contrast', cfg.highContrast); persist(); });
+  document.getElementById('bigBtnSwitch').addEventListener('click', function(){ cfg.bigButtons = !cfg.bigButtons; this.classList.toggle('on', cfg.bigButtons); document.body.classList.toggle('big-buttons', cfg.bigButtons); persist(); });
+  document.getElementById('motionSwitch').addEventListener('click', function(){ cfg.reduceMotion = !cfg.reduceMotion; this.classList.toggle('on', cfg.reduceMotion); document.body.classList.toggle('reduce-motion', cfg.reduceMotion); persist(); });
+  document.querySelectorAll('#textSizeRow .toggle-opt').forEach(opt => {
+    opt.addEventListener('click', () => {
+      document.querySelectorAll('#textSizeRow .toggle-opt').forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected'); cfg.textSize = opt.dataset.size;
+      document.documentElement.setAttribute('data-textsize', cfg.textSize); persist();
+    });
   });
 
-  function syncSettingsUI(){
+  function fullResync(){
     document.documentElement.setAttribute('data-theme', cfg.theme);
-    document.querySelectorAll('.theme-opt').forEach(o => o.classList.remove('selected'));
-    THEMES.forEach((t,i) => { if (t.id === cfg.theme) themeRow.children[i].classList.add('selected'); });
-    clampImpostors();
+    document.documentElement.setAttribute('data-textsize', cfg.textSize);
+    document.querySelectorAll('.theme-opt').forEach((o,i) => o.classList.toggle('selected', THEMES[i].id === cfg.theme));
+    document.querySelectorAll('#textSizeRow .toggle-opt').forEach(o => o.classList.toggle('selected', o.dataset.size === cfg.textSize));
+    renderPlayerList(); renderCategoryChips(); renderCustomList();
+    clampRoles();
     impKnowSwitch.classList.toggle('on', cfg.impostorsKnow);
-    refreshAllRadioCards();
-    syncRoundModeFields();
+    refreshAllRadioCards(); syncRoundModeFields();
     phasesSwitch.classList.toggle('on', cfg.timedPhases);
     document.getElementById('singleDurationField').style.display = cfg.timedPhases ? 'none' : 'block';
     document.getElementById('phaseDurationFields').style.display = cfg.timedPhases ? 'block' : 'none';
-    durVal.textContent = fmt(cfg.timedSeconds);
-    reflVal.textContent = fmt(cfg.reflectionSeconds);
-    discVal.textContent = fmt(cfg.discussionSeconds);
+    durVal.textContent = fmt(cfg.timedSeconds); reflVal.textContent = fmt(cfg.reflectionSeconds); discVal.textContent = fmt(cfg.discussionSeconds);
+    document.querySelectorAll('#orderModeRow .toggle-opt').forEach(o => o.classList.toggle('selected', o.dataset.mode === cfg.orderMode));
+    document.getElementById('designatedSelectWrap').style.display = cfg.orderMode === 'designated' ? 'block' : 'none';
+    refreshDesignatedSelect();
     document.getElementById('challengeSwitch').classList.toggle('on', cfg.challengeMode);
+    document.getElementById('justifySwitch').classList.toggle('on', cfg.voteJustify);
     document.getElementById('justifyField').style.display = cfg.voteMode === 'secret' ? 'block' : 'none';
+    document.getElementById('revealAnimSwitch').classList.toggle('on', cfg.revealAnimation);
+    document.getElementById('soundSwitch').classList.toggle('on', cfg.sound);
+    document.getElementById('volumeRange').value = cfg.volume;
+    document.getElementById('vibSwitch').classList.toggle('on', cfg.vibration);
+    document.getElementById('contrastSwitch').classList.toggle('on', cfg.highContrast);
+    document.body.classList.toggle('high-contrast', cfg.highContrast);
+    document.getElementById('bigBtnSwitch').classList.toggle('on', cfg.bigButtons);
+    document.body.classList.toggle('big-buttons', cfg.bigButtons);
+    document.getElementById('motionSwitch').classList.toggle('on', cfg.reduceMotion);
+    document.body.classList.toggle('reduce-motion', cfg.reduceMotion);
+    renderPresetsList();
   }
 
-  /* ---------------- Sheet open/close ---------------- */
+  /* ---------------- Presets (save / share) ---------------- */
+  function gatherGamePreset(){
+    const data = {};
+    GAME_KEYS.forEach(k => { data[k] = k === 'categories' ? Array.from(cfg.categories) : cfg[k]; });
+    return data;
+  }
+  function applyGamePreset(data){
+    GAME_KEYS.forEach(k => { if (data[k] !== undefined) cfg[k] = k === 'categories' ? new Set(data[k]) : data[k]; });
+    fullResync(); persist();
+  }
+  function toCode(obj){
+    const bytes = new TextEncoder().encode(JSON.stringify(obj));
+    let bin = ''; bytes.forEach(b => bin += String.fromCharCode(b));
+    return btoa(bin);
+  }
+  function fromCode(code){
+    const bin = atob(code.trim());
+    const bytes = new Uint8Array(bin.length);
+    for (let i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
+    return JSON.parse(new TextDecoder().decode(bytes));
+  }
+  function renderPresetsList(){
+    const list = document.getElementById('presetsList');
+    list.innerHTML = '';
+    if (!presets.length){ list.innerHTML = '<div class="hint" style="margin-top:0;">Aucun préréglage enregistré.</div>'; return; }
+    presets.forEach((p, i) => {
+      const row = document.createElement('div'); row.className = 'preset-row';
+      row.innerHTML = '<span class="pname">' + p.name + '</span><button type="button" data-a="apply">Utiliser</button><button type="button" data-a="share">Code</button><button type="button" data-a="del">🗑</button>';
+      row.querySelector('[data-a="apply"]').addEventListener('click', () => applyGamePreset(p.data));
+      row.querySelector('[data-a="del"]').addEventListener('click', () => { presets.splice(i,1); renderPresetsList(); persist(); });
+      row.querySelector('[data-a="share"]').addEventListener('click', () => {
+        const code = toCode(p.data);
+        const box = document.createElement('textarea'); box.className = 'code-box'; box.readOnly = true; box.value = code; box.style.marginTop = '8px';
+        row.after(box);
+        if (navigator.clipboard) navigator.clipboard.writeText(code).catch(()=>{});
+      });
+      list.appendChild(row);
+    });
+  }
+  document.getElementById('savePresetBtn').addEventListener('click', () => {
+    const name = prompt('Nom du préréglage :', 'Ma partie');
+    if (!name) return;
+    presets.push({name: name.trim().slice(0,40), data: gatherGamePreset()});
+    renderPresetsList(); persist();
+  });
+  document.getElementById('importCodeBtn').addEventListener('click', () => {
+    const hintEl = document.getElementById('importHint');
+    try{
+      const data = fromCode(document.getElementById('importCodeInput').value);
+      applyGamePreset(data);
+      hintEl.textContent = 'Préréglage importé et appliqué ✔';
+      document.getElementById('importCodeInput').value = '';
+    }catch(e){ hintEl.textContent = "Code invalide."; }
+  });
+
+  /* ---------------- Sheet open/close (+ swipe down to close) ---------------- */
   const overlay = document.getElementById('overlay');
   const sheet = document.getElementById('sheet');
-  function openSheet(){ refreshDesignatedSelect(); overlay.classList.add('open'); sheet.classList.add('open'); }
+  function openSheet(){ refreshDesignatedSelect(); renderPresetsList(); overlay.classList.add('open'); sheet.classList.add('open'); }
   function closeSheet(){ overlay.classList.remove('open'); sheet.classList.remove('open'); }
   document.getElementById('openSettings').addEventListener('click', openSheet);
   document.getElementById('closeSettings').addEventListener('click', closeSheet);
   overlay.addEventListener('click', closeSheet);
+  attachSwipe(sheet, { down: closeSheet });
 
   /* ---------------- Word pool helpers ---------------- */
-  function getActiveCategories(){
-    const cats = CATEGORY_KEYS.filter(c => cfg.categories.has(c));
-    if (cfg.customWords.length) cats.push('custom');
-    return cats.length ? cats : CATEGORY_KEYS.slice();
-  }
+  function getActiveCategories(){ const cats = CATEGORY_KEYS.filter(c => cfg.categories.has(c)); if (cfg.customWords.length) cats.push('custom'); return cats.length ? cats : CATEGORY_KEYS.slice(); }
   function getPool(catKey){ return catKey === 'custom' ? cfg.customWords : WORD_BANK[catKey]; }
   function catLabel(catKey){ return catKey === 'custom' ? 'Mes mots' : catKey; }
   function pickRandom(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
-
-  function pickSecretWord(){
-    const cats = getActiveCategories();
-    const catKey = pickRandom(cats);
-    round.categoryOfWord = catKey;
-    round.secretWord = pickRandom(getPool(catKey));
-  }
-  function getCloseWord(){
-    const pool = getPool(round.categoryOfWord).filter(w => w !== round.secretWord);
-    return pool.length ? pickRandom(pool) : round.secretWord;
-  }
-  function getTrapWord(){
-    const others = getActiveCategories().filter(c => c !== round.categoryOfWord);
-    const cats = others.length ? others : CATEGORY_KEYS.filter(c => c !== round.categoryOfWord);
-    const catKey = pickRandom(cats.length ? cats : CATEGORY_KEYS);
-    return pickRandom(getPool(catKey));
-  }
-  function getRandomAnyWord(){
-    const all = CATEGORY_KEYS.flatMap(c => WORD_BANK[c]).concat(cfg.customWords).filter(w => w !== round.secretWord);
-    return pickRandom(all);
-  }
-  function impostorDisplay(){
+  function pickSecretWord(){ const cats = getActiveCategories(); const catKey = pickRandom(cats); round.categoryOfWord = catKey; round.secretWord = pickRandom(getPool(catKey)); }
+  function getCloseWord(){ const pool = getPool(round.categoryOfWord).filter(w => w !== round.secretWord); return pool.length ? pickRandom(pool) : round.secretWord; }
+  function getTrapWord(){ const others = getActiveCategories().filter(c => c !== round.categoryOfWord); const cats = others.length ? others : CATEGORY_KEYS.filter(c => c !== round.categoryOfWord); const catKey = pickRandom(cats.length ? cats : CATEGORY_KEYS); return pickRandom(getPool(catKey)); }
+  function getRandomAnyWord(){ const all = CATEGORY_KEYS.flatMap(c => WORD_BANK[c]).concat(cfg.customWords).filter(w => w !== round.secretWord); return pickRandom(all); }
+  function impostorWordText(){
     switch(cfg.impostorView){
-      case 'theme': return { text: 'Thème : ' + catLabel(round.categoryOfWord) };
-      case 'close': return { text: getCloseWord() };
-      case 'trap': return { text: getTrapWord() };
-      case 'random': return { text: getRandomAnyWord() };
-      default: return { text: 'Écoute les autres pour deviner le mot' };
+      case 'theme': return 'Thème : ' + catLabel(round.categoryOfWord);
+      case 'close': return getCloseWord();
+      case 'trap': return getTrapWord();
+      case 'random': return getRandomAnyWord();
+      default: return 'Écoute les autres pour deviner le mot';
     }
   }
-
-  function shuffledIndices(n){
-    const arr = Array.from({length:n}, (_,i) => i);
-    for (let i = arr.length - 1; i > 0; i--){ const j = Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; }
-    return arr;
-  }
+  function shuffledIndices(n){ const arr = Array.from({length:n}, (_,i) => i); for (let i = arr.length - 1; i > 0; i--){ const j = Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } return arr; }
+  function getRoleId(idx){ if (round.impostorSet.has(idx)) return 'impostor'; if (round.inspectorSet.has(idx)) return 'inspector'; if (round.masochistSet.has(idx)) return 'masochist'; return 'innocent'; }
 
   /* ---------------- Start round ---------------- */
   document.getElementById('startBtn').addEventListener('click', () => {
-    const errorEl = document.getElementById('setupError');
-    errorEl.textContent = '';
+    const errorEl = document.getElementById('setupError'); errorEl.textContent = '';
     if (players.length < 3){ errorEl.textContent = 'Il faut au moins 3 joueurs.'; return; }
-
+    clampRoles();
     pickSecretWord();
     const shuffled = shuffledIndices(players.length);
-    round.impostorSet = new Set(shuffled.slice(0, Math.min(cfg.numImpostors, maxImpostors())));
+    let cur = 0;
+    round.impostorSet = new Set(shuffled.slice(cur, cur+cfg.numImpostors)); cur += cfg.numImpostors;
+    round.inspectorSet = new Set(shuffled.slice(cur, cur+cfg.numInspectors)); cur += cfg.numInspectors;
+    round.masochistSet = new Set(shuffled.slice(cur, cur+cfg.numMasochists)); cur += cfg.numMasochists;
     round.names = players.map((p,i) => p.name.trim() || ('Joueur ' + (i+1)));
-    round.avatars = players.map(p => p.avatar);
-    round.currentIndex = 0;
-    round.turnPrompt = pickRandom(TURN_PROMPTS);
-    round.turnIndex = 0;
-
+    round.currentIndex = 0; round.turnPrompt = pickRandom(TURN_PROMPTS); round.turnIndex = 0; round.clues = {};
     buildDots(round.names.length);
     renderPassScreen();
     showScreen('screen-pass');
+    persist();
   });
 
-  /* ---------------- Pass / reveal ---------------- */
+  /* ---------------- Role reveal (flip card) ---------------- */
   const dotsRow = document.getElementById('progressDots');
   function buildDots(n){ dotsRow.innerHTML = ''; for (let i=0;i<n;i++) dotsRow.appendChild(document.createElement('span')); }
   function updateDots(){ document.querySelectorAll('#progressDots span').forEach((d,i) => { d.classList.toggle('done', i < round.currentIndex); d.classList.toggle('current', i === round.currentIndex); }); }
 
+  const roleCard = document.getElementById('roleCard');
+  const tapRevealBtn = document.getElementById('tapRevealBtn');
+  const nextPlayerBtn = document.getElementById('nextPlayerBtn');
+
+  function computeClueFor(idx){
+    if (round.clues[idx]) return round.clues[idx];
+    const others = round.names.map((_,i)=>i).filter(i => i !== idx);
+    const target = pickRandom(others);
+    const clue = { name: round.names[target], isImpostor: round.impostorSet.has(target) };
+    round.clues[idx] = clue;
+    return clue;
+  }
+
   function renderPassScreen(){
     const idx = round.currentIndex;
     document.getElementById('currentPlayerName').textContent = round.names[idx];
-    const isImp = round.impostorSet.has(idx);
-    const peephole = document.getElementById('peephole');
-    peephole.classList.remove('revealed');
-    peephole.classList.toggle('is-impostor', isImp);
-    document.getElementById('revealTag').textContent = isImp ? "TU ES L'IMPOSTEUR" : 'MOT SECRET';
-    let sub = '';
-    if (isImp){
-      document.getElementById('revealWord').textContent = impostorDisplay().text;
-      if (cfg.impostorsKnow && round.impostorSet.size > 1){
-        const others = [...round.impostorSet].filter(i => i !== idx).map(i => round.names[i]);
-        sub = 'Tes complices : ' + others.join(', ');
-      }
+    roleCard.classList.remove('flipped');
+    roleCard.classList.toggle('no-anim', !cfg.revealAnimation || cfg.reduceMotion);
+    tapRevealBtn.style.display = 'block';
+    tapRevealBtn.disabled = false;
+    nextPlayerBtn.disabled = true;
+
+    const roleId = getRoleId(idx);
+    const role = ROLES[roleId];
+    document.getElementById('roleBack').style.setProperty('--role-color', role.color);
+    document.getElementById('rcIcon').textContent = role.icon;
+    document.getElementById('rcName').textContent = role.name;
+    document.getElementById('rcSummary').textContent = role.summary;
+    document.getElementById('rcObjective').textContent = role.objective;
+
+    const capEl = document.getElementById('rcCapacity');
+    if (roleId === 'inspector'){
+      const clue = computeClueFor(idx);
+      capEl.style.display = 'block';
+      capEl.textContent = '🔎 Indice : ' + clue.name + (clue.isImpostor ? ' est suspect(e).' : " n'est probablement pas l'imposteur.");
+    } else if (roleId === 'impostor' && cfg.impostorsKnow && round.impostorSet.size > 1){
+      const others = [...round.impostorSet].filter(i => i !== idx).map(i => round.names[i]);
+      capEl.style.display = 'block';
+      capEl.textContent = 'Tes complices : ' + others.join(', ');
     } else {
-      document.getElementById('revealWord').textContent = round.secretWord;
+      capEl.style.display = 'none';
     }
-    document.getElementById('revealSub').textContent = sub;
+
+    const wordEl = document.getElementById('rcWord');
+    wordEl.textContent = roleId === 'impostor' ? impostorWordText() : ('Mot secret : ' + round.secretWord);
     updateDots();
-    const holdBtn = document.getElementById('holdBtn');
-    holdBtn.classList.remove('pressed');
-    holdBtn.textContent = 'Maintenir pour regarder';
   }
 
-  const peephole = document.getElementById('peephole');
-  const holdBtn = document.getElementById('holdBtn');
-  function reveal(){ peephole.classList.add('revealed'); holdBtn.classList.add('pressed'); holdBtn.textContent = 'Relâche pour cacher'; beep(); }
-  function hideAndAdvance(){
-    if (!peephole.classList.contains('revealed')) return;
-    peephole.classList.remove('revealed');
-    holdBtn.classList.remove('pressed');
+  tapRevealBtn.addEventListener('click', () => {
+    roleCard.classList.add('flipped');
+    tapRevealBtn.style.display = 'none';
+    nextPlayerBtn.disabled = false;
+    vibrate(50); beep();
+  });
+  nextPlayerBtn.addEventListener('click', () => {
     round.currentIndex++;
     if (round.currentIndex >= round.names.length) enterRoundScreen();
     else renderPassScreen();
-  }
-  ['mousedown','touchstart'].forEach(evt => holdBtn.addEventListener(evt, e => { e.preventDefault(); reveal(); }));
-  ['mouseup','mouseleave','touchend','touchcancel'].forEach(evt => holdBtn.addEventListener(evt, e => { e.preventDefault(); hideAndAdvance(); }));
+  });
+  attachSwipe(document.getElementById('roleStage'), { up: () => { if (!nextPlayerBtn.disabled) nextPlayerBtn.click(); } });
 
   /* ---------------- Round screen ---------------- */
   const timedSection = document.getElementById('timedSection');
@@ -1003,8 +1065,7 @@
   const timerPhaseLabel = document.getElementById('timerPhaseLabel');
 
   function resetTimer(){
-    clearInterval(round.timerHandle);
-    round.timerRunning = false;
+    clearInterval(round.timerHandle); round.timerRunning = false;
     round.timerPhase = cfg.timedPhases ? 'reflection' : 'discussion';
     round.timerSecondsLeft = cfg.timedPhases ? cfg.reflectionSeconds : cfg.timedSeconds;
     timerPhaseLabel.textContent = cfg.timedPhases ? 'RÉFLEXION' : 'DISCUSSION';
@@ -1012,20 +1073,11 @@
     document.getElementById('timerToggle').textContent = 'Démarrer';
   }
   function tickTimer(){
-    if (round.timerSecondsLeft > 0){
-      round.timerSecondsLeft--;
-      timerDisplay.textContent = fmt(round.timerSecondsLeft);
-    } else if (cfg.timedPhases && round.timerPhase === 'reflection'){
-      round.timerPhase = 'discussion';
-      round.timerSecondsLeft = cfg.discussionSeconds;
-      timerPhaseLabel.textContent = 'DISCUSSION';
-      beep();
-      if (cfg.vibration && navigator.vibrate) navigator.vibrate(120);
-    } else {
-      clearInterval(round.timerHandle);
-      round.timerRunning = false;
-      document.getElementById('timerToggle').textContent = 'Démarrer';
-    }
+    if (round.timerSecondsLeft > 0){ round.timerSecondsLeft--; timerDisplay.textContent = fmt(round.timerSecondsLeft); }
+    else if (cfg.timedPhases && round.timerPhase === 'reflection'){
+      round.timerPhase = 'discussion'; round.timerSecondsLeft = cfg.discussionSeconds;
+      timerPhaseLabel.textContent = 'DISCUSSION'; beep(); vibrate(120);
+    } else { clearInterval(round.timerHandle); round.timerRunning = false; document.getElementById('timerToggle').textContent = 'Démarrer'; }
   }
   document.getElementById('timerToggle').addEventListener('click', () => {
     round.timerRunning = !round.timerRunning;
@@ -1035,31 +1087,19 @@
   document.getElementById('timerReset').addEventListener('click', resetTimer);
 
   document.getElementById('drawOrderBtn').addEventListener('click', () => {
-    const list = document.getElementById('orderList');
-    let ticks = 0;
+    const list = document.getElementById('orderList'); let ticks = 0;
     const spin = setInterval(() => {
-      list.innerHTML = '<li><span class="n">…</span><span>' + pickRandom(round.names) + '</span></li>';
-      ticks++;
+      list.innerHTML = '<li><span class="n">…</span><span>' + pickRandom(round.names) + '</span></li>'; ticks++;
       if (ticks > 8){
-        clearInterval(spin);
-        if (cfg.vibration && navigator.vibrate) navigator.vibrate([40,40,40]);
-        beep();
+        clearInterval(spin); vibrate([40,40,40]); beep();
         const shuffled = shuffledIndices(round.names.length);
-        round.speakingOrder = shuffled.map(i => round.names[i]);
-        list.innerHTML = '';
-        round.speakingOrder.forEach((name,i) => {
-          const li = document.createElement('li');
-          li.innerHTML = '<span class="n">' + String(i+1).padStart(2,'0') + '</span><span>' + name + '</span>';
-          list.appendChild(li);
-        });
+        round.speakingOrder = shuffled.map(i => round.names[i]); list.innerHTML = '';
+        round.speakingOrder.forEach((name,i) => { const li = document.createElement('li'); li.innerHTML = '<span class="n">' + String(i+1).padStart(2,'0') + '</span><span>' + name + '</span>'; list.appendChild(li); });
       }
     }, 70);
   });
 
-  function renderTurn(){
-    document.getElementById('turnPrompt').textContent = round.turnPrompt;
-    document.getElementById('turnName').textContent = round.names[round.turnIndex % round.names.length];
-  }
+  function renderTurn(){ document.getElementById('turnPrompt').textContent = round.turnPrompt; document.getElementById('turnName').textContent = round.names[round.turnIndex % round.names.length]; }
   document.getElementById('turnNextBtn').addEventListener('click', () => { round.turnIndex++; renderTurn(); });
 
   function enterRoundScreen(){
@@ -1071,13 +1111,11 @@
     document.getElementById('orderList').innerHTML = '';
     document.getElementById('designatedDisplay').style.display = 'none';
     document.getElementById('drawOrderBtn').style.display = 'block';
-
     if (cfg.roundMode === 'timed') resetTimer();
     if (cfg.roundMode === 'order' && cfg.orderMode === 'designated'){
       document.getElementById('drawOrderBtn').style.display = 'none';
       const dEl = document.getElementById('designatedDisplay');
-      const name = round.names[Math.min(cfg.designatedIndex, round.names.length - 1)];
-      dEl.textContent = 'Commence : ' + name;
+      dEl.textContent = 'Commence : ' + round.names[Math.min(cfg.designatedIndex, round.names.length - 1)];
       dEl.style.display = 'block';
     }
     if (cfg.roundMode === 'turns') renderTurn();
@@ -1086,22 +1124,16 @@
 
   /* ---------------- Vote ---------------- */
   function startVote(){
-    round.votes = {};
-    round.names.forEach(n => round.votes[n] = 0);
+    round.votes = {}; round.names.forEach(n => round.votes[n] = 0);
     if (cfg.voteMode === 'public'){
       document.getElementById('votePublicCard').style.display = 'block';
       document.getElementById('voteSecretCard').style.display = 'none';
       document.getElementById('voteResultsCard').style.display = 'none';
-      const list = document.getElementById('votePublicList');
-      list.innerHTML = '';
+      const list = document.getElementById('votePublicList'); list.innerHTML = '';
       round.names.forEach(name => {
-        const row = document.createElement('li');
-        row.className = 'vote-row';
+        const row = document.createElement('li'); row.className = 'vote-row';
         row.innerHTML = '<span class="vname">' + name + '</span><div style="display:flex; align-items:center; gap:10px;"><span class="vcount">0</span><button class="vtap" type="button">Voter</button></div>';
-        row.querySelector('.vtap').addEventListener('click', () => {
-          round.votes[name]++;
-          row.querySelector('.vcount').textContent = round.votes[name];
-        });
+        row.querySelector('.vtap').addEventListener('click', () => { round.votes[name]++; row.querySelector('.vcount').textContent = round.votes[name]; vibrate(20); });
         list.appendChild(row);
       });
     } else {
@@ -1113,7 +1145,6 @@
     }
     showScreen('screen-vote');
   }
-
   let currentVoterChoice = null;
   function renderSecretVoter(){
     currentVoterChoice = null;
@@ -1122,30 +1153,26 @@
     document.getElementById('justifyInput').style.display = cfg.voteJustify ? 'block' : 'none';
     const voterIdx = round.voterRemaining[0];
     document.getElementById('voteSecretVoter').textContent = round.names[voterIdx];
-    const list = document.getElementById('voteSecretList');
-    list.innerHTML = '';
+    const list = document.getElementById('voteSecretList'); list.innerHTML = '';
     round.names.forEach((name, i) => {
       if (i === voterIdx) return;
-      const row = document.createElement('li');
-      row.className = 'vote-row';
+      const row = document.createElement('li'); row.className = 'vote-row';
       row.innerHTML = '<span class="vname">' + name + '</span><button class="vtap" type="button">Choisir</button>';
       row.querySelector('.vtap').addEventListener('click', () => {
         currentVoterChoice = name;
         list.querySelectorAll('.vote-row').forEach(r => r.style.outline = 'none');
         row.style.outline = '2px solid var(--accent)';
         document.getElementById('confirmSecretVoteBtn').disabled = false;
+        vibrate(20);
       });
       list.appendChild(row);
     });
   }
   document.getElementById('confirmSecretVoteBtn').addEventListener('click', () => {
     if (!currentVoterChoice) return;
-    round.votes[currentVoterChoice]++;
-    round.voterRemaining.shift();
-    if (round.voterRemaining.length) renderSecretVoter();
-    else showVoteResults();
+    round.votes[currentVoterChoice]++; round.voterRemaining.shift();
+    if (round.voterRemaining.length) renderSecretVoter(); else showVoteResults();
   });
-
   document.getElementById('finishPublicVoteBtn').addEventListener('click', showVoteResults);
 
   function showVoteResults(){
@@ -1153,13 +1180,10 @@
     document.getElementById('voteSecretCard').style.display = 'none';
     document.getElementById('voteResultsCard').style.display = 'block';
     const maxVotes = Math.max(0, ...Object.values(round.votes));
-    const bars = document.getElementById('voteBars');
-    bars.innerHTML = '';
+    const bars = document.getElementById('voteBars'); bars.innerHTML = '';
     round.names.forEach(name => {
-      const v = round.votes[name] || 0;
-      const pct = maxVotes ? Math.round((v / maxVotes) * 100) : 0;
-      const row = document.createElement('div');
-      row.className = 'bar-row';
+      const v = round.votes[name] || 0; const pct = maxVotes ? Math.round((v / maxVotes) * 100) : 0;
+      const row = document.createElement('div'); row.className = 'bar-row';
       row.innerHTML = '<div class="bar-label"><span>' + name + '</span><span>' + v + '</span></div><div class="bar-track"><div class="bar-fill" style="width:' + pct + '%;"></div></div>';
       bars.appendChild(row);
     });
@@ -1173,89 +1197,96 @@
   const alarmFlash = document.getElementById('alarmFlash');
   function showRoles(){
     clearInterval(round.timerHandle);
-    const list = document.getElementById('rosterList');
-    list.innerHTML = '';
+    document.getElementById('wordReveal').textContent = 'Le mot secret était : ' + round.secretWord;
+    const list = document.getElementById('rosterList'); list.innerHTML = '';
     round.names.forEach((name, i) => {
-      const isImp = round.impostorSet.has(i);
+      const role = ROLES[getRoleId(i)];
       const li = document.createElement('li');
-      li.className = isImp ? 'imp' : '';
-      li.innerHTML = '<span>' + name + '</span><span class="role">' + (isImp ? 'Imposteur' : '<span class="word">' + round.secretWord + '</span>') + '</span>';
+      li.innerHTML = '<span>' + role.icon + ' ' + name + '</span><span class="role" style="color:' + role.color + '">' + role.name + '</span>';
       list.appendChild(li);
     });
 
-    const banner = document.getElementById('resultBanner');
-    banner.innerHTML = '';
+    const banner = document.getElementById('resultBanner'); banner.innerHTML = '';
+    let outcome = null;
     if (round._mostVoted && round._mostVoted.length === 1){
       const votedName = round._mostVoted[0];
       const votedIdx = round.names.indexOf(votedName);
-      const groupWins = round.impostorSet.has(votedIdx);
+      const votedRole = getRoleId(votedIdx);
       const div = document.createElement('div');
-      div.className = 'result-banner ' + (groupWins ? 'win' : 'lose');
-      div.textContent = groupWins ? ('Bien joué — ' + votedName + ' était l\'imposteur !') : (votedName + ' n\'était pas l\'imposteur… il s\'en sort !');
+      if (votedRole === 'masochist'){
+        div.className = 'result-banner special';
+        div.textContent = '🌀 ' + votedName + ' voulait se faire voter… et a gagné !';
+        outcome = {type:'masochistWon', idx:votedIdx};
+      } else if (votedRole === 'impostor'){
+        div.className = 'result-banner win';
+        div.textContent = 'Bien joué — ' + votedName + " était l'imposteur !";
+        outcome = {type:'impostorCaught'};
+      } else {
+        div.className = 'result-banner lose';
+        div.textContent = votedName + " n'était pas l'imposteur… il s'en sort !";
+        outcome = {type:'impostorEscaped'};
+      }
       banner.appendChild(div);
-      updateStats(groupWins);
     } else if (round._mostVoted && round._mostVoted.length > 1){
-      const div = document.createElement('div');
-      div.className = 'result-banner lose';
+      const div = document.createElement('div'); div.className = 'result-banner lose';
       div.textContent = 'Égalité au vote — personne n\'est démasqué.';
       banner.appendChild(div);
-      updateStats(false);
-    } else {
-      updateStats(null);
+      outcome = {type:'tie'};
     }
-
+    updateStats(outcome);
     document.getElementById('revealCard').classList.add('blurred');
     document.getElementById('unblurBtn').textContent = 'Afficher';
     showScreen('screen-reveal');
   }
 
-  function updateStats(groupWon){
+  function updateStats(outcome){
     round.names.forEach((name, i) => {
       const p = players.find(pl => (pl.name.trim() || ('Joueur ' + (players.indexOf(pl)+1))) === name);
       if (!p) return;
       p.games++;
-      const isImp = round.impostorSet.has(i);
-      if (isImp) p.imp++;
-      if (groupWon === true && !isImp) p.wins++;
-      if (groupWon === false && isImp) p.wins++;
+      const roleId = getRoleId(i);
+      if (roleId === 'impostor') p.imp++;
+      let won = false;
+      if (outcome){
+        if (outcome.type === 'masochistWon') won = (roleId === 'masochist' && outcome.idx === i);
+        else if (outcome.type === 'impostorCaught') won = roleId !== 'impostor';
+        else if (outcome.type === 'impostorEscaped') won = roleId === 'impostor';
+      }
+      if (won) p.wins++;
     });
+    persist();
   }
 
   document.getElementById('unblurBtn').addEventListener('click', () => {
     const blurred = document.getElementById('revealCard').classList.toggle('blurred');
     document.getElementById('unblurBtn').textContent = blurred ? 'Afficher' : 'Cacher';
-    if (!blurred){
-      alarmFlash.classList.remove('go'); void alarmFlash.offsetWidth; alarmFlash.classList.add('go');
-    }
+    if (!blurred){ alarmFlash.classList.remove('go'); void alarmFlash.offsetWidth; alarmFlash.classList.add('go'); vibrate(80); }
   });
 
   document.getElementById('restartBtn').addEventListener('click', () => {
+    clampRoles();
     pickSecretWord();
     const shuffled = shuffledIndices(round.names.length);
-    round.impostorSet = new Set(shuffled.slice(0, Math.min(cfg.numImpostors, Math.max(1, round.names.length - 2))));
-    round.currentIndex = 0;
-    round.turnPrompt = pickRandom(TURN_PROMPTS);
-    round.turnIndex = 0;
+    let cur = 0;
+    round.impostorSet = new Set(shuffled.slice(cur, cur+cfg.numImpostors)); cur += cfg.numImpostors;
+    round.inspectorSet = new Set(shuffled.slice(cur, cur+cfg.numInspectors)); cur += cfg.numInspectors;
+    round.masochistSet = new Set(shuffled.slice(cur, cur+cfg.numMasochists)); cur += cfg.numMasochists;
+    round.currentIndex = 0; round.turnPrompt = pickRandom(TURN_PROMPTS); round.turnIndex = 0; round.clues = {};
     buildDots(round.names.length);
     renderPassScreen();
     showScreen('screen-pass');
   });
-
   document.getElementById('newRoundBtn').addEventListener('click', () => showScreen('screen-setup'));
   document.getElementById('backToSetupBtn').addEventListener('click', () => showScreen('screen-setup'));
 
-  /* ---------------- Stats screen ---------------- */
+  /* ---------------- Stats ---------------- */
   function renderStats(){
-    const list = document.getElementById('statsList');
-    list.innerHTML = '';
+    const list = document.getElementById('statsList'); list.innerHTML = '';
     if (!players.length){ list.innerHTML = '<div class="hint">Aucun joueur pour l\'instant.</div>'; return; }
     players.forEach((p,i) => {
-      const row = document.createElement('div');
-      row.className = 'stat-row';
+      const row = document.createElement('div'); row.className = 'stat-row';
       const name = p.name.trim() || ('Joueur ' + (i+1));
-      row.innerHTML =
-        '<span class="stat-name">' + name + '</span>' +
-        '<div class="stat-figs"><div><b>' + p.games + '</b>parties</div><div><b>' + p.imp + '</b>imposteur</div><div><b>' + p.wins + '</b>victoires</div></div>';
+      row.innerHTML = '<span class="stat-name">' + name + '</span><div class="stat-figs"><div><b>' + p.games + '</b>parties</div><div><b>' + p.imp + '</b>imposteur</div><div><b>' + p.wins + '</b>victoires</div></div>';
       list.appendChild(row);
     });
   }
@@ -1263,22 +1294,8 @@
   document.getElementById('statsBackBtn').addEventListener('click', () => showScreen('screen-setup'));
   document.getElementById('resetStatsBtn').addEventListener('click', () => { players.forEach(p => { p.games=0; p.imp=0; p.wins=0; }); renderStats(); persist(); });
 
-  /* ---------------- Reflect any loaded state visually, then autosave ---------------- */
-  renderCustomList();
-  document.getElementById('vibSwitch').classList.toggle('on', cfg.vibration);
-  document.getElementById('soundSwitch').classList.toggle('on', cfg.sound);
-  document.getElementById('motionSwitch').classList.toggle('on', cfg.reduceMotion);
-  document.body.classList.toggle('reduce-motion', cfg.reduceMotion);
-  document.getElementById('challengeSwitch').classList.toggle('on', cfg.challengeMode);
-  document.getElementById('impKnowSwitch').classList.toggle('on', cfg.impostorsKnow);
-  document.getElementById('phasesSwitch').classList.toggle('on', cfg.timedPhases);
-  document.getElementById('justifySwitch').classList.toggle('on', cfg.voteJustify);
-  document.getElementById('justifyField').style.display = cfg.voteMode === 'secret' ? 'block' : 'none';
-  document.getElementById('singleDurationField').style.display = cfg.timedPhases ? 'none' : 'block';
-  document.getElementById('phaseDurationFields').style.display = cfg.timedPhases ? 'block' : 'none';
-  document.querySelectorAll('#orderModeRow .toggle-opt').forEach(o => o.classList.toggle('selected', o.dataset.mode === cfg.orderMode));
-  document.getElementById('designatedSelectWrap').style.display = cfg.orderMode === 'designated' ? 'block' : 'none';
-
+  /* ---------------- Apply loaded state visually + autosave ---------------- */
+  fullResync();
   setInterval(persist, 1500);
   window.addEventListener('beforeunload', persist);
   document.addEventListener('visibilitychange', () => { if (document.hidden) persist(); });
