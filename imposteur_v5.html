@@ -507,23 +507,112 @@
 (function(){
   /* ---------------- Word bank ---------------- */
   const WORD_BANK = {
-    "Quotidien": ["Parapluie","Frigo","Chaussette","Brosse à dents","Oreiller","Clé USB","Savon","Miroir","Balai","Réveil","Ceinture","Lampe de poche","Trousseau de clés","Éponge"],
-    "Nourriture": ["Pizza","Croissant","Sushi","Fondue","Ratatouille","Crêpe","Kebab","Popcorn","Raclette","Churros","Lasagnes","Tacos","Falafel","Risotto"],
-    "Lieux": ["Plage","Aéroport","Hôpital","Bibliothèque","Camping","Cinéma","Marché","Piscine","Montagne","Gare","Musée","Stade","Forêt","Désert"],
-    "Films & Séries": ["Titanic","Matrix","Friends","Le Roi Lion","Squid Game","Star Wars","Naruto","Harry Potter","La Casa de Papel","Avatar","Breaking Bad","Jurassic Park","Le Seigneur des Anneaux","Stranger Things"],
-    "Métiers": ["Boulanger","Pompier","Astronaute","Dentiste","Fleuriste","Plombier","Vétérinaire","Pilote","Facteur","Chirurgien","Architecte","Journaliste","Menuisier","Traducteur"],
-    "Sport": ["Football","Judo","Escalade","Natation","Tennis","Ski","Boxe","Surf","Basket","Rugby","Golf","Escrime","Bowling","Aviron"],
-    "Animaux": ["Éléphant","Girafe","Pingouin","Kangourou","Requin","Hibou","Renard","Panda","Dauphin","Chameau","Hérisson","Perroquet","Crocodile","Koala"],
-    "Nature": ["Volcan","Cascade","Glacier","Récif corallien","Tornade","Arc-en-ciel","Éclipse","Aurore boréale","Geyser","Falaise","Tempête","Marée"],
-    "Technologie": ["Smartphone","Drone","Robot","Intelligence artificielle","Casque VR","Imprimante 3D","Satellite","Batterie","Console de jeux","Écran tactile","Antivirus","Hologramme"],
-    "Instruments de musique": ["Guitare","Piano","Violon","Batterie","Trompette","Flûte","Saxophone","Harpe","Accordéon","Tambour","Violoncelle","Clarinette"],
-    "Transports": ["Vélo","Trottinette","Sous-marin","Montgolfière","Téléphérique","Fusée","Voilier","Tramway","Hélicoptère","Traîneau","Métro","Scooter","Paquebot"],
-    "Émotions": ["Jalousie","Nostalgie","Fierté","Timidité","Curiosité","Soulagement","Enthousiasme","Méfiance","Gratitude","Embarras","Impatience","Sérénité"],
-    "École": ["Tableau noir","Cartable","Récréation","Cantine","Examen","Cahier","Professeur","Bulletin","Uniforme","Retenue","Trousse","Rentrée"],
-    "Vacances": ["Valise","Passeport","Camping-car","Croisière","Souvenir","Coup de soleil","Carte postale","Randonnée","Bronzage","Décalage horaire","Sable","Piscine gonflable"],
-    "Univers Harry Potter": ["Poudlard","Baguette magique","Quidditch","Sortilège","Moldu","Horcruxe","Patronus","Choixpeau","Balai volant","Potion","Détraqueur","Sorcier"],
-    "Univers Minecraft": ["Bloc","Pioche","Creeper","Diamant","Village","Nether","Enderman","Coffre","Torche","Portail","Redstone","Zombie"]
-  };
+"Quotidien": [
+"Parapluie", "Frigo", "Chaussette", "Brosse à dents", "Oreiller", "Clé USB", "Savon", "Miroir", "Balai", "Réveil", "Ceinture", "Lampe de poche", "Trousseau de clés", "Éponge",
+"Aspirateur", "Bougie", "Ciseaux", "Tapis", "Thermos", "Serviette", "Cintre", "Briquet", "Marque-page", "Peigne"
+],
+"Nourriture": [
+"Pizza", "Croissant", "Sushi", "Fondue", "Ratatouille", "Crêpe", "Kebab", "Popcorn", "Raclette", "Churros", "Lasagnes", "Tacos", "Falafel", "Risotto",
+"Paëlla", "Hamburger", "Gaufre", "Tiramisu", "Omelette", "Ramen", "Guacamole", "Couscous", "Macaron", "Pancakes"
+],
+"Lieux": [
+"Plage", "Aéroport", "Hôpital", "Bibliothèque", "Camping", "Cinéma", "Marché", "Piscine", "Montagne", "Gare", "Musée", "Stade", "Forêt", "Désert",
+"Zoo", "Château", "Pharmacie", "Parc d'attractions", "Restaurant", "Port", "Grotte", "Casino", "Boulangerie", "Supermarché"
+],
+"Films & Séries": [
+"Titanic", "Matrix", "Friends", "Le Roi Lion", "Squid Game", "Star Wars", "Naruto", "Harry Potter", "La Casa de Papel", "Avatar", "Breaking Bad", "Jurassic Park", "Le Seigneur des Anneaux", "Stranger Things",
+"Inception", "Game of Thrones", "Shrek", "Pirates des Caraïbes", "The Office", "Avengers", "Gladiator", "One Piece", "Interstellar", "Peaky Blinders"
+],
+"Métiers": [
+"Boulanger", "Pompier", "Astronaute", "Dentiste", "Fleuriste", "Plombier", "Vétérinaire", "Pilote", "Facteur", "Chirurgien", "Architecte", "Journaliste", "Menuisier", "Traducteur",
+"Avocat", "Coiffeur", "Électricien", "Détective", "Cuisinier", "Photographe", "Agriculteur", "Jardinier", "Comédien", "Juge"
+],
+"Sport": [
+"Football", "Judo", "Escalade", "Natation", "Tennis", "Ski", "Boxe", "Surf", "Basket", "Rugby", "Golf", "Escrime", "Bowling", "Aviron",
+"Volley-ball", "Badminton", "Athlétisme", "Tir à l'arc", "Équitation", "Handball", "Patinage artistique", "Karaté", "Gymnastique", "Skateboard"
+],
+"Animaux": [
+"Éléphant", "Girafe", "Pingouin", "Kangourou", "Requin", "Hibou", "Renard", "Panda", "Dauphin", "Chameau", "Hérisson", "Perroquet", "Crocodile", "Koala",
+"Caméléon", "Loup", "Tortue", "Aigle", "Guépard", "Pieuvre", "Flamant rose", "Hippopotame", "Loutre", "Écureuil"
+],
+"Nature": [
+"Volcan", "Cascade", "Glacier", "Récif corallien", "Tornade", "Arc-en-ciel", "Éclipse", "Aurore boréale", "Geyser", "Falaise", "Tempête", "Marée",
+"Canyon", "Océan", "Brouillard", "Dune", "Cratère", "Séisme", "Météorite", "Rivière", "Avalanche", "Forêt tropicale", "Grotte", "Lagon"
+],
+"Technologie": [
+"Smartphone", "Drone", "Robot", "Intelligence artificielle", "Casque VR", "Imprimante 3D", "Satellite", "Batterie", "Console de jeux", "Écran tactile", "Antivirus", "Hologramme",
+"Ordinateur portable", "Microprocesseur", "Fibre optique", "Serveur", "GPS", "Montre connectée", "Scanner", "Carte mère", "Panneau solaire", "Clé Wi-Fi", "Webcam", "Bluetooth"
+],
+"Instruments de musique": [
+"Guitare", "Piano", "Violon", "Batterie", "Trompette", "Flûte", "Saxophone", "Harpe", "Accordéon", "Tambour", "Violoncelle", "Clarinette",
+"Xylophone", "Ukulélé", "Orgue", "Basse", "Trombone", "Banjo", "Triangle", "Harmonica", "Mandoline", "Synthétiseur", "Djembe", "Bongos"
+],
+"Transports": [
+"Vélo", "Trottinette", "Sous-marin", "Montgolfière", "Téléphérique", "Fusée", "Voilier", "Tramway", "Hélicoptère", "Traîneau", "Métro", "Scooter", "Paquebot",
+"Camion", "Monocycle", "TGV", "Side-car", "Jetski", "Dirigeable", "Quad", "Tuk-tuk", "Pédalo", "Caravane", "Taxi"
+],
+"Émotions": [
+"Jalousie", "Nostalgie", "Fierté", "Timidité", "Curiosité", "Soulagement", "Enthousiasme", "Méfiance", "Gratitude", "Embarras", "Impatience", "Sérénité",
+"Colère", "Angoisse", "Euphorie", "Déception", "Compassion", "Panique", "Émerveillement", "Rancœur", "Tristesse", "Espoir", "Affection", "Frustration"
+],
+"École": [
+"Tableau noir", "Cartable", "Récréation", "Cantine", "Examen", "Cahier", "Professeur", "Bulletin", "Uniforme", "Retenue", "Trousse", "Rentrée",
+"Compas", "Dictée", "Conseil de classe", "Kermesse", "Délégué", "Surligneur", "Brouillon", "Sonnerie", "Manuel scolaire", "Diplôme", "Règle", "Stylo quatre couleurs"
+],
+"Vacances": [
+"Valise", "Passeport", "Camping-car", "Croisière", "Souvenir", "Coup de soleil", "Carte postale", "Randonnée", "Bronzage", "Décalage horaire", "Sable", "Piscine gonflable",
+"Crème solaire", "Lunettes de soleil", "Serviette de plage", "Parachute ascensionnel", "Bungalow", "Transat", "Coquillage", "Billet d'avion", "Club enfants", "Excursion", "Pique-nique", "Bouée"
+],
+"Monuments & Merveilles": [
+"Tour Eiffel", "Pyramides de Gizeh", "Grande Muraille de Chine", "Taj Mahal", "Colisée", "Statue de la Liberté", "Machu Picchu", "Big Ben", "Mont Saint-Michel", "Sagrada Família", "Christ Rédempteur", "Parthénon", "Château de Versailles", "Empire State Building",
+"Sainte-Sophie", "Alhambra", "Pétra", "Opéra de Sydney", "Tour de Pise", "Burj Khalifa", "Stonehenge", "Pont du Gard", "Arc de Triomphe", "Chichen Itza"
+],
+"Vêtements & Accessoires": [
+"Chapeau", "Manteau", "Écharpe", "Gants", "Chemise", "Casquette", "Bottes", "Cravate", "Montre", "Ceinture", "Maillot de bain", "Pyjama", "Chaussettes", "Capuche",
+"Lunettes de soleil", "Sac à dos", "Sweat à capuche", "Jean", "Baskets", "Bijou", "Bonnet", "Costume", "Kimono", "Nœud papillon"
+],
+"Espace & Cosmos": [
+"Trou noir", "Supernova", "Voie lactée", "Astéroïde", "Planète", "Constellation", "Comète", "Étoile filante", "Nébuleuse", "Station spatiale", "Trou de ver", "Galaxie", "Orbite", "Aérolithe",
+"Combinaison spatiale", "Cratère lunaire", "Télescope", "Système solaire", "Éclipse solaire", "Exoplanète", "Poussière d'étoile", "Sonde spatiale", "Pesanteur", "Fuseau horaire spatial"
+],
+"Mythologie & Fantastique": [
+"Dragon", "Sorcier", "Baguette magique", "Potion", "Lutin", "Licorne", "Grimoire", "Elfe", "Vampire", "Fantôme", "Phénix", "Centaure", "Sirène", "Troll",
+"Minotaure", "Loup-garou", "Goblinoïde", "Basilic", "Pégase", "Gorgone", "Cerbère", "Sortilège", "Talisman", "Château hanté"
+],
+"Jeux & Jouets": [
+"Échecs", "Lego", "Monopoly", "Puzzle", "Rubik's Cube", "Scrabble", "Domino", "Billes", "Poupée", "Carte Pokémon", "Belote", "Baby-foot", "Yo-yo", "Toupies",
+"Uno", "Mölkky", "Tarot", "Pâte à modeler", "Circuit de voitures", "Peluche", "Jeu de fléchettes", "Jeu de cartes", "Mastermind", "Trivial Pursuit"
+],
+"Corps humain": [
+"Cœur", "Cerveau", "Squelette", "Muscles", "Poumons", "Estomac", "Œil", "Dents", "Colonne vertébrale", "Empreinte digitale", "Foie", "Veines", "Peau", "Cils",
+"Ongles", "Reins", "Intestin", "Articulation", "Corde vocale", "Tympan", "Cheveux", "Langue", "Côtes", "Gorge"
+],
+"Super-héros & Fictions": [
+"Spider-Man", "Batman", "Iron Man", "Superman", "Wonder Woman", "Thor", "Hulk", "Captain America", "Deadpool", "Wolverine", "Flash", "Black Panther", "Joker", "Thanos",
+"Doctor Strange", "Venom", "Green Goblin", "Aquaman", "Harley Quinn", "Loki", "Daredevil", "Groot", "Star-Lord", "Wanda Maximoff"
+],
+"Ustensiles de cuisine": [
+"Casserole", "Poêle", "Fouet", "Spatule", "Moule", "Épluche-légumes", "Planche à découper", "Louche", "Balance", "Mixeur", "Écumoir", "Ouvre-boîte", "Râpe", "Tire-bouchon",
+"Saladier", "Passoire", "Presse-ail", "Rouleau à pâtisserie", "Thermomètre de cuisson", "Pince de cuisine", "Siphon", "Moule à gâteau", "Ramequin", "Couteau de chef"
+],
+"Histoire & Époques": [
+"Moyen Âge", "Renaissance", "Préhistoire", "Antiquité", "Révolution française", "Far West", "Égypte antique", "Belle Époque", "Empire romain", "Âge de pierre", "Gladiateurs", "Période Viking", "Révolution industrielle", "Chevaliers",
+"Guerre de Cent Ans", "Temps modernes", "Mayas", "Incas", "Dynastie Ming", "Siècle des Lumières", "Grèce antique", "Samouraïs", "Âge du bronze", "Débarquement de Normandie"
+],
+"Météo & Climat": [
+"Orage", "Tornade", "Canicule", "Brouillard", "Averse", "Blizzard", "Verglas", "Grêle", "Arc-en-ciel", "Sécheresse", "Vent violent", "Tempête de neige", "Rosée", "Gelée",
+"Avalanche", "Aurore polaire", "Ouragan", "Pluie battante", "Brouillard givrant", "Typhon", "Ciel dégagé", "Nuage de haute altitude", "Vague de froid", "Dégel"
+],
+"Jeux vidéo": [
+"Minecraft", "Fortnite", "Grand Theft Auto", "FIFA / EA FC", "Call of Duty", "League of Legends", "Mario Kart", "Zelda", "Valorant", "Rocket League", "Assassin's Creed", "Pokémon", "The Witcher", "Red Dead Redemption", "Among Us", "Animal Crossing", "Clash Royale", "Brawl Stars", "Apex Legends", "Elden Ring", "God of War", "Roblox", "Counter-Strike", "Cyberpunk 2077", "Genshin Impact", "The Last of Us", "Overwatch", "Fall Guys"
+],
+"Acteurs & Actrices": [
+"Omar Sy", "Pierre Niney", "François Civil", "Jamel Debbouze", "Kev Adams", "Jean Dujardin", "Mister V", "Jonathan Cohen", "Gilles Lellouche", "Marion Cotillard", "Virginie Efira", "Tahar Rahim", "Vincent Cassel", "Alain Chabat", "Christian Clavier", "Jean Reno", "Louis de Funès", "Franck Gastambide", "Alban Lenoir", "Audrey Fleurot", "Guillaume Canet", "Leïla Bekhti", "Adèle Exarchopoulos", "Paul Mirabel", "Inès Reg"
+],
+"Faits divers": [
+"Vol de tableau", "Cambriolage mystérieux", "Sac de billets trouvé", "Poursuite en voiture", "Canular téléphonique", "Faux policier", "Chasse au trésor", "Bouteille à la mer", "Erreur de banque", "Pigeon voyageur égaré", "Panne géante", "Chat coincé dans un arbre", "Découverte de fossile", "Sosie imposteur", "Perte de mémoire", "Valise oubliée", "Alerte mystérieuse", "Disparition d'un bijou", "Témoin anonyme", "Usurpation d'identité", "Trésor enfoui", "Avis de recherche", "Infiltration", "Évasion spectaculaire"
+]
+};
   const CATEGORY_KEYS = Object.keys(WORD_BANK);
   const TURN_PROMPTS = ["Décris ton mot en un seul mot.","Utilise ton mot dans une phrase sans le prononcer.","Donne une association d'idée liée à ton mot.","Mime un geste lié à ton mot.","Cite un endroit où on peut trouver ton mot."];
   const AVATARS = ["#e8b94b","#d1526d","#49d2c2","#3e93c9","#f0a23a","🎭","🕵️","🦊","🐱","⚡","🔥","🌙","👑","🐸"];
