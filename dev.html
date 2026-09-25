@@ -27,7 +27,7 @@
     </script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- PeerJS pour la connexion WebRTC facile -->
+    <!-- PeerJS pour la connexion WebRTC P2P -->
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <!-- QRCode.js pour générer les codes QR -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -43,6 +43,11 @@
             background: rgba(156, 163, 175, 0.3);
             border-radius: 3px;
         }
+        .tab-active {
+            border-bottom: 2px solid #0ea5e9;
+            color: #0ea5e9;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 min-h-screen flex flex-col font-sans transition-colors duration-200">
@@ -55,14 +60,17 @@
                     <i data-lucide="share-2" class="w-6 h-6"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold tracking-wide">MultiConnect P2P</h1>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">Connexion directe multi-appareils</p>
+                    <h1 class="text-xl font-bold tracking-wide flex items-center gap-2">
+                        MultiConnect P2P
+                        <span class="text-[10px] bg-brand-100 dark:bg-brand-900/60 text-brand-600 dark:text-brand-300 font-semibold px-2 py-0.5 rounded-full uppercase">v2.0</span>
+                    </h1>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Salons publics, privés & transfert P2P chiffré</p>
                 </div>
             </div>
 
             <div class="flex items-center space-x-3">
                 <!-- Theme Toggle -->
-                <button id="themeToggleBtn" onclick="toggleTheme()" class="p-2.5 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 transition-colors">
+                <button id="themeToggleBtn" onclick="toggleTheme()" class="p-2.5 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 transition-colors" title="Changer de thème">
                     <i id="themeIcon" data-lucide="sun" class="w-5 h-5"></i>
                 </button>
             </div>
@@ -72,43 +80,98 @@
     <!-- Main Content Container -->
     <main class="flex-1 max-w-6xl w-full mx-auto p-4 md:p-6 flex flex-col">
 
-        <!-- SECTION 1 : Rejoindre ou Créer un salon -->
-        <div id="joinSection" class="max-w-md mx-auto w-full my-auto py-8">
-            <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 sm:p-8 shadow-xl border border-gray-200 dark:border-gray-700 text-center space-y-6">
+        <!-- SECTION 1 : Navigation par Onglets (Accueil / Rejoindre / Créer) -->
+        <div id="joinSection" class="max-w-2xl mx-auto w-full my-auto py-4">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-200 dark:border-gray-700 space-y-6">
                 
-                <div class="inline-flex p-4 rounded-full bg-brand-50 dark:bg-brand-900/30 text-brand-500 mb-2">
-                    <i data-lucide="wifi" class="w-10 h-10 animate-pulse"></i>
+                <!-- Champ Pseudo Principal -->
+                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl border border-gray-200 dark:border-gray-600 flex flex-col sm:flex-row items-center gap-3">
+                    <div class="p-2 bg-brand-500/10 text-brand-500 rounded-lg">
+                        <i data-lucide="user" class="w-5 h-5"></i>
+                    </div>
+                    <div class="flex-1 w-full">
+                        <label class="block text-[11px] font-bold uppercase text-gray-400 tracking-wider mb-1">Votre Pseudo / Nom d'appareil</label>
+                        <input type="text" id="usernameInput" placeholder="Ex: Mon iPhone, Luc Bureau..." class="w-full bg-transparent font-semibold focus:outline-none text-sm text-gray-900 dark:text-white">
+                    </div>
                 </div>
 
-                <h2 class="text-2xl font-bold">Connecter des appareils</h2>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Échangez des messages et fichiers en temps réel sans serveur intermédiaire.</p>
+                <!-- Navigation Onglets -->
+                <div class="flex border-b border-gray-200 dark:border-gray-700 text-sm">
+                    <button id="tabLobbyBtn" onclick="switchTab('lobby')" class="flex-1 py-3 text-center text-gray-500 dark:text-gray-400 hover:text-brand-500 transition-all flex items-center justify-center gap-2 tab-active">
+                        <i data-lucide="globe" class="w-4 h-4"></i>
+                        <span>Salons Publics</span>
+                    </button>
+                    <button id="tabCreateBtn" onclick="switchTab('create')" class="flex-1 py-3 text-center text-gray-500 dark:text-gray-400 hover:text-brand-500 transition-all flex items-center justify-center gap-2">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                        <span>Créer un Salon</span>
+                    </button>
+                    <button id="tabJoinCodeBtn" onclick="switchTab('joincode')" class="flex-1 py-3 text-center text-gray-500 dark:text-gray-400 hover:text-brand-500 transition-all flex items-center justify-center gap-2">
+                        <i data-lucide="key" class="w-4 h-4"></i>
+                        <span>Code / Lien</span>
+                    </button>
+                </div>
 
-                <div class="space-y-4 text-left">
-                    <div>
-                        <label class="block text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 mb-1">Votre Nom / Pseudo</label>
-                        <input type="text" id="usernameInput" placeholder="Ex: iPhone de Luc, PC Bureau..." class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all">
+                <!-- CONTENU ONGLET 1 : Liste des Salons Publics -->
+                <div id="tabLobby" class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Salons publics accessibles en direct :</p>
+                        <button onclick="fetchPublicRooms()" class="text-xs text-brand-500 hover:underline flex items-center gap-1 font-medium">
+                            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Actualiser
+                        </button>
                     </div>
 
-                    <div class="pt-2 border-t border-gray-200 dark:border-gray-700"></div>
+                    <div id="publicRoomsContainer" class="space-y-2 max-h-72 overflow-y-auto pr-1">
+                        <!-- Rempli dynamiquement -->
+                        <div class="text-center py-8 text-gray-400 text-xs">
+                            <i data-lucide="loader" class="w-6 h-6 animate-spin mx-auto mb-2 opacity-50"></i>
+                            Recherche de salons publics en cours...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CONTENU ONGLET 2 : Créer un Salon avec options de sécurité -->
+                <div id="tabCreate" class="hidden space-y-4 text-left">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 mb-1">Nom du Salon</label>
+                        <input type="text" id="roomNameInput" placeholder="Ex: Équipe Design, Soirée Photos..." class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all text-sm">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 mb-1">Visibilité du Salon</label>
+                        <select id="roomVisibilityInput" onchange="togglePasswordInputVisibility()" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all text-sm">
+                            <option value="public">🌐 Public (Visible dans l'annuaire, ouvert à tous)</option>
+                            <option value="public_password">🔒 Public Protégé (Visible dans l'annuaire, mot de passe requis)</option>
+                            <option value="private">👁️‍🗨️ Masqué / Privé (Invisible, accessible uniquement via code/QR)</option>
+                        </select>
+                    </div>
+
+                    <div id="passwordFieldContainer" class="hidden">
+                        <label class="block text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 mb-1">Mot de Passe du Salon</label>
+                        <div class="relative">
+                            <input type="password" id="createPasswordInput" placeholder="Définissez un mot de passe" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all text-sm">
+                            <button type="button" onclick="togglePasswordDisplay('createPasswordInput')" class="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                                <i data-lucide="eye" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
 
                     <button onclick="createNewRoom()" class="w-full py-3 px-4 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-xl shadow-lg shadow-brand-500/25 transition-all flex items-center justify-center space-x-2">
                         <i data-lucide="plus-circle" class="w-5 h-5"></i>
-                        <span>Créer un nouveau salon</span>
+                        <span>Lancer le Salon</span>
                     </button>
+                </div>
 
-                    <div class="relative flex py-2 items-center">
-                        <div class="flex-grow border-t border-gray-200 dark:border-gray-700"></div>
-                        <span class="flex-shrink mx-4 text-xs uppercase text-gray-400 font-semibold">OU</span>
-                        <div class="flex-grow border-t border-gray-200 dark:border-gray-700"></div>
-                    </div>
-
+                <!-- CONTENU ONGLET 3 : Rejoindre par Code Secret -->
+                <div id="tabJoinCode" class="hidden space-y-4">
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Entrez le code à 6 caractères fourni par l'hôte d'un salon masqué ou privé :</p>
                     <div class="flex space-x-2">
-                        <input type="text" id="roomCodeInput" placeholder="Code du salon (ex: 8f3a9b)" class="flex-1 px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all uppercase tracking-wider font-mono text-center">
-                        <button onclick="joinExistingRoom()" class="px-5 py-3 bg-gray-800 dark:bg-gray-700 hover:bg-gray-900 dark:hover:bg-gray-600 text-white font-semibold rounded-xl transition-all">
+                        <input type="text" id="roomCodeInput" placeholder="Ex: 8f3a9b" class="flex-1 px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all uppercase tracking-wider font-mono text-center text-lg">
+                        <button onclick="joinExistingRoomFromInput()" class="px-6 py-3 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-xl transition-all shadow-md shadow-brand-500/20">
                             Rejoindre
                         </button>
                     </div>
                 </div>
+
             </div>
         </div>
 
@@ -120,9 +183,9 @@
                 <!-- Info Card -->
                 <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-200 dark:border-gray-700 space-y-4">
                     <div class="flex justify-between items-center">
-                        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Code du salon</span>
-                        <span id="connectionBadge" class="px-2 py-0.5 text-xs font-semibold bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400 rounded-full flex items-center gap-1">
-                            <span class="w-2 h-2 rounded-full bg-green-500 animate-ping"></span> Actif
+                        <span id="activeRoomName" class="text-xs font-bold text-gray-400 uppercase tracking-wider truncate">Salon</span>
+                        <span id="roomProtectionBadge" class="px-2 py-0.5 text-[10px] font-semibold bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded-full flex items-center gap-1">
+                            <!-- Rempli en JS -->
                         </span>
                     </div>
 
@@ -133,9 +196,9 @@
                         </button>
                     </div>
 
-                    <!-- Botton Afficher QR Code -->
+                    <!-- Button Afficher QR Code -->
                     <button onclick="toggleQRCodeModal()" class="w-full text-xs text-brand-500 hover:text-brand-600 font-semibold flex items-center justify-center gap-1 py-1">
-                        <i data-lucide="qr-code" class="w-4 h-4"></i> Afficher QR Code pour Mobile
+                        <i data-lucide="qr-code" class="w-4 h-4"></i> QR Code d'accès
                     </button>
                 </div>
 
@@ -163,8 +226,8 @@
                 <div id="chatBox" class="flex-1 p-4 sm:p-6 overflow-y-auto space-y-4 chat-scroll">
                     <!-- Dynamic Messages -->
                     <div class="text-center my-4">
-                        <span class="bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-xs px-3 py-1 rounded-full">
-                            🔒 Salon sécurisé P2P. Vos données ne passent par aucun serveur tiers.
+                        <span class="bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-xs px-3 py-1.5 rounded-full inline-flex items-center gap-1.5">
+                            <i data-lucide="shield-check" class="w-4 h-4 text-green-500"></i> Salon P2P Chiffré. Aucun fichier ni message n'est stocké sur un serveur.
                         </span>
                     </div>
                 </div>
@@ -192,13 +255,54 @@
         </div>
     </main>
 
+    <!-- Modal Mot de Passe requis -->
+    <div id="passwordModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-sm w-full space-y-4 text-center shadow-2xl border border-gray-200 dark:border-gray-700">
+            <div class="w-12 h-12 bg-amber-100 dark:bg-amber-900/40 text-amber-500 rounded-full flex items-center justify-center mx-auto">
+                <i data-lucide="lock" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-lg font-bold">Salon Protégé par Mot de Passe</h3>
+            <p class="text-xs text-gray-500 dark:text-gray-400">Veuillez saisir le mot de passe défini par l'hôte pour accéder au salon.</p>
+            
+            <div class="text-left">
+                <div class="relative">
+                    <input type="password" id="modalPasswordInput" placeholder="Mot de passe..." class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all text-sm">
+                    <button type="button" onclick="togglePasswordDisplay('modalPasswordInput')" class="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                        <i data-lucide="eye" class="w-4 h-4"></i>
+                    </button>
+                </div>
+                <p id="passwordErrorMsg" class="text-xs text-red-500 mt-1.5 hidden font-medium flex items-center gap-1">
+                    <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i> Mot de passe incorrect
+                </p>
+            </div>
+
+            <div class="flex space-x-2 pt-2">
+                <button onclick="closePasswordModal()" class="flex-1 py-2.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 font-semibold rounded-xl text-sm transition-colors">
+                    Annuler
+                </button>
+                <button onclick="submitPasswordModal()" class="flex-1 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-xl text-sm transition-colors shadow-md shadow-brand-500/20">
+                    Valider
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal QR Code -->
     <div id="qrModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-sm w-full space-y-4 text-center shadow-2xl border border-gray-200 dark:border-gray-700">
             <h3 class="text-lg font-bold">Scanner pour rejoindre</h3>
-            <p class="text-xs text-gray-500 dark:text-gray-400">Scannez ce code avec votre téléphone ou un autre appareil pour vous connecter instantanément.</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400">Scannez ce code avec votre appareil mobile pour vous connecter instantanément.</p>
             
             <div id="qrcodeContainer" class="flex justify-center p-4 bg-white rounded-xl shadow-inner w-fit mx-auto"></div>
+
+            <!-- Configuration de l'URL hôte personnalisée -->
+            <div class="text-left space-y-1 pt-2 border-t border-gray-100 dark:border-gray-700">
+                <label class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider block">URL personnalisée du site (HTTPS)</label>
+                <div class="flex gap-1">
+                    <input type="text" id="customBaseUrlInput" placeholder="https://votre-site.netlify.app" class="flex-1 px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-1 focus:ring-brand-500">
+                    <button onclick="updateCustomBaseUrl()" class="px-2.5 py-1.5 bg-brand-500 hover:bg-brand-600 text-white rounded-lg text-xs font-medium">Appliquer</button>
+                </div>
+            </div>
 
             <button onclick="toggleQRCodeModal()" class="w-full py-2.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 font-semibold rounded-xl text-sm transition-colors">
                 Fermer
@@ -212,103 +316,205 @@
         <span id="toastMessage">Message</span>
     </div>
 
+    <!-- Script Firebase SDK (pour le lobby public) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Configuration dynamique de Firebase
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'multiconnect-app';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            apiKey: "AIzaSyDemoConfigKeyForPublicRoomsLobby123",
+            authDomain: "multiconnect-demo.firebaseapp.com",
+            projectId: "multiconnect-demo",
+            storageBucket: "multiconnect-demo.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:1234567890:web:abcdef123456"
+        };
+
+        let app, auth, db;
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+
+            // Auth initiale
+            const initialToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+            if (initialToken) {
+                await signInWithCustomToken(auth, initialToken);
+            } else {
+                await signInAnonymously(auth);
+            }
+
+            window.dbInstance = db;
+            window.appIdInstance = appId;
+            window.listenToPublicRooms();
+        } catch(e) {
+            console.warn("Lobby Firestore indisponible ou hors ligne. Fonctionnement autonome actif.", e);
+        }
+    </script>
+
     <script>
         // --- ÉTATS GLOBAUX ---
         let peer = null;
         let connections = {}; // Stocke les connexions actives par peerId
         let myPeerId = '';
         let roomId = '';
+        let roomName = '';
         let username = '';
         let isHost = false;
-        let qrCodeInstance = null;
+        let roomVisibility = 'public'; // 'public', 'public_password', 'private'
+        let targetJoinRoomId = '';
+        let roomPasswordHash = '';
+        let pendingPasswordCallback = null;
 
-        // --- INITIALISATION DES ICÔNES LUCIDE ---
+        // --- INITIALISATION AU CHARGEMENT ---
         lucide.createIcons();
 
-        // Check pour l'URL avec paramètre salon (?room=...)
         window.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             const roomParam = urlParams.get('room');
-            if (roomParam) {
-                document.getElementById('roomCodeInput').value = roomParam;
-            }
             
             // Auto-génération d'un pseudo par défaut
             document.getElementById('usernameInput').value = 'Appareil-' + Math.floor(1000 + Math.random() * 9000);
+
+            if (roomParam) {
+                document.getElementById('roomCodeInput').value = roomParam;
+                switchTab('joincode');
+            }
         });
 
-        // --- GESTION DU THÈME SOMBRE / CLAIR ---
-        function toggleTheme() {
-            const html = document.documentElement;
-            const icon = document.getElementById('themeIcon');
-            if (html.classList.contains('dark')) {
-                html.classList.remove('dark');
-                icon.setAttribute('data-lucide', 'moon');
-            } else {
-                html.classList.add('dark');
-                icon.setAttribute('data-lucide', 'sun');
-            }
-            lucide.createIcons();
+        // --- GESTION DES ONGLETS ---
+        function switchTab(tabName) {
+            const tabs = ['lobby', 'create', 'joincode'];
+            tabs.forEach(t => {
+                document.getElementById('tab' + capitalize(t)).classList.add('hidden');
+                document.getElementById('tab' + capitalize(t) + 'Btn').classList.remove('tab-active');
+            });
+
+            document.getElementById('tab' + capitalize(tabName)).classList.remove('hidden');
+            document.getElementById('tab' + capitalize(tabName) + 'Btn').classList.add('tab-active');
         }
 
-        // --- CRÉATION OU JONCTION DU SALON ---
-        function createNewRoom() {
+        function capitalize(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        function togglePasswordInputVisibility() {
+            const vis = document.getElementById('roomVisibilityInput').value;
+            const container = document.getElementById('passwordFieldContainer');
+            if (vis === 'public_password' || vis === 'private') {
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+            }
+        }
+
+        function togglePasswordDisplay(inputId) {
+            const el = document.getElementById(inputId);
+            if (el.type === 'password') {
+                el.type = 'text';
+            } else {
+                el.type = 'password';
+            }
+        }
+
+        // --- HASHAGE MOT DE PASSE (SHA-256) ---
+        async function hashString(str) {
+            if (!str) return '';
+            const msgBuffer = new TextEncoder().encode(str);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // --- CRÉATION DE SALON ---
+        async function createNewRoom() {
             username = document.getElementById('usernameInput').value.trim() || 'Anonyme';
-            roomId = Math.random().toString(36).substring(2, 8); // Code court
+            roomName = document.getElementById('roomNameInput').value.trim() || 'Salon de ' + username;
+            roomVisibility = document.getElementById('roomVisibilityInput').value;
+            
+            const rawPassword = document.getElementById('createPasswordInput').value;
+            roomPasswordHash = (roomVisibility !== 'public' && rawPassword) ? await hashString(rawPassword) : '';
+
+            roomId = Math.random().toString(36).substring(2, 8); // Code à 6 caractères
             isHost = true;
+
             initPeerJS(true);
         }
 
-        function joinExistingRoom() {
-            username = document.getElementById('usernameInput').value.trim() || 'Anonyme';
-            const inputCode = document.getElementById('roomCodeInput').value.trim().toLowerCase();
-            if (!inputCode) {
-                showToast("Veuillez entrer un code de salon valide.");
+        // --- REJOINDRE DEPUIS LE CODE / INPUT ---
+        function joinExistingRoomFromInput() {
+            const code = document.getElementById('roomCodeInput').value.trim().toLowerCase();
+            if (!code) {
+                showToast("Veuillez saisir un code de salon.");
                 return;
             }
-            roomId = inputCode;
+            joinRoomWithId(code);
+        }
+
+        // --- REJOINDRE DEPUIS UN ID ---
+        function joinRoomWithId(targetId, isProtected = false, passwordHash = '') {
+            username = document.getElementById('usernameInput').value.trim() || 'Anonyme';
+            roomId = targetId;
             isHost = false;
-            initPeerJS(false);
+
+            if (isProtected && !passwordHash) {
+                // Demander mot de passe via modal
+                openPasswordModal(async (enteredPassword) => {
+                    const hashed = await hashString(enteredPassword);
+                    initPeerJS(false, hashed);
+                });
+                return;
+            }
+
+            initPeerJS(false, passwordHash);
+        }
+
+        // --- MODAL MOT DE PASSE ---
+        function openPasswordModal(callback) {
+            pendingPasswordCallback = callback;
+            document.getElementById('modalPasswordInput').value = '';
+            document.getElementById('passwordErrorMsg').classList.add('hidden');
+            document.getElementById('passwordModal').classList.remove('hidden');
+            document.getElementById('modalPasswordInput').focus();
+        }
+
+        function closePasswordModal() {
+            document.getElementById('passwordModal').classList.add('hidden');
+            pendingPasswordCallback = null;
+        }
+
+        async function submitPasswordModal() {
+            const pwd = document.getElementById('modalPasswordInput').value;
+            if (!pwd) {
+                document.getElementById('passwordErrorMsg').classList.remove('hidden');
+                return;
+            }
+            const cb = pendingPasswordCallback;
+            closePasswordModal();
+            if (cb) cb(pwd);
         }
 
         // --- LOGIQUE PEERJS / WEBRTC ---
-        function initPeerJS(creatingRoom) {
-            // Pour simplifier l'interconnexion P2P, l'ID PeerJS inclut l'ID du salon
+        function initPeerJS(creatingRoom, providedPasswordHash = '') {
             const peerId = creatingRoom 
                 ? `multiconnect-${roomId}-host` 
                 : `multiconnect-${roomId}-${Math.random().toString(36).substring(2, 7)}`;
 
-            showToast("Connexion au réseau mondial en cours...");
+            showToast("Connexion P2P en cours...");
 
             peer = new Peer(peerId, {
                 debug: 1,
                 config: {
                     iceServers: [
-                        // Serveurs STUN gratuits (Résolution d'adresse IP P2P)
                         { urls: 'stun:stun.l.google.com:19302' },
                         { urls: 'stun:stun1.l.google.com:19302' },
                         { urls: 'stun:stun2.l.google.com:19302' },
-                        { urls: 'stun:stun3.l.google.com:19302' },
-                        { urls: 'stun:stun4.l.google.com:19302' },
                         { urls: 'stun:global.stun.twilio.com:3478' },
-                        { urls: 'stun:stun.services.mozilla.com' },
-
-                        // Serveurs TURN relais (Nécessaires pour traverser le CGNAT 4G/5G)
-                        {
-                            urls: 'turn:openrelay.metered.ca:80',
-                            username: 'openrelay',
-                            credential: 'openrelay'
-                        },
-                        {
-                            urls: 'turn:openrelay.metered.ca:443',
-                            username: 'openrelay',
-                            credential: 'openrelay'
-                        },
-                        {
-                            urls: 'turn:openrelay.metered.ca:443?transport=tcp',
-                            username: 'openrelay',
-                            credential: 'openrelay'
-                        }
+                        { urls: 'turn:openrelay.metered.ca:80', username: 'openrelay', credential: 'openrelay' },
+                        { urls: 'turn:openrelay.metered.ca:443', username: 'openrelay', credential: 'openrelay' }
                     ]
                 }
             });
@@ -317,15 +523,16 @@
                 myPeerId = id;
                 switchToRoomUI();
 
-                if (!creatingRoom) {
-                    // Si on rejoint, se connecter directement à l'hôte
-                    connectToPeer(`multiconnect-${roomId}-host`);
+                if (creatingRoom) {
+                    publishRoomToLobby();
+                } else {
+                    // Connexion à l'hôte avec vérification du mot de passe
+                    connectToHost(`multiconnect-${roomId}-host`, providedPasswordHash);
                 }
 
                 updatePeerList();
             });
 
-            // Réception de connexions entrantes (pour l'hôte et les clients)
             peer.on('connection', (conn) => {
                 setupConnectionListeners(conn);
             });
@@ -340,11 +547,9 @@
             });
         }
 
-        function connectToPeer(targetPeerId) {
-            if (connections[targetPeerId] || targetPeerId === myPeerId) return;
-
+        function connectToHost(targetPeerId, passHash) {
             const conn = peer.connect(targetPeerId, {
-                metadata: { username: username }
+                metadata: { username: username, passwordHash: passHash }
             });
 
             setupConnectionListeners(conn);
@@ -352,17 +557,13 @@
 
         function setupConnectionListeners(conn) {
             conn.on('open', () => {
-                connections[conn.peer] = conn;
-
-                // Envoyer nos informations de profil
+                // Envoi poignée de main
                 conn.send({
                     type: 'handshake',
                     username: username,
-                    peerId: myPeerId
+                    peerId: myPeerId,
+                    passwordHash: conn.metadata?.passwordHash || ''
                 });
-
-                showToast(`Appareil connecté : ${conn.metadata?.username || 'Nouveau membre'}`);
-                updatePeerList();
             });
 
             conn.on('data', (data) => {
@@ -373,16 +574,51 @@
                 delete connections[conn.peer];
                 showToast("Un appareil s'est déconnecté.");
                 updatePeerList();
+                if (isHost) updateRoomPeerCount();
             });
         }
 
-        // --- TRAITEMENT DES DONNÉES ENTRANTES ---
         function handleIncomingData(data, conn) {
             switch (data.type) {
                 case 'handshake':
+                    // Vérification du mot de passe par l'hôte
+                    if (isHost && roomPasswordHash) {
+                        if (data.passwordHash !== roomPasswordHash) {
+                            conn.send({ type: 'auth_error', message: 'Mot de passe incorrect' });
+                            setTimeout(() => conn.close(), 500);
+                            return;
+                        }
+                    }
+
                     conn.remoteUsername = data.username;
+                    connections[conn.peer] = conn;
+                    
+                    // Si hôte, informer l'invité des métadonnées du salon
+                    if (isHost) {
+                        conn.send({
+                            type: 'room_meta',
+                            roomName: roomName,
+                            isProtected: !!roomPasswordHash
+                        });
+                        updateRoomPeerCount();
+                    }
+
+                    showToast(`${data.username} a rejoint le salon !`);
                     updatePeerList();
                     appendSystemMessage(`${data.username} a rejoint le salon.`);
+                    break;
+
+                case 'room_meta':
+                    roomName = data.roomName;
+                    document.getElementById('activeRoomName').innerText = roomName;
+                    break;
+
+                case 'auth_error':
+                    showToast(data.message);
+                    openPasswordModal(async (enteredPassword) => {
+                        const hashed = await hashString(enteredPassword);
+                        connectToHost(`multiconnect-${roomId}-host`, hashed);
+                    });
                     break;
 
                 case 'chat':
@@ -395,12 +631,10 @@
             }
         }
 
-        // --- ENVOI DE MESSAGES & FICHIERS ---
+        // --- ENVOI MESSAGES & FICHIERS ---
         function broadcastData(data) {
             Object.values(connections).forEach(conn => {
-                if (conn.open) {
-                    conn.send(data);
-                }
+                if (conn.open) conn.send(data);
             });
         }
 
@@ -408,24 +642,13 @@
             e.preventDefault();
             const input = document.getElementById('messageInput');
             const text = input.value.trim();
-
             if (!text) return;
 
             const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const messageData = { type: 'chat', sender: username, text: text, timestamp: timestamp };
 
-            const messageData = {
-                type: 'chat',
-                sender: username,
-                text: text,
-                timestamp: timestamp
-            };
-
-            // Transmettre aux autres
             broadcastData(messageData);
-
-            // Afficher dans notre propre salon
             appendChatMessage("Vous", text, true, timestamp);
-
             input.value = '';
         }
 
@@ -433,7 +656,6 @@
             const file = e.target.files[0];
             if (!file) return;
 
-            // Limite de taille indicative (ex: 15Mo pour éviter d'exploser le WebRTC data channel)
             if (file.size > 15 * 1024 * 1024) {
                 showToast("Fichier trop volumineux (Max: 15Mo)");
                 return;
@@ -442,24 +664,145 @@
             const reader = new FileReader();
             reader.onload = function(evt) {
                 const fileData = evt.target.result;
-
-                const dataPayload = {
-                    type: 'file',
-                    sender: username,
-                    fileName: file.name,
-                    fileType: file.type,
-                    fileData: fileData
-                };
-
+                const dataPayload = { type: 'file', sender: username, fileName: file.name, fileType: file.type, fileData: fileData };
                 broadcastData(dataPayload);
                 appendFileMessage("Vous", file.name, file.type, fileData, true);
-                e.target.value = ''; // Reset input
+                e.target.value = '';
             };
-
             reader.readAsDataURL(file);
         }
 
-        // --- INTERFACE DU CHAT (AFFICHAGE) ---
+        // --- MISE À JOUR UI & LOBBY FIRESTORE ---
+        async function publishRoomToLobby() {
+            if (!isHost || roomVisibility === 'private' || !window.dbInstance) return;
+
+            try {
+                const docRef = doc(window.dbInstance, 'artifacts', window.appIdInstance, 'public', 'data', 'rooms', roomId);
+                await setDoc(docRef, {
+                    roomId: roomId,
+                    name: roomName,
+                    hostName: username,
+                    isProtected: roomVisibility === 'public_password',
+                    peerCount: Object.keys(connections).length + 1,
+                    updatedAt: Date.now()
+                });
+            } catch (err) {
+                console.warn("Erreur publication salon lobby:", err);
+            }
+        }
+
+        async function updateRoomPeerCount() {
+            if (!isHost || roomVisibility === 'private' || !window.dbInstance) return;
+            try {
+                const docRef = doc(window.dbInstance, 'artifacts', window.appIdInstance, 'public', 'data', 'rooms', roomId);
+                await setDoc(docRef, {
+                    peerCount: Object.keys(connections).length + 1,
+                    updatedAt: Date.now()
+                }, { merge: true });
+            } catch (err) {}
+        }
+
+        async function removeRoomFromLobby() {
+            if (!isHost || !window.dbInstance) return;
+            try {
+                const docRef = doc(window.dbInstance, 'artifacts', window.appIdInstance, 'public', 'data', 'rooms', roomId);
+                await deleteDoc(docRef);
+            } catch(e) {}
+        }
+
+        window.listenToPublicRooms = function() {
+            if (!window.dbInstance) return;
+            const colRef = collection(window.dbInstance, 'artifacts', window.appIdInstance, 'public', 'data', 'rooms');
+
+            onSnapshot(colRef, (snapshot) => {
+                const container = document.getElementById('publicRoomsContainer');
+                container.innerHTML = '';
+
+                if (snapshot.empty) {
+                    container.innerHTML = `
+                        <div class="text-center py-8 text-gray-400 text-xs">
+                            <i data-lucide="radio" class="w-8 h-8 mx-auto mb-2 opacity-40"></i>
+                            Aucun salon public actif pour le moment.<br>Soyez le premier à en créer un !
+                        </div>`;
+                    lucide.createIcons();
+                    return;
+                }
+
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    // Ignorer les salons inactifs depuis plus de 5 minutes
+                    if (Date.now() - (data.updatedAt || 0) > 300000) return;
+
+                    const card = document.createElement('div');
+                    card.className = "flex items-center justify-between p-3.5 bg-gray-50 dark:bg-gray-700/60 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600 transition-all";
+                    
+                    card.innerHTML = `
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-sm">${escapeHtml(data.name || 'Salon')}</span>
+                                ${data.isProtected ? '<span class="px-2 py-0.5 text-[10px] bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300 font-semibold rounded-full flex items-center gap-1"><i data-lucide="lock" class="w-3 h-3"></i> Protégé</span>' : '<span class="px-2 py-0.5 text-[10px] bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300 font-semibold rounded-full">Ouvert</span>'}
+                            </div>
+                            <div class="text-xs text-gray-400 flex items-center gap-3">
+                                <span>Hôte : ${escapeHtml(data.hostName || 'Anonyme')}</span>
+                                <span>• ${data.peerCount || 1} membre(s)</span>
+                            </div>
+                        </div>
+                        <button onclick="joinRoomWithId('${data.roomId}', ${data.isProtected})" class="px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-lg text-xs font-semibold transition-all flex items-center gap-1 shadow-sm">
+                            Rejoindre <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </button>
+                    `;
+                    container.appendChild(card);
+                });
+                lucide.createIcons();
+            }, (error) => {
+                console.warn("Erreur snapshot public rooms:", error);
+            });
+        };
+
+        function fetchPublicRooms() {
+            if (window.listenToPublicRooms) window.listenToPublicRooms();
+            showToast("Liste des salons actualisée.");
+        }
+
+        function switchToRoomUI() {
+            document.getElementById('joinSection').classList.add('hidden');
+            document.getElementById('roomSection').classList.remove('hidden');
+            document.getElementById('currentRoomId').value = roomId;
+            document.getElementById('activeRoomName').innerText = roomName || ('Salon ' + roomId);
+
+            const badge = document.getElementById('roomProtectionBadge');
+            if (roomPasswordHash || roomVisibility === 'public_password') {
+                badge.innerHTML = `<i data-lucide="lock" class="w-3 h-3 text-amber-500"></i> Protégé`;
+            } else {
+                badge.innerHTML = `<i data-lucide="globe" class="w-3 h-3 text-green-500"></i> Public`;
+            }
+            lucide.createIcons();
+        }
+
+        function updatePeerList() {
+            const list = document.getElementById('peerList');
+            const count = document.getElementById('peerCount');
+            list.innerHTML = '';
+
+            const peerNames = [username + ' (Vous)'];
+            Object.values(connections).forEach(c => {
+                if (c.open) peerNames.push(c.remoteUsername || c.peer);
+            });
+
+            count.innerText = peerNames.length;
+
+            peerNames.forEach(name => {
+                const li = document.createElement('li');
+                li.className = "flex items-center space-x-2 text-xs p-2 rounded-lg bg-gray-50 dark:bg-gray-700/40";
+                li.innerHTML = `
+                    <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                    <span class="truncate font-medium">${escapeHtml(name)}</span>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        // --- AFFICHAGE TCHAT ---
         function appendChatMessage(sender, text, isMe, timestamp) {
             const chatBox = document.getElementById('chatBox');
             const msgDiv = document.createElement('div');
@@ -471,14 +814,9 @@
                     <span class="text-[10px] text-gray-400">${timestamp || ''}</span>
                 </div>
                 <div class="max-w-xs sm:max-w-md px-4 py-2.5 rounded-2xl text-sm shadow-sm ${
-                    isMe 
-                    ? 'bg-brand-500 text-white rounded-br-none' 
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-bl-none'
-                }">
-                    ${escapeHtml(text)}
-                </div>
+                    isMe ? 'bg-brand-500 text-white rounded-br-none' : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-bl-none'
+                }">${escapeHtml(text)}</div>
             `;
-
             chatBox.appendChild(msgDiv);
             chatBox.scrollTop = chatBox.scrollHeight;
         }
@@ -489,20 +827,14 @@
             msgDiv.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'} mb-3`;
 
             const isImage = fileType.startsWith('image/');
-
-            let contentPreview = '';
-            if (isImage) {
-                contentPreview = `<img src="${fileData}" class="max-w-xs max-h-48 rounded-lg mb-2 object-cover">`;
-            }
+            const contentPreview = isImage ? `<img src="${fileData}" class="max-w-xs max-h-48 rounded-lg mb-2 object-cover">` : '';
 
             msgDiv.innerHTML = `
                 <div class="flex items-baseline space-x-2 mb-1">
                     <span class="text-xs font-semibold text-gray-500 dark:text-gray-400">${escapeHtml(sender)}</span>
                 </div>
                 <div class="max-w-xs sm:max-w-md p-3 rounded-2xl text-sm shadow-sm ${
-                    isMe 
-                    ? 'bg-brand-600 text-white rounded-br-none' 
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-bl-none'
+                    isMe ? 'bg-brand-600 text-white rounded-br-none' : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-bl-none'
                 }">
                     ${contentPreview}
                     <div class="flex items-center space-x-2">
@@ -514,7 +846,6 @@
                     </div>
                 </div>
             `;
-
             chatBox.appendChild(msgDiv);
             lucide.createIcons();
             chatBox.scrollTop = chatBox.scrollHeight;
@@ -524,92 +855,91 @@
             const chatBox = document.getElementById('chatBox');
             const msgDiv = document.createElement('div');
             msgDiv.className = "text-center my-2";
-            msgDiv.innerHTML = `
-                <span class="bg-gray-100 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400 text-xs px-3 py-1 rounded-full">
-                    ${escapeHtml(text)}
-                </span>
-            `;
+            msgDiv.innerHTML = `<span class="bg-gray-100 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400 text-xs px-3 py-1 rounded-full">${escapeHtml(text)}</span>`;
             chatBox.appendChild(msgDiv);
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
-        // --- MISE À JOUR DE L'INTERFACE ---
-        function switchToRoomUI() {
-            document.getElementById('joinSection').classList.add('hidden');
-            document.getElementById('roomSection').classList.remove('hidden');
-            document.getElementById('currentRoomId').value = roomId;
-
-            generateQRCode();
+        // --- OUTILS URL & QR CODE ---
+        function getAppBaseUrl() {
+            const customUrl = localStorage.getItem('multiconnect_custom_url');
+            if (customUrl && customUrl.trim() !== '') return customUrl.trim().replace(/\/$/, '');
+            if (window.location.protocol === 'http:' || window.location.protocol === 'https:') return window.location.origin + window.location.pathname;
+            return window.location.href.split('?')[0].split('#')[0];
         }
 
-        function updatePeerList() {
-            const list = document.getElementById('peerList');
-            const count = document.getElementById('peerCount');
-            list.innerHTML = '';
-
-            // Mon appareil
-            const myItem = createPeerListItem(`${username} (Cet appareil)`, true);
-            list.appendChild(myItem);
-
-            // Les autres pairs
-            const otherPeers = Object.values(connections);
-            otherPeers.forEach(conn => {
-                const name = conn.remoteUsername || conn.metadata?.username || 'Appareil distant';
-                list.appendChild(createPeerListItem(name, false));
-            });
-
-            count.innerText = otherPeers.length + 1;
-        }
-
-        function createPeerListItem(name, isSelf) {
-            const li = document.createElement('li');
-            li.className = "flex items-center justify-between p-2.5 rounded-xl bg-gray-50 dark:bg-gray-700/50 text-sm";
-            li.innerHTML = `
-                <div class="flex items-center space-x-2.5 truncate">
-                    <div class="w-2 h-2 rounded-full ${isSelf ? 'bg-brand-500' : 'bg-green-500'}"></div>
-                    <span class="truncate font-medium">${escapeHtml(name)}</span>
-                </div>
-                ${isSelf ? '<span class="text-[10px] bg-brand-100 text-brand-700 dark:bg-brand-900/50 dark:text-brand-300 px-2 py-0.5 rounded-md font-semibold">VOUS</span>' : ''}
-            `;
-            return li;
-        }
-
-        // --- FONCTIONS UTILITAIRES ---
-        function generateQRCode() {
-            const joinUrl = `${window.location.origin}${window.location.pathname}?room=${roomId}`;
-            const container = document.getElementById('qrcodeContainer');
-            container.innerHTML = '';
-
-            qrCodeInstance = new QRCode(container, {
-                text: joinUrl,
-                width: 180,
-                height: 180,
-                colorDark : "#0f172a",
-                colorLight : "#ffffff",
-                correctLevel : QRCode.CorrectLevel.H
-            });
+        function getFullJoinUrl() {
+            const baseUrl = getAppBaseUrl();
+            const sep = baseUrl.includes('?') ? '&' : '?';
+            return `${baseUrl}${sep}room=${roomId}`;
         }
 
         function toggleQRCodeModal() {
             const modal = document.getElementById('qrModal');
-            modal.classList.toggle('hidden');
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                generateQRCode();
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
+
+        function generateQRCode() {
+            const container = document.getElementById('qrcodeContainer');
+            container.innerHTML = '';
+            new QRCode(container, {
+                text: getFullJoinUrl(),
+                width: 180,
+                height: 180,
+                colorDark: "#0f172a",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        }
+
+        function updateCustomBaseUrl() {
+            const input = document.getElementById('customBaseUrlInput');
+            if (input && input.value.trim() !== '') {
+                let url = input.value.trim();
+                if (!url.startsWith('http://') && !url.startsWith('https://')) url = 'https://' + url;
+                localStorage.setItem('multiconnect_custom_url', url);
+                generateQRCode();
+                showToast("URL Web personnalisée enregistrée !");
+            } else {
+                localStorage.removeItem('multiconnect_custom_url');
+                generateQRCode();
+                showToast("URL Web réinitialisée.");
+            }
         }
 
         function copyRoomLink() {
-            const joinUrl = `${window.location.origin}${window.location.pathname}?room=${roomId}`;
-            navigator.clipboard.writeText(joinUrl).then(() => {
+            navigator.clipboard.writeText(getFullJoinUrl()).then(() => {
                 showToast("Lien du salon copié dans le presse-papier !");
             }).catch(() => {
                 document.getElementById('currentRoomId').select();
                 document.execCommand('copy');
-                showToast("Code du salon copié !");
+                showToast("Code copié !");
             });
         }
 
         function leaveRoom() {
+            if (isHost) removeRoomFromLobby();
             if (peer) peer.destroy();
             connections = {};
             location.reload();
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                icon.setAttribute('data-lucide', 'moon');
+            } else {
+                html.classList.add('dark');
+                icon.setAttribute('data-lucide', 'sun');
+            }
+            lucide.createIcons();
         }
 
         function showToast(message) {
@@ -617,18 +947,11 @@
             const msg = document.getElementById('toastMessage');
             msg.innerText = message;
             toast.classList.remove('opacity-0', 'pointer-events-none');
-            
-            setTimeout(() => {
-                toast.classList.add('opacity-0', 'pointer-events-none');
-            }, 3000);
+            setTimeout(() => toast.classList.add('opacity-0', 'pointer-events-none'), 3000);
         }
 
         function escapeHtml(str) {
-            return str.replace(/&/g, "&amp;")
-                      .replace(/</g, "&lt;")
-                      .replace(/>/g, "&gt;")
-                      .replace(/"/g, "&quot;")
-                      .replace(/'/g, "&#039;");
+            return (str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
     </script>
 </body>
