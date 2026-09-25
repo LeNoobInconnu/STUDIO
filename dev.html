@@ -105,7 +105,7 @@
                         <i data-lucide="plus-circle" class="w-4 h-4"></i>
                         <span>Créer un Salon</span>
                     </button>
-                    <button id="tabJoinCodeBtn" onclick="switchTab('joincode')" class="flex-1 py-3 text-center text-gray-500 dark:text-gray-400 hover:text-brand-500 transition-all flex items-center justify-center gap-2">
+                    <button id="tabJoincodeBtn" onclick="switchTab('joincode')" class="flex-1 py-3 text-center text-gray-500 dark:text-gray-400 hover:text-brand-500 transition-all flex items-center justify-center gap-2">
                         <i data-lucide="key" class="w-4 h-4"></i>
                         <span>Code / Lien</span>
                     </button>
@@ -133,7 +133,7 @@
                 <div id="tabCreate" class="hidden space-y-4 text-left">
                     <div>
                         <label class="block text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 mb-1">Nom du Salon</label>
-                        <input type="text" id="roomNameInput" placeholder="Ex: Équipe Design, Soirée Photos..." class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all text-sm">
+                        <input type="text" id="roomNameInput" placeholder="Ex: Équipe Design, Soirée Photos..." class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all text-sm" onkeydown="if(event.key==='Enter') createNewRoom()">
                     </div>
 
                     <div>
@@ -148,26 +148,26 @@
                     <div id="passwordFieldContainer" class="hidden">
                         <label class="block text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 mb-1">Mot de Passe du Salon</label>
                         <div class="relative">
-                            <input type="password" id="createPasswordInput" placeholder="Définissez un mot de passe" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all text-sm">
+                            <input type="password" id="createPasswordInput" placeholder="Définissez un mot de passe" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all text-sm" onkeydown="if(event.key==='Enter') createNewRoom()">
                             <button type="button" onclick="togglePasswordDisplay('createPasswordInput')" class="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
                                 <i data-lucide="eye" class="w-4 h-4"></i>
                             </button>
                         </div>
                     </div>
 
-                    <button onclick="createNewRoom()" class="w-full py-3 px-4 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-xl shadow-lg shadow-brand-500/25 transition-all flex items-center justify-center space-x-2">
+                    <button id="createRoomBtn" onclick="createNewRoom()" class="w-full py-3 px-4 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-xl shadow-lg shadow-brand-500/25 transition-all flex items-center justify-center space-x-2">
                         <i data-lucide="plus-circle" class="w-5 h-5"></i>
-                        <span>Lancer le Salon</span>
+                        <span id="createRoomBtnText">Lancer le Salon</span>
                     </button>
                 </div>
 
                 <!-- CONTENU ONGLET 3 : Rejoindre par Code Secret -->
-                <div id="tabJoinCode" class="hidden space-y-4">
+                <div id="tabJoincode" class="hidden space-y-4">
                     <p class="text-xs text-gray-500 dark:text-gray-400">Entrez le code à 6 caractères fourni par l'hôte d'un salon masqué ou privé :</p>
                     <div class="flex space-x-2">
-                        <input type="text" id="roomCodeInput" placeholder="Ex: 8f3a9b" class="flex-1 px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all uppercase tracking-wider font-mono text-center text-lg">
-                        <button onclick="joinExistingRoomFromInput()" class="px-6 py-3 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-xl transition-all shadow-md shadow-brand-500/20">
-                            Rejoindre
+                        <input type="text" id="roomCodeInput" placeholder="Ex: 8f3a9b" class="flex-1 px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all uppercase tracking-wider font-mono text-center text-lg" onkeydown="if(event.key==='Enter') joinExistingRoomFromInput()">
+                        <button onclick="joinExistingRoomFromInput()" class="px-6 py-3 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-xl transition-all shadow-md shadow-brand-500/20 flex items-center gap-2">
+                            <span>Rejoindre</span>
                         </button>
                     </div>
                 </div>
@@ -356,7 +356,6 @@
     </script>
 
     <script>
-        // --- ÉTATS GLOBAUX ---
         let peer = null;
         let connections = {}; // Stocke les connexions actives par peerId
         let myPeerId = '';
@@ -368,8 +367,8 @@
         let targetJoinRoomId = '';
         let roomPasswordHash = '';
         let pendingPasswordCallback = null;
+        let peerConnectionTimeout = null;
 
-        // --- INITIALISATION AU CHARGEMENT ---
         lucide.createIcons();
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -385,20 +384,29 @@
             }
         });
 
-        // --- GESTION DES ONGLETS ---
         function switchTab(tabName) {
             const tabs = ['lobby', 'create', 'joincode'];
             tabs.forEach(t => {
-                document.getElementById('tab' + capitalize(t)).classList.add('hidden');
-                document.getElementById('tab' + capitalize(t) + 'Btn').classList.remove('tab-active');
+                const targetId = 'tab' + capitalize(t);
+                const btnId = 'tab' + capitalize(t) + 'Btn';
+                
+                const contentEl = document.getElementById(targetId);
+                const btnEl = document.getElementById(btnId);
+
+                if (contentEl) contentEl.classList.add('hidden');
+                if (btnEl) btnEl.classList.remove('tab-active');
             });
 
-            document.getElementById('tab' + capitalize(tabName)).classList.remove('hidden');
-            document.getElementById('tab' + capitalize(tabName) + 'Btn').classList.add('tab-active');
+            const activeContent = document.getElementById('tab' + capitalize(tabName));
+            const activeBtn = document.getElementById('tab' + capitalize(tabName) + 'Btn');
+
+            if (activeContent) activeContent.classList.remove('hidden');
+            if (activeBtn) activeBtn.classList.add('tab-active');
         }
 
         function capitalize(str) {
-            return str.charAt(0).toUpperCase() + str.slice(1);
+            if (!str) return '';
+            return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
         }
 
         function togglePasswordInputVisibility() {
@@ -420,7 +428,6 @@
             }
         }
 
-        // --- HASHAGE MOT DE PASSE (SHA-256) ---
         async function hashString(str) {
             if (!str) return '';
             const msgBuffer = new TextEncoder().encode(str);
@@ -429,22 +436,45 @@
             return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
         }
 
-        // --- CRÉATION DE SALON ---
         async function createNewRoom() {
-            username = document.getElementById('usernameInput').value.trim() || 'Anonyme';
-            roomName = document.getElementById('roomNameInput').value.trim() || 'Salon de ' + username;
-            roomVisibility = document.getElementById('roomVisibilityInput').value;
-            
-            const rawPassword = document.getElementById('createPasswordInput').value;
-            roomPasswordHash = (roomVisibility !== 'public' && rawPassword) ? await hashString(rawPassword) : '';
+            try {
+                username = document.getElementById('usernameInput').value.trim() || 'Anonyme';
+                roomName = document.getElementById('roomNameInput').value.trim() || 'Salon de ' + username;
+                roomVisibility = document.getElementById('roomVisibilityInput').value;
+                
+                const rawPassword = document.getElementById('createPasswordInput').value;
+                roomPasswordHash = (roomVisibility !== 'public' && rawPassword) ? await hashString(rawPassword) : '';
 
-            roomId = Math.random().toString(36).substring(2, 8); // Code à 6 caractères
-            isHost = true;
+                roomId = Math.random().toString(36).substring(2, 8); // Code à 6 caractères
+                isHost = true;
 
-            initPeerJS(true);
+                // Indication visuelle du chargement
+                setCreateButtonLoading(true);
+
+                initPeerJS(true);
+            } catch (err) {
+                console.error("Erreur lors de la création du salon:", err);
+                showToast("Erreur lors de la création du salon.");
+                setCreateButtonLoading(false);
+            }
         }
 
-        // --- REJOINDRE DEPUIS LE CODE / INPUT ---
+        function setCreateButtonLoading(isLoading) {
+            const btn = document.getElementById('createRoomBtn');
+            const btnText = document.getElementById('createRoomBtnText');
+            if (!btn || !btnText) return;
+
+            if (isLoading) {
+                btn.disabled = true;
+                btn.classList.add('opacity-75', 'cursor-not-allowed');
+                btnText.innerText = "Création du salon en cours...";
+            } else {
+                btn.disabled = false;
+                btn.classList.remove('opacity-75', 'cursor-not-allowed');
+                btnText.innerText = "Lancer le Salon";
+            }
+        }
+
         function joinExistingRoomFromInput() {
             const code = document.getElementById('roomCodeInput').value.trim().toLowerCase();
             if (!code) {
@@ -454,14 +484,12 @@
             joinRoomWithId(code);
         }
 
-        // --- REJOINDRE DEPUIS UN ID ---
         function joinRoomWithId(targetId, isProtected = false, passwordHash = '') {
             username = document.getElementById('usernameInput').value.trim() || 'Anonyme';
             roomId = targetId;
             isHost = false;
 
             if (isProtected && !passwordHash) {
-                // Demander mot de passe via modal
                 openPasswordModal(async (enteredPassword) => {
                     const hashed = await hashString(enteredPassword);
                     initPeerJS(false, hashed);
@@ -472,7 +500,6 @@
             initPeerJS(false, passwordHash);
         }
 
-        // --- MODAL MOT DE PASSE ---
         function openPasswordModal(callback) {
             pendingPasswordCallback = callback;
             document.getElementById('modalPasswordInput').value = '';
@@ -497,13 +524,25 @@
             if (cb) cb(pwd);
         }
 
-        // --- LOGIQUE PEERJS / WEBRTC ---
         function initPeerJS(creatingRoom, providedPasswordHash = '') {
+            if (peer) {
+                try { peer.destroy(); } catch(e){}
+            }
+
             const peerId = creatingRoom 
                 ? `multiconnect-${roomId}-host` 
                 : `multiconnect-${roomId}-${Math.random().toString(36).substring(2, 7)}`;
 
             showToast("Connexion P2P en cours...");
+
+            // Timeout de sécurité au cas où le serveur PeerJS met du temps à répondre
+            clearTimeout(peerConnectionTimeout);
+            peerConnectionTimeout = setTimeout(() => {
+                if (!myPeerId) {
+                    showToast("Connexion au réseau P2P trop lente, réessaye dans un instant.");
+                    setCreateButtonLoading(false);
+                }
+            }, 10000);
 
             peer = new Peer(peerId, {
                 debug: 1,
@@ -512,21 +551,20 @@
                         { urls: 'stun:stun.l.google.com:19302' },
                         { urls: 'stun:stun1.l.google.com:19302' },
                         { urls: 'stun:stun2.l.google.com:19302' },
-                        { urls: 'stun:global.stun.twilio.com:3478' },
-                        { urls: 'turn:openrelay.metered.ca:80', username: 'openrelay', credential: 'openrelay' },
-                        { urls: 'turn:openrelay.metered.ca:443', username: 'openrelay', credential: 'openrelay' }
+                        { urls: 'stun:global.stun.twilio.com:3478' }
                     ]
                 }
             });
 
             peer.on('open', (id) => {
+                clearTimeout(peerConnectionTimeout);
                 myPeerId = id;
+                setCreateButtonLoading(false);
                 switchToRoomUI();
 
                 if (creatingRoom) {
                     publishRoomToLobby();
                 } else {
-                    // Connexion à l'hôte avec vérification du mot de passe
                     connectToHost(`multiconnect-${roomId}-host`, providedPasswordHash);
                 }
 
@@ -538,11 +576,16 @@
             });
 
             peer.on('error', (err) => {
-                console.error("PeerJS Error:", err);
+                clearTimeout(peerConnectionTimeout);
+                console.error("Erreur PeerJS:", err);
+                setCreateButtonLoading(false);
+
                 if (err.type === 'peer-unavailable' && !creatingRoom) {
                     showToast("Salon introuvable ou l'hôte s'est déconnecté.");
+                } else if (err.type === 'unavailable-id' && creatingRoom) {
+                    showToast("Un salon avec cet ID existe déjà. Veuillez réessayer.");
                 } else {
-                    showToast("Erreur de connexion : " + err.type);
+                    showToast("Erreur de connexion WebRTC: " + err.type);
                 }
             });
         }
