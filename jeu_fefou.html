@@ -437,12 +437,12 @@
                     </div>
 
                     <div class="bg-purple-900 text-white p-4 rounded-2xl border-2 border-yellow-400 mb-4">
-                        <p class="font-game text-lg text-yellow-300 mb-1">📜 PREUVE DE VICTOIRE</p>
-                        <p class="text-xs text-purple-200 mb-3">Télécharge ce fichier et envoie-le pour prouver que tu as fini le jeu à 100% !</p>
+                        <p class="font-game text-lg text-yellow-300 mb-1">📜 DIPLÔME DE VICTOIRE EN IMAGE</p>
+                        <p class="text-xs text-purple-200 mb-3">Télécharge ton diplôme en image (PNG) et envoie-le pour prouver ta victoire !</p>
                         
-                        <button onclick="downloadProof('${proofCode}', '${date}')" 
+                        <button onclick="downloadProofImage('${proofCode}', '${date}')" 
                             class="btn-bounce bg-green-500 hover:bg-green-600 text-white font-game py-3 px-6 rounded-xl shadow-lg border-b-4 border-green-700 w-full flex items-center justify-center space-x-2">
-                            <span>📥 Télécharger la Preuve</span>
+                            <span>📥 Télécharger l'Image du Diplôme</span>
                         </button>
                     </div>
 
@@ -453,31 +453,76 @@
             `;
         }
 
-        function downloadProof(code, date) {
-            const content = `==============================================
-🏆 CERTIFICAT OFFICIEL DE VICTOIRE 🏆
-==============================================
+        function downloadProofImage(code, date) {
+            // Création d'un canvas invisible pour dessiner l'image du diplôme
+            const canvas = document.createElement('canvas');
+            canvas.width = 800;
+            canvas.height = 600;
+            const ctx = canvas.getContext('2d');
 
-Ce document atteste officiellement que le joueur a réussi 
-avec succès et sans tricher les 25 épreuves de 
-"La Quête du Secret Super Magique" !
+            // Fond coloré et design du certificat
+            const gradient = ctx.createLinearGradient(0, 0, 800, 600);
+            gradient.addColorStop(0, '#7C3AED');
+            gradient.addColorStop(0.5, '#3B82F6');
+            gradient.addColorStop(1, '#10B981');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 800, 600);
 
-- Étoiles récoltées : ${stars} ⭐
-- Date de réussite : ${date}
-- Code de vérification unique : ${code}
+            // Cadre intérieur blanc
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(40, 40, 720, 520);
 
-Félicitations Champion ! 🎉
-==============================================`;
+            // Bordure dorée
+            ctx.strokeStyle = '#F59E0B';
+            ctx.lineWidth = 8;
+            ctx.strokeRect(50, 50, 700, 500);
 
-            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
+            // Titre
+            ctx.fillStyle = '#1E1B4B';
+            ctx.font = 'bold 36px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('🏆 CERTIFICAT DE VICTOIRE 🏆', 400, 130);
+
+            // Sous-titre
+            ctx.fillStyle = '#4B5563';
+            ctx.font = 'bold 20px sans-serif';
+            ctx.fillText("La Quête du Secret Super Magique", 400, 175);
+
+            // Message central
+            ctx.fillStyle = '#6D28D9';
+            ctx.font = 'bold 24px sans-serif';
+            ctx.fillText('Bravo champion ! Tu as réussi toutes les épreuves !', 400, 245);
+
+            // Détails (Étoiles, Date, Code)
+            ctx.fillStyle = '#1F2937';
+            ctx.font = '18px sans-serif';
+            ctx.fillText(`⭐ Étoiles récoltées : ${stars} / 250`, 400, 315);
+            ctx.fillText(`📅 Date de réussite : ${date}`, 400, 355);
+
+            // Boîte du code secret
+            ctx.fillStyle = '#FEF3C7';
+            ctx.fillRect(200, 400, 400, 70);
+            ctx.strokeStyle = '#F59E0B';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(200, 400, 400, 70);
+
+            ctx.fillStyle = '#92400E';
+            ctx.font = 'bold 22px sans-serif';
+            ctx.fillText(`Code Unique : ${code}`, 400, 442);
+
+            // Signature bas de page
+            ctx.fillStyle = '#9CA3AF';
+            ctx.font = 'italic 14px sans-serif';
+            ctx.fillText('Certifié sans tricherie - Validé par Claude IA', 400, 525);
+
+            // Conversion en image et téléchargement automatique
+            const imageUrl = canvas.toDataURL('image/png');
             const a = document.createElement('a');
-            a.href = url;
-            a.download = `Preuve_Victoire_${code}.txt`;
+            a.href = imageUrl;
+            a.download = `Diplome_Victoire_${code}.png`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
-            URL.revokeObjectURL(url);
         }
 
         function restartGame() {
