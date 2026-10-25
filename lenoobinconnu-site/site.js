@@ -80,14 +80,13 @@ var SITE = {
                 Sans fichier image, le nom s'affiche à la place.
                 lien : laisse "" si le partenaire n'a pas de page. */
   partenaires: {
-    afficher: false,
+    afficher: true,
     titre: "Chaînes et marques affiliées",
     vitesse: 30,
     liste: [
       { nom: "Partenaire 1", logo: "assets/partenaires/partenaire-1.png", lien: "" },
       { nom: "Partenaire 2", logo: "assets/partenaires/partenaire-2.png", lien: "" },
       { nom: "Partenaire 3", logo: "assets/partenaires/partenaire-3.png", lien: "" },
-      { nom: "Partenaire 4", logo: "assets/partenaires/partenaire-4.png", lien: "" }
     ]
   },
 
