@@ -238,13 +238,15 @@
     var c = SITE.partenaires || {};
     var liste = c.liste || [];
     if (c.afficher === false || !liste.length) return "";
-    var fois = Math.max(1, Math.ceil(10 / liste.length));
+    // Nombre de logos nécessaires pour remplir l'écran (un logo fait environ 190 px)
+    var largeur = Math.max(window.innerWidth || 1200, 800);
+    var fois = Math.max(1, Math.ceil((largeur / 190 + 1) / liste.length));
     var moitie = "", moitieDup = "", i, j;
     for (i = 0; i < fois; i++) {
       for (j = 0; j < liste.length; j++) { moitie += partenaireHtml(liste[j], false); moitieDup += partenaireHtml(liste[j], true); }
     }
     return '<div class="wrap"><p class="eyebrow">Affiliés</p><h2 class="h2">' + esc(c.titre || "Partenaires") + '</h2></div>' +
-      '<div class="marquee" style="--duree:' + (Number(c.vitesse) || 30) + 's" aria-label="' + esc(c.titre || "Partenaires") + '">' +
+      '<div class="marquee' + (c.toujoursEnMouvement === false ? '' : ' force') + '" style="--duree:' + (Number(c.vitesse) || 30) + 's" aria-label="' + esc(c.titre || "Partenaires") + '">' +
       '<ul class="marquee-track">' + moitie + moitieDup + '</ul></div>';
   }
 
