@@ -111,9 +111,9 @@ var SITE = {
      true = la page affiche un message de maintenance, false = page normale. */
   maintenance: {
     accueil: false,
-    programme: false,
-    series: false,
-    communaute: false,
+    programme: true,
+    series: true,
+    communaute: true,
     contact: false,
     mentions: false
   },
