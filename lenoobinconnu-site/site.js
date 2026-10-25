@@ -27,7 +27,7 @@ var SITE = {
     discord: "https://discord.gg/SqftnMhUyr",
     x: "https://x.com/lenoobinconnu",
     instagram: "https://www.instagram.com/lenoobinconnu",
-    boutique: "",
+    boutique: "https://www.youtube.com/@LeNoobInconnu",
     contact: ""
   },
 
@@ -108,16 +108,16 @@ var SITE = {
      Les choix d'un visiteur sont gardés d'une page à l'autre. */
   reglagesParDefaut: {
     theme: "normal",
-    musique: false
+    musique: true
   },
 
   /* ---------- MAINTENANCE ----------
      true = la page affiche un message de maintenance, false = page normale. */
   maintenance: {
     accueil: false,
-    programme: false,
-    series: false,
-    communaute: false,
+    programme: true,
+    series: true,
+    communaute: true,
     contact: false,
     mentions: false
   },
