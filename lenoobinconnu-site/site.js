@@ -14,7 +14,7 @@ var SITE = {
 
   /* ---------- VIDÉO DE L'ACCUEIL ----------
      Dans https://www.youtube.com/watch?v=ABCDEFGHIJK, l'identifiant est ABCDEFGHIJK. */
-  videoId: "ylwBQmnzYaQ",
+  videoId: "",
 
   /* ---------- LIENS IMPORTANTS ----------
      Un lien modifié ici change sur toutes les pages.
@@ -24,7 +24,7 @@ var SITE = {
   liens: {
     youtube: "https://www.youtube.com/@LeNoobInconnu",
     twitch: "https://www.twitch.tv/lenoobinconnu",
-    discord: "https://discord.gg/SqftnMhUyr",
+    discord: "https://discord.gg/ton-invitation",
     x: "https://x.com/lenoobinconnu",
     instagram: "https://www.instagram.com/lenoobinconnu",
     boutique: "",
@@ -32,7 +32,7 @@ var SITE = {
   },
 
   /* Adresse e-mail affichée sur la page Contact (laisse "" pour la cacher) */
-  email: "contact.lenoobinconnu@gmail.com",
+  email: "",
 
   /* ---------- ANNONCE GLOBALE ----------
      Bandeau affiché en haut de toutes les pages.
@@ -40,8 +40,8 @@ var SITE = {
      lien  : laisse "" pour un bandeau sans lien.
      fermable : true permet au visiteur de le fermer (il revient si tu changes le texte). */
   annonce: {
-    actif: true,
-    texte: "En développement",
+    actif: false,
+    texte: "Nouvelle vidéo tous les dimanches à 18 h !",
     lien: "",
     texteLien: "Voir la chaîne",
     fermable: true
@@ -76,17 +76,21 @@ var SITE = {
   /* ---------- PARTENAIRES (carrousel de l'accueil) ----------
      afficher : false pour cacher tout le carrousel.
      vitesse  : durée d'un tour complet en secondes (plus grand = plus lent).
+     toujoursEnMouvement : true = le carrousel tourne toujours en boucle,
+                false = il reste fixe pour les visiteurs qui ont coupé les animations sur leur appareil.
      liste    : un logo par ligne. Dépose les images dans assets/partenaires/.
                 Sans fichier image, le nom s'affiche à la place.
                 lien : laisse "" si le partenaire n'a pas de page. */
   partenaires: {
-    afficher: false,
+    afficher: true,
     titre: "Chaînes et marques affiliées",
     vitesse: 30,
+    toujoursEnMouvement: true,
     liste: [
       { nom: "Partenaire 1", logo: "assets/partenaires/partenaire-1.png", lien: "" },
       { nom: "Partenaire 2", logo: "assets/partenaires/partenaire-2.png", lien: "" },
       { nom: "Partenaire 3", logo: "assets/partenaires/partenaire-3.png", lien: "" },
+      { nom: "Partenaire 4", logo: "assets/partenaires/partenaire-4.png", lien: "" }
     ]
   },
 
@@ -104,16 +108,16 @@ var SITE = {
      Les choix d'un visiteur sont gardés d'une page à l'autre. */
   reglagesParDefaut: {
     theme: "normal",
-    musique: true
+    musique: false
   },
 
   /* ---------- MAINTENANCE ----------
      true = la page affiche un message de maintenance, false = page normale. */
   maintenance: {
     accueil: false,
-    programme: true,
-    series: true,
-    communaute: true,
+    programme: false,
+    series: false,
+    communaute: false,
     contact: false,
     mentions: false
   },
