@@ -32,7 +32,7 @@ var SITE = {
   },
 
   /* Adresse e-mail affichée sur la page Contact (laisse "" pour la cacher) */
-  email: "",
+  email: "contact.lenoobinconnu@gmail.com",
 
   /* ---------- ANNONCE GLOBALE ----------
      Bandeau affiché en haut de toutes les pages.
