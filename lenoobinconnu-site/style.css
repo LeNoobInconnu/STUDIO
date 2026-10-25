@@ -232,9 +232,9 @@ a.partner:hover { transform: translateY(-3px); }
 .section-head .btn-solid { margin-top: 0; }
 
 @media (prefers-reduced-motion: reduce) {
-  .marquee-track { animation: none; flex-wrap: wrap; width: auto; justify-content: center; }
-  .marquee-track .dup { display: none; }
-  .marquee { -webkit-mask-image: none; mask-image: none; }
+  .marquee:not(.force) .marquee-track { animation: none; flex-wrap: wrap; width: auto; justify-content: center; }
+  .marquee:not(.force) .marquee-track .dup { display: none; }
+  .marquee:not(.force) { -webkit-mask-image: none; mask-image: none; }
   .featured, a.partner { transition: none; }
   .featured:hover, a.partner:hover { transform: none; }
 }
