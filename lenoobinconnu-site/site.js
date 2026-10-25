@@ -24,7 +24,7 @@ var SITE = {
   liens: {
     youtube: "https://www.youtube.com/@LeNoobInconnu",
     twitch: "https://www.twitch.tv/lenoobinconnu",
-    discord: "https://discord.gg/ton-invitation",
+    discord: "https://discord.gg/SqftnMhUyr",
     x: "https://x.com/lenoobinconnu",
     instagram: "https://www.instagram.com/lenoobinconnu",
     boutique: "",
@@ -104,7 +104,7 @@ var SITE = {
      Les choix d'un visiteur sont gardés d'une page à l'autre. */
   reglagesParDefaut: {
     theme: "normal",
-    musique: false
+    musique: true
   },
 
   /* ---------- MAINTENANCE ----------
