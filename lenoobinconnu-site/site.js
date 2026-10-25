@@ -40,8 +40,8 @@ var SITE = {
      lien  : laisse "" pour un bandeau sans lien.
      fermable : true permet au visiteur de le fermer (il revient si tu changes le texte). */
   annonce: {
-    actif: false,
-    texte: "Nouvelle vidéo tous les dimanches à 18 h !",
+    actif: true,
+    texte: "En développement",
     lien: "",
     texteLien: "Voir la chaîne",
     fermable: true
@@ -80,7 +80,7 @@ var SITE = {
                 Sans fichier image, le nom s'affiche à la place.
                 lien : laisse "" si le partenaire n'a pas de page. */
   partenaires: {
-    afficher: true,
+    afficher: false,
     titre: "Chaînes et marques affiliées",
     vitesse: 30,
     liste: [
