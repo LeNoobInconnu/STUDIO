@@ -1,0 +1,12 @@
+LeNoobInconnu - guide rapide
+
+Fichier à modifier : site.js (tout est expliqué dedans)
+
+Où mettre tes fichiers :
+  assets/logo.png                      ton logo
+  assets/musique.mp3                   ta musique
+  assets/partenaires/partenaire-1.png  les logos du carrousel (le nom se règle dans site.js)
+
+Ne modifie pas icones.js ni moteur.js, ils construisent les pages.
+Pour que la vidéo YouTube et la musique fonctionnent bien, mets le dossier en ligne
+(GitHub Pages, Netlify...) au lieu d'ouvrir les pages par double-clic.
