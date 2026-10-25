@@ -80,7 +80,7 @@ var SITE = {
                 Sans fichier image, le nom s'affiche à la place.
                 lien : laisse "" si le partenaire n'a pas de page. */
   partenaires: {
-    afficher: true,
+    afficher: false,
     titre: "Chaînes et marques affiliées",
     vitesse: 30,
     liste: [
