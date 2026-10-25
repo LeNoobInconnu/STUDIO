@@ -14,7 +14,7 @@ var SITE = {
 
   /* ---------- VIDÉO DE L'ACCUEIL ----------
      Dans https://www.youtube.com/watch?v=ABCDEFGHIJK, l'identifiant est ABCDEFGHIJK. */
-  videoId: "",
+  videoId: "ylwBQmnzYaQ",
 
   /* ---------- LIENS IMPORTANTS ----------
      Un lien modifié ici change sur toutes les pages.
