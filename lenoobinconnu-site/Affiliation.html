@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LeNoobInconnu Affiliation</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500;600;700&family=Syne:wght@800&display=swap">
+<style>
+/* Mise en page : fond crème, grand titre large noir + rouge, panneau noir arrondi, programme en lignes séparées par des filets, pastilles d'icônes rondes */
+:root {
+  --bg: #faf6ee;
+  --fg: #121212;
+  --muted: #5e5a53;
+  --grey: #8c877e;
+  --line: #d9d3c7;
+  --card: #ffffff;
+  --accent: #e30b1b;
+  --ok: #2f9e5c;
+  --black: #0a0a0a;
+  --font-hero: "Syne", "Arial Black", Impact, sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+body { margin: 0; }
+html { background: var(--bg); }
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--font-body); font-size: 16px; line-height: 1.6;
+  padding-block: 56px 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1100px; margin-inline: auto; }
+a { color: var(--accent); }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+.hero { position: relative; }
+h1 {
+  font-family: var(--font-hero); font-weight: 800; text-transform: uppercase;
+  font-size: clamp(30px, 6.6vw, 72px); line-height: 1; letter-spacing: -.005em; margin: 0; text-wrap: balance;
+}
+h1 span { display: block; color: var(--accent); }
+.tag {
+  position: absolute; right: 8px; top: 8px; transform: rotate(-6deg);
+  background: var(--black); color: #fff; font-weight: 700; font-size: 14px;
+  padding: 10px 18px; border-radius: 22px 22px 22px 4px;
+}
+.tag::after { content: ""; position: absolute; left: 22px; bottom: -9px; border: 6px solid transparent; border-top-color: var(--black); border-left-color: var(--black); }
+@media (max-width: 760px) { .tag { position: static; display: inline-block; margin-top: 18px; } }
+
+.panel {
+  margin-top: 36px; background: var(--black); color: #fff; border-radius: 28px;
+  padding: clamp(28px, 6vw, 64px); display: grid; gap: 22px; justify-items: start;
+}
+.panel .mono { color: #b9b4aa; }
+.panel p { margin: 0; max-width: 52ch; font-size: clamp(18px, 2.4vw, 24px); line-height: 1.4; font-weight: 500; }
+.panel strong { color: #fff; font-weight: 700; }
+.btn {
+  display: inline-block; background: var(--accent); color: #fff; text-decoration: none; border: 0; cursor: pointer;
+  font-family: var(--font-body); font-weight: 700; font-size: 16px; padding: 14px 28px; border-radius: 999px;
+}
+.btn:hover { filter: brightness(1.1); }
+.ghost { background: transparent; color: var(--fg); border: 1px solid var(--fg); }
+.ghost:hover { background: var(--fg); color: var(--bg); filter: none; }
+
+.mono { font-family: var(--font-mono); font-weight: 500; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; }
+.kicker { color: var(--accent); }
+
+.block { margin-top: 96px; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 40px 56px; align-items: start; }
+@media (max-width: 860px) { .block { grid-template-columns: minmax(0, 1fr); margin-top: 72px; } }
+h2 {
+  font-family: var(--font-body); font-weight: 700; text-transform: uppercase; letter-spacing: -.01em;
+  font-size: clamp(32px, 5vw, 52px); line-height: 1.02; margin: 14px 0 18px; text-wrap: balance;
+}
+h2 em { font-style: normal; color: var(--grey); }
+.sub { color: var(--muted); margin: 0; max-width: 34ch; }
+
+.rows { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); min-width: 0; }
+.row {
+  display: grid; grid-template-columns: 150px minmax(0, 1fr) 72px; gap: 8px 28px;
+  padding-block: 32px; border-bottom: 1px solid var(--line); align-items: start;
+}
+.when b { display: block; font-size: 26px; font-weight: 700; line-height: 1.1; letter-spacing: -.01em; }
+.when small { display: block; color: var(--grey); font-size: 14px; margin-top: 6px; }
+.status { display: inline-flex; align-items: center; gap: 7px; margin-top: 14px; color: var(--grey); }
+.status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.status.on { color: var(--ok); }
+.what h3 { font-size: 28px; font-weight: 700; margin: 0 0 8px; letter-spacing: -.015em; line-height: 1.15; }
+.what .mono { color: var(--grey); display: block; margin-bottom: 14px; }
+.what p { margin: 0; color: var(--muted); max-width: 58ch; }
+.ico {
+  width: 64px; height: 64px; border-radius: 50%; background: var(--card); border: 1px solid var(--line);
+  display: grid; place-items: center; justify-self: end;
+}
+.ico svg { width: 28px; height: 28px; stroke: var(--fg); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+@media (max-width: 640px) {
+  .row { grid-template-columns: minmax(0, 1fr) 56px; }
+  .when { grid-column: 1; grid-row: 1; }
+  .ico { grid-column: 2; grid-row: 1; width: 52px; height: 52px; }
+  .what { grid-column: 1 / -1; grid-row: 2; margin-top: 10px; }
+  .what h3 { font-size: 24px; }
+}
+
+.perks { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+.perks li { padding-block: 20px; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 6px 24px; }
+.perks b { font-weight: 700; font-size: 18px; }
+.perks span { color: var(--muted); }
+@media (max-width: 640px) { .perks li { grid-template-columns: minmax(0, 1fr); } }
+
+form {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px;
+  background: var(--card); border: 1px solid var(--line); border-radius: 28px; padding: clamp(20px, 4vw, 36px); min-width: 0;
+}
+.full { grid-column: 1 / -1; }
+label { display: block; margin-bottom: 8px; color: var(--muted); }
+input[type=text], input[type=url], select, textarea {
+  width: 100%; background: var(--bg); color: var(--fg); border: 1px solid var(--line); border-radius: 14px;
+  padding: 13px 16px; font: inherit; font-size: 16px;
+}
+textarea { min-height: 140px; resize: vertical; }
+input::placeholder, textarea::placeholder { color: #a39e94; }
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); background: #fff; }
+.check { display: flex; gap: 12px; align-items: flex-start; }
+.check input { margin-top: 5px; width: 18px; height: 18px; flex: none; accent-color: var(--accent); }
+.check label { margin: 0; color: var(--fg); font-size: 15px; }
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.err { color: var(--accent); font-size: 15px; min-height: 1.3em; margin: 0; }
+.multi { border: 1px solid var(--line); border-radius: 14px; background: var(--bg); min-width: 0; }
+.multi summary {
+  list-style: none; cursor: pointer; padding: 13px 44px 13px 16px; position: relative; font-size: 16px;
+  overflow-wrap: anywhere; border-radius: 14px;
+}
+.multi summary::-webkit-details-marker { display: none; }
+.multi summary::after {
+  content: ""; position: absolute; right: 18px; top: 50%; width: 8px; height: 8px; margin-top: -6px;
+  border-right: 2px solid var(--fg); border-bottom: 2px solid var(--fg); transform: rotate(45deg);
+}
+.multi[open] summary::after { transform: rotate(-135deg); margin-top: -2px; }
+.multi[open] { border-color: var(--accent); background: #fff; }
+.opts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 16px; padding: 4px 16px 14px; border-top: 1px solid var(--line); }
+.opt { display: flex; align-items: center; gap: 12px; margin: 0; padding: 10px 0; color: var(--fg); cursor: pointer; font-size: 16px; }
+.opt input { width: 18px; height: 18px; flex: none; accent-color: var(--accent); }
+.links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.links:empty { display: none; }
+@media (max-width: 640px) { .opts, .links { grid-template-columns: minmax(0, 1fr); } }
+.actions { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+.actions small { color: var(--grey); }
+@media (max-width: 640px) { form { grid-template-columns: minmax(0, 1fr); } }
+
+.result { background: var(--card); border: 1px solid var(--ok); border-radius: 28px; padding: clamp(20px, 4vw, 36px); min-width: 0; }
+.result h3 { margin: 10px 0 10px; font-size: 30px; letter-spacing: -.015em; }
+.result .mono { color: var(--ok); }
+.result p { color: var(--muted); max-width: 56ch; margin: 0 0 16px; }
+.result pre {
+  margin: 0 0 18px; padding: 16px; background: var(--bg); border: 1px solid var(--line); border-radius: 14px;
+  white-space: pre-wrap; overflow-wrap: anywhere; font: 14px/1.6 var(--font-mono);
+}
+
+footer { margin-top: 96px; padding-top: 24px; border-top: 1px solid var(--line); color: var(--grey); font-size: 14px; }
+@media (prefers-reduced-motion: no-preference) { .btn, input, select, textarea { transition: filter .15s, border-color .15s, background .15s; } }
+</style>
+
+<div class="wrap">
+  <header class="hero">
+    <h1>Ton projet rejoint<span>LeNoobInconnu</span></h1>
+    <div class="tag">@LeNoobInconnu</div>
+  </header>
+
+  <div class="panel">
+    <span class="mono">Programme d'affiliation</span>
+    <p><strong>Chaîne YouTube ou Twitch, serveur Discord ou Minecraft, site web, projet ?</strong> Envoie ta demande, on regarde ce que tu as créé et on te répond.</p>
+    <a class="btn" href="#candidature">Faire ma demande</a>
+  </div>
+
+  <section class="block">
+    <div>
+      <span class="mono kicker">Programme</span>
+      <h2>Quatre étapes jusqu'à <em>l'affiliation</em></h2>
+      <p class="sub">De ta demande à ton arrivée dans la team.</p>
+    </div>
+    <ol class="rows">
+      <li class="row">
+        <div class="when"><b>Étape 1</b><small>Toi</small><span class="mono status on">Ouvert</span></div>
+        <div class="what"><h3>Envoi de ta demande</h3><span class="mono">Formulaire ci-dessous</span><p>Tu choisis le type de projet, tu remplis le formulaire et tu indiques un moyen de te contacter.</p></div>
+        <div class="ico"><svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h3"/></svg></div>
+      </li>
+      <li class="row">
+        <div class="when"><b>Étape 2</b><small>LeNoobInconnu</small><span class="mono status">À venir</span></div>
+        <div class="what"><h3>Étude de ton projet</h3><span class="mono">Contenu · Ambiance · Régularité</span><p>On regarde ce que tu proposes pour voir si l'esprit et le rythme collent avec la communauté.</p></div>
+        <div class="ico"><svg viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></div>
+      </li>
+      <li class="row">
+        <div class="when"><b>Étape 3</b><small>LeNoobInconnu</small><span class="mono status">À venir</span></div>
+        <div class="what"><h3>Réponse</h3><span class="mono">Par Discord ou message</span><p>Tu reçois la décision sur le contact que tu as indiqué dans ta demande.</p></div>
+        <div class="ico"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg></div>
+      </li>
+      <li class="row">
+        <div class="when"><b>Étape 4</b><small>Ensemble</small><span class="mono status">À venir</span></div>
+        <div class="what"><h3>Bienvenue dans la team</h3><span class="mono">Affiliation confirmée</span><p>Ton projet rejoint les créateurs affiliés, on prépare les premières actions communes.</p></div>
+        <div class="ico"><svg viewBox="0 0 24 24"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg></div>
+      </li>
+    </ol>
+  </section>
+
+  <section class="block">
+    <div>
+      <span class="mono kicker">Avantages</span>
+      <h2>Ce que tu <em>y gagnes</em></h2>
+    </div>
+    <ul class="perks">
+      <li><b>De la visibilité</b><span>Ton projet est présenté à la communauté de LeNoobInconnu.</span></li>
+      <li><b>Des projets communs</b><span>Parties à plusieurs, collabs et défis entre projets affiliés.</span></li>
+      <li><b>Un coup de main</b><span>Conseils sur le montage, les miniatures et la régularité.</span></li>
+      <li><b>Une vraie team</b><span>Un groupe de créateurs qui s'entraident et se soutiennent.</span></li>
+    </ul>
+  </section>
+
+  <section class="block" id="candidature">
+    <div>
+      <span class="mono kicker">Candidature</span>
+      <h2>Ma demande <em>d'affiliation</em></h2>
+      <p class="sub">Coche les plateformes de ton projet et remplis les champs. Une demande par projet.</p>
+    </div>
+    <div style="min-width:0">
+      <form id="form" novalidate>
+        <div class="full">
+          <label class="mono" id="plat-label">Où se trouve ton projet ? (plusieurs choix possibles)</label>
+          <details class="multi" id="multi">
+            <summary id="multi-sum" aria-labelledby="plat-label multi-sum">Choisir les plateformes…</summary>
+            <div class="opts">
+              <label class="opt"><input type="checkbox" name="plat" value="youtube"><span>YouTube</span></label>
+              <label class="opt"><input type="checkbox" name="plat" value="tiktok"><span>TikTok</span></label>
+              <label class="opt"><input type="checkbox" name="plat" value="twitch"><span>Twitch</span></label>
+              <label class="opt"><input type="checkbox" name="plat" value="discord"><span>Discord</span></label>
+              <label class="opt"><input type="checkbox" name="plat" value="minecraft"><span>Serveur Minecraft</span></label>
+              <label class="opt"><input type="checkbox" name="plat" value="site"><span>Site web</span></label>
+              <label class="opt"><input type="checkbox" name="plat" value="autre"><span>Autre</span></label>
+            </div>
+          </details>
+        </div>
+        <div class="full links" id="links"></div>
+        <div>
+          <label class="mono" for="nom">Nom de ta chaîne ou de ton projet</label>
+          <input type="text" id="nom" name="nom" autocomplete="off" placeholder="Ex. La Team des Noobs">
+        </div>
+        <div>
+          <label class="mono" for="abos">Taille de ta communauté (au total)</label>
+          <select id="abos" name="abos">
+            <option value="">Choisir…</option>
+            <option>Moins de 100</option>
+            <option>100 à 1 000</option>
+            <option>1 000 à 10 000</option>
+            <option>Plus de 10 000</option>
+          </select>
+        </div>
+        <div class="full">
+          <label class="mono" for="jeux">Jeux ou contenu</label>
+          <input type="text" id="jeux" name="jeux" autocomplete="off" placeholder="Ex. Minecraft, Fortnite, vlogs, entraide…">
+        </div>
+        <div class="full">
+          <label class="mono" for="contact">Ton contact (Discord ou e-mail)</label>
+          <input type="text" id="contact" name="contact" autocomplete="off" placeholder="Ex. pseudo ou nom@exemple.fr">
+        </div>
+        <div class="full">
+          <label class="mono" for="motivation">Pourquoi veux-tu devenir affilié ?</label>
+          <textarea id="motivation" name="motivation" placeholder="Présente-toi en quelques lignes et dis ce que tu attends de l'affiliation."></textarea>
+        </div>
+        <div class="hp" aria-hidden="true"><label for="_honey">Ne pas remplir</label><input type="text" id="_honey" name="_honey" tabindex="-1" autocomplete="off"></div>
+        <div class="full check">
+          <input type="checkbox" id="regles" name="regles">
+          <label for="regles">Je confirme être le propriétaire ou un responsable de ce projet et que mes informations sont exactes.</label>
+        </div>
+        <p class="err full" id="err" role="alert"></p>
+        <div class="full actions">
+          <button class="btn" type="submit" id="send">Envoyer ma demande</button>
+          <small id="hint"></small>
+        </div>
+      </form>
+
+      <div class="result" id="result" hidden>
+        <span class="mono" id="r-kicker">Demande envoyée</span>
+        <h3 id="r-title">Merci, c'est bien reçu.</h3>
+        <p id="r-text">Ta demande est arrivée. LeNoobInconnu te répond sur le contact que tu as indiqué.</p>
+        <pre id="recap" hidden></pre>
+        <div class="actions">
+          <button class="btn" type="button" id="copy" hidden>Copier le message</button>
+          <button class="btn ghost" type="button" id="edit">Modifier ma demande</button>
+          <small id="copied" role="status"></small>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>LeNoobInconnu · Programme d'affiliation · Page indépendante, non liée à un événement tiers.</footer>
+</div>
+
+<script>
+/* ============ CONFIGURATION ============
+   Mets ton adresse e-mail entre les guillemets pour recevoir les demandes par mail
+   (service gratuit FormSubmit). Tu peux aussi (ou seulement) utiliser un webhook Discord. */
+var EMAIL_DE_RECEPTION = "contact.lenoobinconnu@gmail.com";
+
+/* Webhook Discord (facultatif) : colle ici l'adresse du webhook, ou celle de ton Worker Cloudflare
+   (recommandé, voir worker.js). Les demandes arrivent alors aussi dans ton salon Discord. */
+var WEBHOOK_DISCORD = "";
+/* ======================================= */
+
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var form = $('form'), result = $('result'), recap = $('recap'), err = $('err');
+  var PLATS = {
+    youtube:   { label: 'YouTube', lien: 'Lien YouTube', ph: 'https://www.youtube.com/@machaine', url: 'req' },
+    tiktok:    { label: 'TikTok', lien: 'Lien TikTok', ph: 'https://www.tiktok.com/@monpseudo', url: 'req' },
+    twitch:    { label: 'Twitch', lien: 'Lien Twitch', ph: 'https://www.twitch.tv/monpseudo', url: 'req' },
+    discord:   { label: 'Discord', lien: 'Lien d\'invitation Discord', ph: 'https://discord.gg/…', url: 'req' },
+    minecraft: { label: 'Serveur Minecraft', lien: 'Adresse du serveur Minecraft', ph: 'play.monserveur.fr', url: 'text' },
+    site:      { label: 'Site web', lien: 'Adresse du site', ph: 'https://monsite.fr', url: 'req' },
+    autre:     { label: 'Autre', lien: 'Lien ou précision', ph: 'Lien, ou décris ton projet en quelques mots', url: 'text' }
+  };
+  function pickedList() {
+    return Array.prototype.map.call(form.querySelectorAll('input[name="plat"]:checked'), function (c) { return c.value; });
+  }
+  function renderLinks() {
+    var box = $('links'), old = {};
+    Array.prototype.forEach.call(box.querySelectorAll('input'), function (i) { old[i.id] = i.value; });
+    box.innerHTML = '';
+    var picked = pickedList();
+    picked.forEach(function (k) {
+      var d = document.createElement('div');
+      var l = document.createElement('label'); l.className = 'mono'; l.htmlFor = 'lien-' + k; l.textContent = PLATS[k].lien;
+      var i = document.createElement('input'); i.type = 'text'; i.id = 'lien-' + k; i.autocomplete = 'off'; i.placeholder = PLATS[k].ph;
+      if (old['lien-' + k]) i.value = old['lien-' + k];
+      d.appendChild(l); d.appendChild(i); box.appendChild(d);
+    });
+    $('multi-sum').textContent = picked.length ? picked.map(function (k) { return PLATS[k].label; }).join(' · ') : 'Choisir les plateformes…';
+  }
+  $('multi').addEventListener('change', renderLinks);
+  renderLinks();
+  var useMail = EMAIL_DE_RECEPTION.indexOf('@') > 0, useHook = /^https:\/\//.test(WEBHOOK_DISCORD), live = useMail || useHook;
+  $('hint').textContent = live ? 'Ta demande est envoyée directement à LeNoobInconnu.' : 'Aucun envoi n\'est configuré sur cette page : un récapitulatif à copier s\'affiche.';
+
+  function val(id) { return $(id).value.trim(); }
+  function showResult(sent, text) {
+    form.hidden = true; result.hidden = false;
+    $('copy').hidden = sent; recap.hidden = sent;
+    if (sent) {
+      $('r-kicker').textContent = 'Demande envoyée';
+      $('r-title').textContent = 'Merci, c\'est bien reçu.';
+      $('r-text').textContent = 'Ta demande est arrivée. LeNoobInconnu te répond sur le contact que tu as indiqué.';
+    } else {
+      recap.textContent = text;
+      $('r-kicker').textContent = 'Demande prête';
+      $('r-title').textContent = 'Il reste à l\'envoyer.';
+      $('r-text').textContent = 'L\'envoi automatique n\'a pas fonctionné. Copie le message et envoie-le à LeNoobInconnu en message privé.';
+    }
+    result.scrollIntoView({ block: 'start' });
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    err.textContent = '';
+    var picked = pickedList();
+    var labels = picked.map(function (k) { return PLATS[k].label; });
+    if (!val('contact')) { err.textContent = 'Indique un contact (Discord ou e-mail) pour que LeNoobInconnu puisse te répondre.'; $('contact').focus(); return; }
+    if (!$('regles').checked) { err.textContent = 'Coche la confirmation pour continuer.'; return; }
+
+    var text =
+      'DEMANDE D\'AFFILIATION · LeNoobInconnu\n\n' +
+      'Nom : ' + (val('nom') || 'non renseigné') + '\n' +
+      (picked.length ? picked.map(function (k) { return PLATS[k].label + ' : ' + (val('lien-' + k) || 'non renseigné'); }).join('\n') : 'Plateformes : non précisé') +
+      '\nTaille de la communauté : ' + (val('abos') || 'non renseignée') + '\nContenu : ' + (val('jeux') || 'non renseigné') +
+      '\nContact : ' + val('contact') + '\n\nMotivation :\n' + val('motivation');
+
+    if (!live) { showResult(false, text); return; }
+    if ($('_honey').value) { showResult(true); return; }
+
+    var btn = $('send'); btn.disabled = true; btn.textContent = 'Envoi…';
+    var jobs = [];
+
+    if (useMail) {
+      var o = {
+        _subject: 'Demande d\'affiliation : ' + (val('nom') || 'sans nom') + (labels.length ? ' (' + labels.join(', ') + ')' : ''),
+        _template: 'table',
+        'Nom': val('nom') || 'Non renseigné', 'Plateformes': labels.join(', ') || 'Non précisé'
+      };
+      picked.forEach(function (k) { o['Lien ' + PLATS[k].label] = val('lien-' + k) || 'Non renseigné'; });
+      o['Taille de la communauté'] = val('abos') || 'Non renseigné';
+      o['Contenu'] = val('jeux') || 'Non renseigné';
+      o['Contact'] = val('contact');
+      o['Motivation'] = val('motivation') || 'Non renseigné';
+      jobs.push(fetch('https://formsubmit.co/ajax/' + encodeURIComponent(EMAIL_DE_RECEPTION), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(o)
+      }).then(function (r) { return r.json(); }).then(function (d) { return !!(d && (d.success === true || d.success === 'true')); }));
+    }
+
+    if (useHook) {
+      var cut = function (v, n) { v = String(v || '').trim() || '—'; return v.length > n ? v.slice(0, n - 1) + '…' : v; };
+      var fields = [
+        { name: 'Nom', value: cut(val('nom'), 1000), inline: true },
+        { name: 'Contact', value: cut(val('contact'), 1000), inline: true },
+        { name: 'Plateformes', value: picked.length ? cut(picked.map(function (k) { return PLATS[k].label + ' : ' + (val('lien-' + k) || '—'); }).join('\n'), 1000) : '—' },
+        { name: 'Taille de la communauté', value: cut(val('abos'), 1000), inline: true },
+        { name: 'Contenu', value: cut(val('jeux'), 1000), inline: true },
+        { name: 'Motivation', value: cut(val('motivation'), 1000) }
+      ];
+      jobs.push(fetch(WEBHOOK_DISCORD, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: 'Affiliation LeNoobInconnu',
+          allowed_mentions: { parse: [] },
+          embeds: [{ title: 'Nouvelle demande d\'affiliation', color: 0xe30b1b, fields: fields, timestamp: new Date().toISOString() }]
+        })
+      }).then(function (r) { return r.ok; }));
+    }
+
+    Promise.all(jobs.map(function (j) { return j.catch(function () { return false; }); })).then(function (res) {
+      if (res.some(function (x) { return x; })) { showResult(true); return; }
+      btn.disabled = false; btn.textContent = 'Envoyer ma demande';
+      err.textContent = 'L\'envoi a échoué. Réessaie dans un instant.';
+      showResult(false, text);
+    });
+  });
+
+  $('edit').addEventListener('click', function () {
+    result.hidden = true; form.hidden = false; $('copied').textContent = '';
+    var b = $('send'); b.disabled = false; b.textContent = 'Envoyer ma demande';
+    $('nom').focus();
+  });
+
+  $('copy').addEventListener('click', function () {
+    var fallback = function () {
+      var r = document.createRange(); r.selectNodeContents(recap);
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      $('copied').textContent = 'Sélectionné : fais Ctrl+C pour copier.';
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(recap.textContent).then(function () { $('copied').textContent = 'Message copié.'; }, fallback);
+    } else { fallback(); }
+  });
+})();
+</script>
+
+</body>
+</html>
