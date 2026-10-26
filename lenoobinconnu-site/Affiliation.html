@@ -305,9 +305,8 @@ footer { margin-top: 96px; padding-top: 24px; border-top: 1px solid var(--line);
    (service gratuit FormSubmit). Tu peux aussi (ou seulement) utiliser un webhook Discord. */
 var EMAIL_DE_RECEPTION = "contact.lenoobinconnu@gmail.com";
 
-/* Webhook Discord (facultatif) : colle ici l'adresse du webhook, ou celle de ton Worker Cloudflare
-   (recommandé, voir worker.js). Les demandes arrivent alors aussi dans ton salon Discord. */
-var WEBHOOK_DISCORD = "";
+/* Webhook Discord configuré avec ton Worker Cloudflare sécurisé */
+var WEBHOOK_DISCORD = "https://jolly-truth-3f58.contact-lenoobinconnu.workers.dev/";
 /* ======================================= */
 
 (function () {
