@@ -118,7 +118,7 @@ var SITE = {
     nom: "Assistant Noob",
     accueil: "Salut ! Je suis l'assistant de LeNoobInconnu. Pose-moi une question sur les vidéos, les directs ou l'affiliation.",
     suggestions: ["Quand sont les directs ?", "Comment devenir affilié ?", "Où trouver le Discord ?"],
-    maxMessages: 30
+    maxMessages: 15
   },
 
   /* ---------- RÉGLAGES PAR DÉFAUT DES VISITEURS ----------
