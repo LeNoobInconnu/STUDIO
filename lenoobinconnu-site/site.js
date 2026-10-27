@@ -24,7 +24,7 @@ var SITE = {
   liens: {
     youtube: "https://www.youtube.com/@LeNoobInconnu",
     twitch: "https://www.twitch.tv/lenoobinconnu",
-    discord: "https://discord.gg/ton-invitation",
+    discord: "https://discord.gg/QHDNFDS88P",
     x: "https://x.com/lenoobinconnu",
     instagram: "https://www.instagram.com/lenoobinconnu",
     boutique: "",
