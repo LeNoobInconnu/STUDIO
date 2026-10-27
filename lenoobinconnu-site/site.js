@@ -14,7 +14,7 @@ var SITE = {
 
   /* ---------- VIDÉO DE L'ACCUEIL ----------
      Dans https://www.youtube.com/watch?v=ABCDEFGHIJK, l'identifiant est ABCDEFGHIJK. */
-  videoId: "ylwBQmnzYaQ",
+  videoId: "",
 
   /* ---------- LIENS IMPORTANTS ----------
      Un lien modifié ici change sur toutes les pages.
@@ -24,10 +24,10 @@ var SITE = {
   liens: {
     youtube: "https://www.youtube.com/@LeNoobInconnu",
     twitch: "https://www.twitch.tv/lenoobinconnu",
-    discord: "https://discord.gg/SqftnMhUyr",
+    discord: "https://discord.gg/ton-invitation",
     x: "https://x.com/lenoobinconnu",
     instagram: "https://www.instagram.com/lenoobinconnu",
-    boutique: "https://www.youtube.com/@LeNoobInconnu",
+    boutique: "",
     contact: ""
   },
 
@@ -84,6 +84,7 @@ var SITE = {
   partenaires: {
     afficher: true,
     titre: "Chaînes et marques affiliées",
+    lienAffiliation: "https://lenoobinconnu.github.io/STUDIO/lenoobinconnu-site/Affiliation.html",
     vitesse: 30,
     toujoursEnMouvement: true,
     liste: [
@@ -102,22 +103,41 @@ var SITE = {
     volume: 0.3
   },
 
+  /* ---------- CHATBOT ----------
+     actif    : true pour afficher la bulle de chat sur toutes les pages.
+     urlApi   : l'adresse de ton proxy (voir worker.js, à déployer sur Cloudflare Workers).
+                NE METS JAMAIS ta clé d'API ici : elle serait visible par tout le monde.
+                Laisse "" tant que le proxy n'est pas prêt : le chat affiche alors un message d'indisponibilité.
+     nom      : le nom affiché en haut de la fenêtre.
+     accueil  : le premier message du bot.
+     suggestions : des boutons de questions rapides (laisse [] pour aucun).
+     maxMessages : nombre maximum de messages d'un visiteur par session (anti-abus). */
+  chatbot: {
+    actif: true,
+    urlApi: "",
+    nom: "Assistant Noob",
+    accueil: "Salut ! Je suis l'assistant de LeNoobInconnu. Pose-moi une question sur les vidéos, les directs ou l'affiliation.",
+    suggestions: ["Quand sont les directs ?", "Comment devenir affilié ?", "Où trouver le Discord ?"],
+    maxMessages: 30
+  },
+
   /* ---------- RÉGLAGES PAR DÉFAUT DES VISITEURS ----------
      theme   : "normal" ou "sombre"
      musique : false = coupée au premier passage (conseillé), true = lancée dès que possible.
      Les choix d'un visiteur sont gardés d'une page à l'autre. */
   reglagesParDefaut: {
     theme: "normal",
-    musique: true
+    musique: false
   },
 
   /* ---------- MAINTENANCE ----------
      true = la page affiche un message de maintenance, false = page normale. */
   maintenance: {
     accueil: false,
-    programme: true,
-    series: true,
-    communaute: true,
+    programme: false,
+    series: false,
+    communaute: false,
+    affiliation: false,
     contact: false,
     mentions: false
   },

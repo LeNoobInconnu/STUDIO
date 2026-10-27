@@ -105,7 +105,8 @@
       { id: "accueil", href: "index.html", label: "Accueil", icon: "home" },
       { id: "programme", href: "programme.html", label: "Programme", icon: "calendar" },
       { id: "series", href: "series.html", label: "Séries", icon: "series" },
-      { id: "communaute", href: "communaute.html", label: "Communauté", icon: "people" }
+      { id: "communaute", href: "communaute.html", label: "Communauté", icon: "people" },
+      { id: "affiliation", href: "Affiliation.html", label: "Affiliation", icon: "affil" }
     ];
     if (lien("boutique")) p.push({ id: "boutique", href: lien("boutique"), label: "Boutique", icon: "shop", externe: true });
     var c = { id: "contact", href: "contact.html", label: "Contact", icon: "mail" };
@@ -238,16 +239,17 @@
     var c = SITE.partenaires || {};
     var liste = c.liste || [];
     if (c.afficher === false || !liste.length) return "";
-    // Nombre de logos nécessaires pour remplir l'écran (un logo fait environ 190 px)
+    // Nombre de logos nécessaires pour remplir l'écran (une case fait environ 260 px)
     var largeur = Math.max(window.innerWidth || 1200, 800);
-    var fois = Math.max(1, Math.ceil((largeur / 190 + 1) / liste.length));
+    var fois = Math.max(1, Math.ceil((largeur / 260 + 1) / liste.length));
     var moitie = "", moitieDup = "", i, j;
     for (i = 0; i < fois; i++) {
       for (j = 0; j < liste.length; j++) { moitie += partenaireHtml(liste[j], false); moitieDup += partenaireHtml(liste[j], true); }
     }
     return '<div class="wrap"><p class="eyebrow">Affiliés</p><h2 class="h2">' + esc(c.titre || "Partenaires") + '</h2></div>' +
       '<div class="marquee' + (c.toujoursEnMouvement === false ? '' : ' force') + '" style="--duree:' + (Number(c.vitesse) || 30) + 's" aria-label="' + esc(c.titre || "Partenaires") + '">' +
-      '<ul class="marquee-track">' + moitie + moitieDup + '</ul></div>';
+      '<ul class="marquee-track">' + moitie + moitieDup + '</ul></div>' +
+      (c.lienAffiliation ? '<div class="wrap"><a class="btn-solid" href="' + esc(c.lienAffiliation) + '" target="_blank" rel="noopener">Devenir affilié</a></div>' : '');
   }
 
   /* ------------------------------------------------------------------
@@ -387,5 +389,13 @@
     }
 
     brancherReglages();
+
+    // Chatbot (chargé seulement s'il est activé et que la page n'est pas en maintenance)
+    var cb = SITE.chatbot || {};
+    if (cb.actif && !(SITE.maintenance && SITE.maintenance[page])) {
+      var s = document.createElement("script");
+      s.src = "chatbot.js";
+      document.body.appendChild(s);
+    }
   });
 })();

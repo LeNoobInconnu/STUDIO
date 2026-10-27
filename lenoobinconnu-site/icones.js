@@ -19,5 +19,8 @@ ICON.sun = '<svg class="i line" viewBox="0 0 24 24" aria-hidden="true"><circle c
 ICON.moon = '<svg class="i line" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 13A9 9 0 1 1 11 3a7 7 0 0 0 10 10z"/></svg>';
 ICON.music = '<svg class="i line" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>';
 ICON.shop = '<svg class="i line" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9l1.500-5h15L21 9"/><path d="M3 9h18v2a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0z"/><path d="M5 13v8h14v-8"/></svg>';
+ICON.affil = '<svg class="i line" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.700 5.600 6.100.9-4.400 4.300 1 6.100L12 17l-5.400 2.900 1-6.100L3.200 9.500l6.100-.9z"/></svg>';
+ICON.chat = '<svg class="i line" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.600 7.100L4 20l1-4.600A8 8 0 1 1 21 12z"/></svg>';
+ICON.send = '<svg class="i line" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>';
 ICON.close = '<svg class="i line" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
 ICON.arrow = '<svg class="i line" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
