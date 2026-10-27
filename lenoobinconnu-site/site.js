@@ -40,10 +40,10 @@ var SITE = {
      lien  : laisse "" pour un bandeau sans lien.
      fermable : true permet au visiteur de le fermer (il revient si tu changes le texte). */
   annonce: {
-    actif: false,
-    texte: "Nouvelle vidéo tous les dimanches à 18 h !",
+    actif: true,
+    texte: "Bienvenue sur la BETA TEST de LNI STUDIO+",
     lien: "",
-    texteLien: "Voir la chaîne",
+    texteLien: "...",
     fermable: true
   },
 
