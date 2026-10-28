@@ -144,8 +144,8 @@ var SITE = {
      true = la page affiche un message de maintenance, false = page normale. */
   maintenance: {
     accueil: false,
-    programme: false,
-    series: false,
+    programme: true,
+    series: true,
     communaute: false,
     affiliation: false,
     contact: false,
