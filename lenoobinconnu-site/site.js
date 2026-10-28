@@ -62,8 +62,8 @@ var SITE = {
      lien    : l'adresse du projet (laisse "" pour envoyer vers ta chaîne YouTube).
      couleur : la couleur de la carte (code hexadécimal). */
   projets: [
-    { id: "premiers-pas", numero: "01", titre: "Premiers pas", tag: "Nouveau", couleur: "#fff566", lien: "",
-      description: "Le noob se lance et apprend en direct, sans filet." },
+    { id: "affiliation", numero: "01", titre: "Affiliation", tag: "Nouveau", couleur: "#fff566", lien: "",
+      description: "Développez votre projet grâce à notre programme d'affiliation conçu pour VOUS !" },
     { id: "defis", numero: "02", titre: "Défis impossibles", tag: "Série en cours", couleur: "#ff7b6b", lien: "https://www.youtube.com/watch?v=0lS11ve8DrM&list=PL6nkzedD66aZ9gXRL73uAyVPUBuYwwneU&pp=sAgC",
       description: "Des règles absurdes et un seul objectif, tenir jusqu'au bout." },
     { id: "construction", numero: "03", titre: "Construction", tag: "Ouvert à tous", couleur: "#6bcbff", lien: "",
@@ -77,7 +77,7 @@ var SITE = {
   ],
 
   /* Projet mis en avant en grand sur l'accueil (mets l'id d'un projet, ou "" pour aucun) */
-  projetMisEnAvant: "defis",
+  projetMisEnAvant: "affiliation",
 
   /* Projets affichés dans la grille de l'accueil (les id, dans l'ordre voulu) */
   projetsAccueil: ["premiers-pas", "construction", "survie"],
