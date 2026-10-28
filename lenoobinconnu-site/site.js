@@ -87,11 +87,8 @@ var SITE = {
      vitesse  : durée d'un tour complet en secondes (plus grand = plus lent).
      toujoursEnMouvement : true = le carrousel tourne toujours en boucle,
                 false = il reste fixe pour les visiteurs qui ont coupé les animations sur leur appareil.
-     dossier  : le dossier GitHub où tu déposes les logos (à créer : assets/affilies).
-     liste    : un partenaire par ligne.
-                nom  : affiché à la place du logo si l'image est introuvable.
-                logo : le NOM du fichier SANS extension, en minuscules (ex. "lni-studio").
-                       Le site cherche tout seul lni-studio.png, puis .webp, .jpg, .jpeg, .svg.
+     liste    : un logo par ligne. Dépose les images dans assets/partenaires/.
+                Sans fichier image, le nom s'affiche à la place.
                 lien : laisse "" si le partenaire n'a pas de page. */
   partenaires: {
     afficher: true,
@@ -99,13 +96,12 @@ var SITE = {
     lienAffiliation: "https://lenoobinconnu.github.io/STUDIO/lenoobinconnu-site/Affiliation.html",
     vitesse: 30,
     toujoursEnMouvement: true,
-    dossier: "assets/affilies",
     liste: [
-      { nom: "LNI STUDIO", logo: "lni-studio", lien: "https://linktr.ee/LeNoobInconnu" },
-      { nom: "LNI COMU", logo: "lni-comu", lien: "https://discord.gg/QHDNFDS88P" },
-      { nom: "YZO CLIPS", logo: "yzo-clips", lien: "https://www.youtube.com/@YzoClips" },
-      { nom: "LNI BUILD", logo: "lni-build", lien: "https://communities.epicgames.com/community/gc4G/lenoobinconnu" },
-      { nom: "Partenaires 5", logo: "partenaire-5.png", lien: "" }
+      { nom: "LNI STUDIO", logo: "assets/partenaires/partenaire-1.png", lien: "https://linktr.ee/LeNoobInconnu" },
+      { nom: "LNI COMU", logo: "assets/partenaires/partenaire-2.png", lien: "https://discord.gg/QHDNFDS88P" },
+      { nom: "YZO CLIPS", logo: "assets/partenaires/partenaire-3.png", lien: "https://www.youtube.com/@YzoClips" },
+      { nom: "LNI BUILD", logo: "assets/partenaires/partenaire-4.png", lien: "https://communities.epicgames.com/community/gc4G/lenoobinconnu" },
+      { nom: "Partenaires 5", logo: "assets/partenaires/partenaire-5.png", lien: "" }
     ]
   },
 

@@ -225,36 +225,15 @@
   /* ------------------------------------------------------------------
      Carrousel de partenaires
      ------------------------------------------------------------------ */
-  var EXTS = ["png", "webp", "jpg", "jpeg", "svg"];
   function avecVersion(u) {
     var v = SITE.versionImages;
     if (v == null || v === "") return u;
     return u + (u.indexOf("?") < 0 ? "?" : "&") + "v=" + encodeURIComponent(v);
   }
-  // Liste des adresses à essayer pour un logo (nom sans extension : on teste plusieurs formats)
-  function candidatsLogo(p) {
-    var c = SITE.partenaires || {};
-    var dossier = String(c.dossier || "assets/affilies").replace(/\/+$/, "");
-    var base = String(p.logo || "").trim();
-    var urls;
-    if (!base) return [];
-    if (/^https?:\/\//.test(base)) urls = [base];
-    else if (/\.[a-z0-9]{2,4}$/i.test(base)) urls = [dossier + "/" + base];
-    else urls = EXTS.map(function (e) { return dossier + "/" + base + "." + e; });
-    return urls.map(avecVersion);
-  }
-  // Appelée quand une image échoue : on essaie l'adresse suivante, sinon on affiche le nom
-  window.lniImg = function (img) {
-    var reste = (img.getAttribute("data-try") || "").split("|").filter(Boolean);
-    var suivante = reste.shift();
-    if (suivante) { img.setAttribute("data-try", reste.join("|")); img.src = suivante; }
-    else if (img.parentNode) { img.parentNode.classList.add("no-img"); }
-  };
   function partenaireHtml(p, dup) {
-    var cand = candidatsLogo(p);
-    var inner = (cand.length ? '<img src="' + esc(cand[0]) + '" data-try="' + esc(cand.slice(1).join("|")) + '" alt="" onerror="lniImg(this)">' : '') +
+    var inner = '<img src="' + esc(p.logo) + '" alt="" loading="lazy" onerror="this.parentNode.classList.add(\'no-img\')">' +
       '<span class="partner-name">' + esc(p.nom) + '</span>';
-    var cls = 'partner' + (cand.length ? '' : ' no-img');
+    var cls = 'partner';
     var li = dup ? '<li class="dup" aria-hidden="true">' : '<li>';
     if (p.lien) {
       return li + '<a class="' + cls + '" href="' + esc(p.lien) + '" target="_blank" rel="noopener"' + (dup ? ' tabindex="-1"' : '') + ' title="' + esc(p.nom) + '">' + inner + '</a></li>';
