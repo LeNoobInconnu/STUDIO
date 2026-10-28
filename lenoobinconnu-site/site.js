@@ -64,7 +64,7 @@ var SITE = {
   projets: [
     { id: "affiliation", numero: "01", titre: "Affiliation", tag: "Nouveau", couleur: "#fff566", lien: "",
       description: "Développez votre projet grâce à notre programme d'affiliation conçu pour VOUS !" },
-    { id: "defis", numero: "02", titre: "Défis impossibles", tag: "Série en cours", couleur: "#ff7b6b", lien: "https://www.youtube.com/watch?v=0lS11ve8DrM&list=PL6nkzedD66aZ9gXRL73uAyVPUBuYwwneU&pp=sAgC",
+    { id: "defis", numero: "02", titre: "Défis impossibles", tag: "Série en pause", couleur: "#ff7b6b", lien: "https://www.youtube.com/watch?v=0lS11ve8DrM&list=PL6nkzedD66aZ9gXRL73uAyVPUBuYwwneU&pp=sAgC",
       description: "Des règles absurdes et un seul objectif, tenir jusqu'au bout." },
     { id: "construction", numero: "03", titre: "Construction", tag: "Ouvert à tous", couleur: "#6bcbff", lien: "",
       description: "Des projets montés de zéro, du premier bloc à l'inauguration." },
