@@ -80,7 +80,7 @@ var SITE = {
   projetMisEnAvant: "affiliation",
 
   /* Projets affichés dans la grille de l'accueil (les id, dans l'ordre voulu) */
-  projetsAccueil: ["defis", "construction", "survie"],
+  projetsAccueil: ["defis", "constr uction", "sur vie"],
 
   /* ---------- PARTENAIRES (carrousel de l'accueil) ----------
      afficher : false pour cacher tout le carrousel.
