@@ -105,7 +105,7 @@ var SITE = {
       { nom: "LNI COMU", logo: "lni-comu", lien: "https://discord.gg/QHDNFDS88P" },
       { nom: "YZO CLIPS", logo: "yzo-clips", lien: "https://www.youtube.com/@YzoClips" },
       { nom: "LNI BUILD", logo: "lni-build", lien: "https://communities.epicgames.com/community/gc4G/lenoobinconnu" },
-      { nom: "Partenaires 5", logo: "partenaire-5", lien: "" }
+      { nom: "Partenaires 5", logo: "partenaire-5.png", lien: "" }
     ]
   },
 
