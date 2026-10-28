@@ -18,6 +18,7 @@
 html[data-theme="dark"] #aff {
   --a-bg: #171a22; --a-fg: #faf5ee; --a-muted: #b7b2a8; --a-grey: #8c877e; --a-line: #2f3440; --a-card: #20242e;
 }
+#aff [hidden] { display: none !important; }
 #aff .awrap { max-width: 1100px; margin-inline: auto; padding-inline: 16px; }
 #aff a { color: var(--a-accent); }
 #aff .ahero { position: relative; }
@@ -374,6 +375,10 @@ var WEBHOOK_DISCORD = "";
     if ($('_honey').value) { showResult(true); return; }
 
     var btn = $('send'); btn.disabled = true; btn.textContent = 'Envoi…';
+    err.textContent = 'Envoi en cours, ne ferme pas la page avant la confirmation.';
+    var sending = true;
+    var guard = function (ev) { if (sending) { ev.preventDefault(); ev.returnValue = ''; } };
+    window.addEventListener('beforeunload', guard);
     var jobs = [];
 
     if (useMail) {
@@ -386,9 +391,10 @@ var WEBHOOK_DISCORD = "";
       o['Taille de la communauté'] = val('abos') || 'Non renseigné';
       o['Contenu'] = val('jeux') || 'Non renseigné';
       o['Contact'] = val('contact');
-      o['Motivation'] = val('motivation') || 'Non renseigné';
+      o['Motivation'] = val('motivation').slice(0, 3000) || 'Non renseigné';
       jobs.push(fetch('https://formsubmit.co/ajax/' + encodeURIComponent(EMAIL_DE_RECEPTION), {
         method: 'POST',
+        keepalive: true,
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify(o)
       }).then(function (r) { return r.json(); }).then(function (d) { return !!(d && (d.success === true || d.success === 'true')); }));
@@ -397,9 +403,10 @@ var WEBHOOK_DISCORD = "";
     if (useProxy) {
       jobs.push(fetch(PROXY + '/affiliation', {
         method: 'POST',
+        keepalive: true,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          nom: val('nom'), contact: val('contact'), abos: val('abos'), jeux: val('jeux'), motivation: val('motivation'),
+          nom: val('nom'), contact: val('contact'), abos: val('abos'), jeux: val('jeux'), motivation: val('motivation').slice(0, 3000),
           plateformes: picked.map(function (k) { return { label: PLATS[k].label, lien: val('lien-' + k) }; }),
           _honey: $('_honey').value
         })
@@ -418,6 +425,7 @@ var WEBHOOK_DISCORD = "";
       ];
       jobs.push(fetch(WEBHOOK_DISCORD, {
         method: 'POST',
+        keepalive: true,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           username: 'Affiliation LeNoobInconnu',
@@ -427,11 +435,14 @@ var WEBHOOK_DISCORD = "";
       }).then(function (r) { return r.ok; }));
     }
 
-    Promise.all(jobs.map(function (j) { return j.catch(function () { return false; }); })).then(function (res) {
-      if (res.some(function (x) { return x; })) { showResult(true); return; }
-      btn.disabled = false; btn.textContent = 'Envoyer ma demande';
-      err.textContent = 'L\'envoi a échoué. Réessaie dans un instant.';
-      showResult(false, text);
+    var done = false, left = jobs.length, timer;
+    var end = function () { sending = false; window.removeEventListener('beforeunload', guard); clearTimeout(timer); err.textContent = ''; };
+    var succeed = function () { if (done) return; done = true; end(); showResult(true); };
+    var fail = function () { if (done) return; done = true; end(); btn.disabled = false; btn.textContent = 'Envoyer ma demande'; showResult(false, text); };
+    timer = setTimeout(fail, 20000);
+    jobs.forEach(function (j) {
+      j.then(function (ok) { if (ok) succeed(); else if (--left === 0) fail(); },
+             function () { if (--left === 0) fail(); });
     });
   });
 
