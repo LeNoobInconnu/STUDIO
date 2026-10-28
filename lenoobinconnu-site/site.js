@@ -92,7 +92,7 @@ var SITE = {
                 lien : laisse "" si le partenaire n'a pas de page. */
   partenaires: {
     afficher: true,
-    titre: "Chaînes et marques affiliées",
+    titre: "Chaînes et projet affiliées",
     lienAffiliation: "https://lenoobinconnu.github.io/STUDIO/lenoobinconnu-site/Affiliation.html",
     vitesse: 30,
     toujoursEnMouvement: true,
