@@ -88,10 +88,10 @@ var SITE = {
     vitesse: 30,
     toujoursEnMouvement: true,
     liste: [
-      { nom: "Partenaire 1", logo: "assets/partenaires/partenaire-1.png", lien: "" },
-      { nom: "Partenaire 2", logo: "assets/partenaires/partenaire-2.png", lien: "" },
-      { nom: "Partenaire 3", logo: "assets/partenaires/partenaire-3.png", lien: "" },
-      { nom: "Partenaire 4", logo: "assets/partenaires/partenaire-4.png", lien: "" }
+      { nom: "LNI STUDIO", logo: "assets/partenaires/partenaire-1.png", lien: "https://linktr.ee/LeNoobInconnu" },
+      { nom: "LNI COMU", logo: "assets/partenaires/partenaire-2.png", lien: "https://discord.gg/QHDNFDS88P" },
+      { nom: "YZO CLIPS", logo: "assets/partenaires/partenaire-3.png", lien: "https://www.youtube.com/@YzoClips" },
+      { nom: "LNI BUILD", logo: "assets/partenaires/partenaire-4.png", lien: "https://communities.epicgames.com/community/gc4G/lenoobinconnu" }
     ]
   },
 
