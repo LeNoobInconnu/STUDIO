@@ -97,11 +97,11 @@ var SITE = {
     vitesse: 30,
     toujoursEnMouvement: true,
     liste: [
-      { nom: "LNI STUDIO", logo: "assets/partenaires/partenaire-1.png", lien: "https://linktr.ee/LeNoobInconnu" },
-      { nom: "LNI COMU", logo: "assets/partenaires/partenaire-2.png", lien: "https://discord.gg/QHDNFDS88P" },
-      { nom: "YZO CLIPS", logo: "assets/partenaires/partenaire-3.png", lien: "https://www.youtube.com/@YzoClips" },
-      { nom: "LNI BUILD", logo: "assets/partenaires/partenaire-4.png", lien: "https://communities.epicgames.com/community/gc4G/lenoobinconnu" },
-      { nom: "Partenaires 5", logo: "assets/partenaires/partenaire-5.png", lien: "" }
+      { nom: "LNI STUDIO", logo: "assets/partenaire/partenaire-1.png", lien: "https://linktr.ee/LeNoobInconnu" },
+      { nom: "LNI COMU", logo: "assets/partenaire/partenaire-2.png", lien: "https://discord.gg/QHDNFDS88P" },
+      { nom: "YZO CLIPS", logo: "assets/partenaire/partenaire-3.png", lien: "https://www.youtube.com/@YzoClips" },
+      { nom: "LNI BUILD", logo: "assets/partenaire/partenaire-4.png", lien: "https://communities.epicgames.com/community/gc4G/lenoobinconnu" },
+      { nom: "Partenaires 5", logo: "assets/partenaire/partenaire-5.png", lien: "" }
     ]
   },
 
