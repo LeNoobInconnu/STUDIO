@@ -87,6 +87,9 @@ var SITE = {
     lienAffiliation: "https://lenoobinconnu.github.io/STUDIO/lenoobinconnu-site/Affiliation.html",
     vitesse: 30,
     toujoursEnMouvement: true,
+    /* version : change ce nombre (2, 3, 4...) chaque fois que tu remplaces une image de partenaire.
+       Ça force tous les navigateurs à recharger les nouvelles images au lieu des anciennes. */
+    version: "2",
     liste: [
       { nom: "LNI STUDIO", logo: "assets/partenaires/partenaire-1.png", lien: "https://linktr.ee/LeNoobInconnu" },
       { nom: "LNI COMU", logo: "assets/partenaires/partenaire-2.png", lien: "https://discord.gg/QHDNFDS88P" },
