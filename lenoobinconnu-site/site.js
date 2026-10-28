@@ -124,7 +124,7 @@ var SITE = {
      maxMessages : nombre maximum de messages d'un visiteur par session (anti-abus). */
   chatbot: {
     actif: true,
-    urlApi: "https://morning-frog-481a.contact-lenoobinconnu.workers.dev",
+    urlApi: "https://jolly-truth-3f58.contact-lenoobinconnu.workers.dev/",
     nom: "Assistant Noob",
     accueil: "Salut ! Je suis l'assistant de LeNoobInconnu. Pose-moi une question sur les vidéos, les directs ou l'affiliation.",
     suggestions: ["Quand sont les directs ?", "Comment devenir affilié ?", "Où trouver le Discord ?"],
