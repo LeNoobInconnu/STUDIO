@@ -225,8 +225,13 @@
   /* ------------------------------------------------------------------
      Carrousel de partenaires
      ------------------------------------------------------------------ */
+  function srcLogo(p) {
+    var v = (SITE.partenaires || {}).version;
+    if (!p.logo || v == null || v === "") return p.logo;
+    return p.logo + (p.logo.indexOf("?") < 0 ? "?" : "&") + "v=" + encodeURIComponent(v);
+  }
   function partenaireHtml(p, dup) {
-    var inner = '<img src="' + esc(p.logo) + '" alt="" loading="lazy" onerror="this.parentNode.classList.add(\'no-img\')">' +
+    var inner = '<img src="' + esc(srcLogo(p)) + '" alt="" loading="lazy" onerror="this.parentNode.classList.add(\'no-img\')">' +
       '<span class="partner-name">' + esc(p.nom) + '</span>';
     var cls = 'partner';
     var li = dup ? '<li class="dup" aria-hidden="true">' : '<li>';
