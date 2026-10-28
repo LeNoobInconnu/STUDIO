@@ -91,7 +91,8 @@ var SITE = {
       { nom: "LNI STUDIO", logo: "assets/partenaires/partenaire-1.png", lien: "https://linktr.ee/LeNoobInconnu" },
       { nom: "LNI COMU", logo: "assets/partenaires/partenaire-2.png", lien: "https://discord.gg/QHDNFDS88P" },
       { nom: "YZO CLIPS", logo: "assets/partenaires/partenaire-3.png", lien: "https://www.youtube.com/@YzoClips" },
-      { nom: "LNI BUILD", logo: "assets/partenaires/partenaire-4.png", lien: "https://communities.epicgames.com/community/gc4G/lenoobinconnu" }
+      { nom: "LNI BUILD", logo: "assets/partenaires/partenaire-4.png", lien: "https://communities.epicgames.com/community/gc4G/lenoobinconnu" },
+       { nom: "Partenaires 5", logo: "assets/partenaires/partenaire-5.png", lien: "" }
     ]
   },
 
