@@ -175,8 +175,8 @@
       '<a class="btn-pill" href="' + esc(lien("discord")) + '" target="_blank" rel="noopener">' + ICON.discord + 'Rejoindre le Discord</a>' +
       '<div class="cols">' +
         '<div class="about">' + logoHtml() +
-          '<p>' + esc(SITE.nom) + ' est une chaîne YouTube de jeux vidéo.</p>' +
-          '<p>Ce site est un site de fan, non affilié aux éditeurs des jeux présentés.</p></div>' +
+          '<p>' + esc(SITE.nom) + ' est une chaîne YouTube multigaming.</p>' +
+          '<p>Ce site est le cite officielle de LeNoobInconnu.</p></div>' +
         '<nav aria-label="Navigation"><h4>Navigation</h4><ul>' + nav + '</ul></nav>' +
         '<nav aria-label="Réseaux"><h4>Réseaux</h4><ul>' + nets + '</ul></nav>' +
         '<nav aria-label="Informations"><h4>Informations</h4><ul>' +
