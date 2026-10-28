@@ -64,7 +64,7 @@ var SITE = {
   projets: [
     { id: "premiers-pas", numero: "01", titre: "Premiers pas", tag: "Nouveau", couleur: "#fff566", lien: "",
       description: "Le noob se lance et apprend en direct, sans filet." },
-    { id: "defis", numero: "02", titre: "Défis impossibles", tag: "Série en cours", couleur: "#ff7b6b", lien: "",
+    { id: "defis", numero: "02", titre: "Défis impossibles", tag: "Série en cours", couleur: "#ff7b6b", lien: "https://www.youtube.com/watch?v=0lS11ve8DrM&list=PL6nkzedD66aZ9gXRL73uAyVPUBuYwwneU&pp=sAgC",
       description: "Des règles absurdes et un seul objectif, tenir jusqu'au bout." },
     { id: "construction", numero: "03", titre: "Construction", tag: "Ouvert à tous", couleur: "#6bcbff", lien: "",
       description: "Des projets montés de zéro, du premier bloc à l'inauguration." },
