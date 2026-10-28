@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Affiliation - LeNoobInconnu</title>
-<link rel="icon" type="image/png" href="asset/favicon.png">
+<link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Syne:wght@800&display=swap">
 <link rel="stylesheet" href="style.css">
 <style>
@@ -293,8 +293,10 @@ html[data-theme="dark"] #aff {
    (service gratuit FormSubmit). Tu peux aussi (ou seulement) utiliser un webhook Discord. */
 var EMAIL_DE_RECEPTION = "contact.lenoobinconnu@gmail.com";
 
-/* Webhook Discord (facultatif) : colle ici l'adresse du webhook, ou celle de ton Worker Cloudflare
-   (recommandé). Les demandes arrivent alors aussi dans ton salon Discord. */
+/* Discord : RECOMMANDÉ = ne rien mettre ici. Les demandes passent par ton Worker Cloudflare
+   (adresse déjà définie dans site.js > chatbot > urlApi) qui détient le webhook en secret
+   (variable DISCORD_WEBHOOK). Cette ligne n'est qu'un secours : un webhook collé ici serait
+   visible par tout le monde et pourrait être utilisé pour spammer ton salon. */
 var WEBHOOK_DISCORD = "";
 /* ======================================= */
 
@@ -329,7 +331,11 @@ var WEBHOOK_DISCORD = "";
   }
   $('multi').addEventListener('change', renderLinks);
   renderLinks();
-  var useMail = EMAIL_DE_RECEPTION.indexOf('@') > 0, useHook = /^https:\/\//.test(WEBHOOK_DISCORD), live = useMail || useHook;
+  var PROXY = (window.SITE && SITE.chatbot && SITE.chatbot.urlApi) ? String(SITE.chatbot.urlApi).replace(/\/+$/, '') : '';
+  var useMail = EMAIL_DE_RECEPTION.indexOf('@') > 0;
+  var useProxy = /^https:\/\//.test(PROXY);
+  var useHook = !useProxy && /^https:\/\//.test(WEBHOOK_DISCORD);
+  var live = useMail || useProxy || useHook;
   $('hint').textContent = live ? 'Ta demande est envoyée directement à LeNoobInconnu.' : 'Aucun envoi n\'est configuré sur cette page : un récapitulatif à copier s\'affiche.';
 
   function val(id) { return $(id).value.trim(); }
@@ -386,6 +392,18 @@ var WEBHOOK_DISCORD = "";
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify(o)
       }).then(function (r) { return r.json(); }).then(function (d) { return !!(d && (d.success === true || d.success === 'true')); }));
+    }
+
+    if (useProxy) {
+      jobs.push(fetch(PROXY + '/affiliation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nom: val('nom'), contact: val('contact'), abos: val('abos'), jeux: val('jeux'), motivation: val('motivation'),
+          plateformes: picked.map(function (k) { return { label: PLATS[k].label, lien: val('lien-' + k) }; }),
+          _honey: $('_honey').value
+        })
+      }).then(function (r) { return r.ok; }));
     }
 
     if (useHook) {

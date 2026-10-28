@@ -12,6 +12,15 @@ var SITE = {
      Tant que le fichier n'existe pas, le nom de la chaîne s'affiche. */
   logo: "assets/logo.png",
 
+  /* ---------- ICÔNE DE L'ONGLET (favicon) ----------
+     Dépose favicon.png dans le dossier "assets". Sans ce fichier, le logo ci-dessus est utilisé. */
+  favicon: "assets/favicon.png",
+
+  /* ---------- VERSION DES IMAGES ----------
+     Change ce nombre (2, 3, 4...) quand tu remplaces une image (logo, favicon, partenaires)
+     pour obliger tous les navigateurs à recharger la nouvelle. */
+  versionImages: "1",
+
   /* ---------- VIDÉO DE L'ACCUEIL ----------
      Dans https://www.youtube.com/watch?v=ABCDEFGHIJK, l'identifiant est ABCDEFGHIJK. */
   videoId: "ylwBQmnzYaQ",
@@ -78,8 +87,11 @@ var SITE = {
      vitesse  : durée d'un tour complet en secondes (plus grand = plus lent).
      toujoursEnMouvement : true = le carrousel tourne toujours en boucle,
                 false = il reste fixe pour les visiteurs qui ont coupé les animations sur leur appareil.
-     liste    : un logo par ligne. Dépose les images dans assets/partenaires/.
-                Sans fichier image, le nom s'affiche à la place.
+     dossier  : le dossier GitHub où tu déposes les logos (à créer : assets/affilies).
+     liste    : un partenaire par ligne.
+                nom  : affiché à la place du logo si l'image est introuvable.
+                logo : le NOM du fichier SANS extension, en minuscules (ex. "lni-studio").
+                       Le site cherche tout seul lni-studio.png, puis .webp, .jpg, .jpeg, .svg.
                 lien : laisse "" si le partenaire n'a pas de page. */
   partenaires: {
     afficher: true,
@@ -87,15 +99,13 @@ var SITE = {
     lienAffiliation: "https://lenoobinconnu.github.io/STUDIO/lenoobinconnu-site/Affiliation.html",
     vitesse: 30,
     toujoursEnMouvement: true,
-    /* version : change ce nombre (2, 3, 4...) chaque fois que tu remplaces une image de partenaire.
-       Ça force tous les navigateurs à recharger les nouvelles images au lieu des anciennes. */
-    version: "2",
+    dossier: "assets/affilies",
     liste: [
-      { nom: "LNI STUDIO", logo: "assets/partenaires/partenaire-1.png", lien: "https://linktr.ee/LeNoobInconnu" },
-      { nom: "LNI COMU", logo: "assets/partenaires/partenaire-2.png", lien: "https://discord.gg/QHDNFDS88P" },
-      { nom: "YZO CLIPS", logo: "assets/partenaires/partenaire-3.png", lien: "https://www.youtube.com/@YzoClips" },
-      { nom: "LNI BUILD", logo: "assets/partenaires/partenaire-4.png", lien: "https://communities.epicgames.com/community/gc4G/lenoobinconnu" },
-       { nom: "Partenaires 5", logo: "assets/partenaires/partenaire-5.png", lien: "" }
+      { nom: "LNI STUDIO", logo: "lni-studio", lien: "https://linktr.ee/LeNoobInconnu" },
+      { nom: "LNI COMU", logo: "lni-comu", lien: "https://discord.gg/QHDNFDS88P" },
+      { nom: "YZO CLIPS", logo: "yzo-clips", lien: "https://www.youtube.com/@YzoClips" },
+      { nom: "LNI BUILD", logo: "lni-build", lien: "https://communities.epicgames.com/community/gc4G/lenoobinconnu" },
+      { nom: "Partenaires 5", logo: "partenaire-5", lien: "" }
     ]
   },
 
