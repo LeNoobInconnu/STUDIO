@@ -373,3 +373,14 @@ html.menu-ouvert .chat-fab, html.menu-ouvert .chat-panel { display: none; }
 .qs { display: grid; gap: 10px; }
 .compte-id { font-size: .75rem !important; }
 .compte-id code { user-select: all; font-size: .72rem; }
+
+/* Profil et réglages admin */
+.compte-menu button + button { margin-top: 8px; }
+.profil-photo { display: flex; align-items: center; gap: 16px; margin-bottom: 4px; }
+.profil-photo > div { display: grid; gap: 8px; justify-items: start; }
+.profil-apercu { display: grid; place-items: center; width: 72px; height: 72px; border-radius: 50%; overflow: hidden; background: var(--line); color: var(--gray); flex: none; }
+.profil-apercu img { width: 100%; height: 100%; object-fit: cover; }
+.profil-apercu svg { width: 32px; height: 32px; }
+.profil-choisir { cursor: pointer; }
+.rg-bloc { display: grid; gap: 10px; margin: 0 0 6px; padding: 14px; border: 1px solid var(--line); border-radius: 12px; }
+.rg-bloc legend { padding: 0 6px; font-family: var(--font-mono); font-size: .66rem; letter-spacing: .18em; text-transform: uppercase; color: var(--gray); }

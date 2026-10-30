@@ -46,7 +46,7 @@
     if (!a) return Promise.reject("E-mail ou mot de passe incorrect.");
     return hash(mdp, a.sel).then(function (h) {
       if (h !== a.hash) throw "E-mail ou mot de passe incorrect.";
-      ecrire(CLE_SESSION, { pseudo: a.pseudo, email: a.email });
+      ecrire(CLE_SESSION, { pseudo: a.pseudo, email: a.email, avatar: a.avatar || "" });
     });
   }
   var CFG = SITE.connexion || {};
@@ -144,16 +144,113 @@
     if (menu) { fermerMenu(); return; }
     menu = document.createElement("div");
     menu.className = "compte-menu";
-    menu.innerHTML = "<p>Connecté" + (u.fournisseur ? " via " + (u.fournisseur === "google" ? "Google" : "Discord") : "") + (u.email ? " : " + esc(u.email) : "") + '</p>' + (u.id && SITE.actualites && SITE.actualites.urlApi ? '<p class="compte-id">ID admin : <code>' + esc(u.id) + '</code></p>' : "") + '<button type="button">' + ICON.logout + "Se déconnecter</button>";
+    menu.innerHTML = "<p>Connecté" + (u.fournisseur ? " via " + (u.fournisseur === "google" ? "Google" : "Discord") : "") + (u.email ? " : " + esc(u.email) : "") + '</p>' + (u.id && SITE.actualites && SITE.actualites.urlApi ? '<p class="compte-id">ID admin : <code>' + esc(u.id) + '</code></p>' : "") + '<button type="button" class="js-profil">' + ICON.user + "Modifier mon profil</button>" + '<button type="button" class="js-logout">' + ICON.logout + "Se déconnecter</button>";
     if (SRV && SRV.admin) {
       var a = document.createElement("a");
       a.href = "admin.html"; a.className = "compte-lien"; a.innerHTML = ICON.news + "Administration";
-      menu.insertBefore(a, menu.querySelector("button"));
+      menu.insertBefore(a, menu.querySelector(".js-profil"));
     }
-    menu.querySelector("button").addEventListener("click", function () { Promise.resolve(deconnecter()).then(function () { fermerMenu(); majBouton(); }); });
+    menu.querySelector(".js-logout").addEventListener("click", function () { Promise.resolve(deconnecter()).then(function () { fermerMenu(); majBouton(); }); });
+    var bp = menu.querySelector(".js-profil");
+    if (SRV) bp.remove(); else bp.addEventListener("click", function () { fermerMenu(); ouvrirProfil(); });
     wrap.appendChild(menu);
+    document.dispatchEvent(new CustomEvent("lni:menu-compte", { detail: { menu: menu, user: u } }));
   }
   document.addEventListener("click", function (e) { if (menu && !e.target.closest(".compte-wrap")) fermerMenu(); });
+
+  /* ----- Profil (pseudo et photo) ----- */
+  function apiProfil() { return SITE.actualites && SITE.actualites.urlApi ? SITE.actualites.urlApi.replace(/\/+$/, "") + "/api/profil" : ""; }
+  function enteteJeton(u) { return u.jeton ? { Authorization: (u.fournisseur === "google" ? "Google " : "Discord ") + u.jeton } : null; }
+
+  // Reprend le profil enregistré sur le serveur (il passe avant le nom Discord / Google)
+  function appliquerProfil() {
+    var u = utilisateur(), url = apiProfil(), h = u && enteteJeton(u);
+    if (!url || !h) return;
+    fetch(url, { headers: h }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+      if (!d || !d.pseudo) return;
+      var u2 = utilisateur();
+      if (!u2 || u2.id !== u.id) return;
+      var avatar = typeof d.avatar === "string" ? d.avatar : u2.avatar;
+      if (u2.pseudo === d.pseudo && u2.avatar === avatar) return;
+      u2.pseudo = d.pseudo; u2.avatar = avatar;
+      ecrire(CLE_SESSION, u2); majBouton();
+    }).catch(function () {});
+  }
+
+  // Photo carrée de 128 px, en JPEG léger
+  function redimensionner(fichier) {
+    return new Promise(function (ok, ko) {
+      var fr = new FileReader();
+      fr.onerror = ko;
+      fr.onload = function () {
+        var img = new Image();
+        img.onerror = ko;
+        img.onload = function () {
+          var c = document.createElement("canvas"); c.width = c.height = 128;
+          var m = Math.min(img.width, img.height);
+          c.getContext("2d").drawImage(img, (img.width - m) / 2, (img.height - m) / 2, m, m, 0, 0, 128, 128);
+          ok(c.toDataURL("image/jpeg", 0.8));
+        };
+        img.src = fr.result;
+      };
+      fr.readAsDataURL(fichier);
+    });
+  }
+
+  function ouvrirProfil() {
+    var u = utilisateur();
+    if (!u) return;
+    document.dispatchEvent(new Event("lni:modal"));
+    var avatar = u.avatar || "";
+    var fond = document.createElement("div");
+    fond.className = "modal-fond";
+    fond.innerHTML = '<div class="modal" role="dialog" aria-modal="true" aria-labelledby="profil-titre">' +
+      '<button class="modal-x" type="button" aria-label="Fermer">' + ICON.close + '</button>' +
+      '<h2 id="profil-titre">Mon profil</h2>' +
+      '<form novalidate>' +
+        '<div class="profil-photo"><span class="profil-apercu"></span><div>' +
+          '<label class="mini profil-choisir">Changer la photo<input type="file" accept="image/*" hidden></label>' +
+          '<button class="mini" type="button" data-retirer>Retirer</button></div></div>' +
+        '<label>Pseudo<input name="pseudo" maxlength="24" autocomplete="nickname"></label>' +
+        '<p class="form-err" role="alert"></p>' +
+        '<button class="btn-login" type="submit">Enregistrer</button>' +
+      '</form></div>';
+    document.body.appendChild(fond);
+    var form = fond.querySelector("form"), err = fond.querySelector(".form-err"), apercu = fond.querySelector(".profil-apercu");
+    form.pseudo.value = u.pseudo || "";
+    function maj() { apercu.innerHTML = avatar ? '<img src="' + esc(avatar) + '" alt="" referrerpolicy="no-referrer">' : ICON.user; }
+    maj();
+    function fermer() { document.removeEventListener("keydown", touche); fond.remove(); }
+    function touche(e) { if (e.key === "Escape") fermer(); }
+    document.addEventListener("keydown", touche);
+    fond.addEventListener("mousedown", function (e) { if (e.target === fond) fermer(); });
+    fond.querySelector(".modal-x").addEventListener("click", fermer);
+    fond.querySelector("[data-retirer]").addEventListener("click", function () { avatar = ""; maj(); });
+    fond.querySelector("input[type=file]").addEventListener("change", function () {
+      var f = this.files[0];
+      if (!f) return;
+      redimensionner(f).then(function (d) { avatar = d; maj(); err.textContent = ""; }, function () { err.textContent = "Impossible de lire cette image."; });
+    });
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var pseudo = form.pseudo.value.trim();
+      if (pseudo.length < 3 || pseudo.length > 24) { err.textContent = "Le pseudo doit faire entre 3 et 24 caractères."; return; }
+      var btn = form.querySelector(".btn-login"); btn.disabled = true;
+      var h = enteteJeton(u), url = apiProfil();
+      var envoi = h && url
+        ? fetch(url, { method: "PUT", headers: { Authorization: h.Authorization, "Content-Type": "application/json" }, body: JSON.stringify({ pseudo: pseudo, avatar: avatar }) })
+            .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { if (!r.ok) throw r.status === 401 ? "Ta connexion a expiré : déconnecte-toi puis reconnecte-toi." : (d.erreur || "Erreur du serveur"); }); })
+        : Promise.resolve();
+      envoi.then(function () {
+        var s = utilisateur() || u;
+        s.pseudo = pseudo; s.avatar = avatar;
+        ecrire(CLE_SESSION, s);
+        if (!h) { var c = lire(CLE_COMPTES, {}), a = c[(s.email || "").toLowerCase()]; if (a) { a.pseudo = pseudo; a.avatar = avatar; ecrire(CLE_COMPTES, c); } }
+        fermer(); majBouton();
+      }, function (m) { btn.disabled = false; err.textContent = typeof m === "string" ? m : "Impossible d'enregistrer pour le moment."; });
+    });
+    form.pseudo.focus();
+  }
 
   function ouvrirModal(mode, message) {
     document.dispatchEvent(new Event("lni:modal"));
@@ -216,7 +313,7 @@
       gcible.innerHTML = GOOGLE_BTN;
       gcible.firstChild.addEventListener("click", function () { lancerOAuth("google"); });
     } else if (CFG.googleClientId) {
-      boutonGoogle(gcible, function () { fermer(); majBouton(); }, function (m) { err.textContent = m; });
+      boutonGoogle(gcible, function () { fermer(); majBouton(); appliquerProfil(); }, function (m) { err.textContent = m; });
     } else {
       gcible.innerHTML = GOOGLE_BTN;
       gcible.firstChild.addEventListener("click", function () { err.textContent = "Connexion Google pas encore configurée (googleClientId dans site.js)."; });
@@ -229,5 +326,6 @@
   var retour = null;
   try { retour = retourDiscord(); } catch (e) {}
   majBouton();
-  if (retour) retour.then(majBouton, function (m) { majBouton(); ouvrirModal("connexion", typeof m === "string" ? m : "Connexion Discord impossible."); });
+  appliquerProfil();
+  if (retour) retour.then(function () { majBouton(); appliquerProfil(); }, function (m) { majBouton(); ouvrirModal("connexion", typeof m === "string" ? m : "Connexion Discord impossible."); });
 })();

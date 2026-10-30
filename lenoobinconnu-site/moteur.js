@@ -2,6 +2,30 @@
 (function () {
   "use strict";
 
+  /* Réglages publiés par les admins (stockés sur le serveur, lus avant de construire la page) */
+  (function () {
+    var api = SITE.actualites && SITE.actualites.urlApi;
+    if (!api) return;
+    var K = "lni_reglages_site", url = api.replace(/\/+$/, "") + "/api/reglages";
+    function appliquer(r) {
+      if (!r) return;
+      var i;
+      if (r.maintenance) { SITE.maintenance = SITE.maintenance || {}; for (i in r.maintenance) SITE.maintenance[i] = !!r.maintenance[i]; }
+      if (r.annonce) { SITE.annonce = SITE.annonce || {}; SITE.annonce.actif = !!r.annonce.actif; SITE.annonce.texte = r.annonce.texte || ""; SITE.annonce.lien = r.annonce.lien || ""; }
+      if (r.chatbot) { SITE.chatbot = SITE.chatbot || {}; SITE.chatbot.actif = !!r.chatbot.actif; }
+      if (r.partenaires) { SITE.partenaires = SITE.partenaires || {}; SITE.partenaires.afficher = !!r.partenaires.afficher; }
+    }
+    try { appliquer(JSON.parse(localStorage.getItem(K))); } catch (e) {}
+    // Si les réglages ont changé depuis la dernière visite, on recharge une seule fois
+    fetch(url).then(function (r) { return r.ok ? r.json() : null; }).then(function (r) {
+      if (!r) return;
+      var neuf = JSON.stringify(r), vieux = localStorage.getItem(K) || "{}";
+      if (neuf === vieux) { sessionStorage.removeItem("lni_rl"); return; }
+      localStorage.setItem(K, neuf);
+      if (!sessionStorage.getItem("lni_rl")) { sessionStorage.setItem("lni_rl", "1"); location.reload(); }
+    }).catch(function () {});
+  })();
+
   var CLE = "lni_reglages";
   var CLE_ANNONCE = "lni_annonce_fermee";
 
@@ -466,6 +490,13 @@
       } else if (avecServeur) {
         window.LNI.ready.then(lancerAuth);
       } else { lancerAuth(); }
+    }
+
+    // Panneau de réglages pour les admins
+    if (SITE.actualites && SITE.actualites.urlApi) {
+      var sr = document.createElement("script");
+      sr.src = "reglages-admin.js";
+      document.body.appendChild(sr);
     }
 
     // Annonces et questionnaires (accueil)
