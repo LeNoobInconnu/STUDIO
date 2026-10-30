@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LeNoobInconnu</title>
+<link rel="icon" type="image/png" href="asset/favicon.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=Syne:wght@800&display=swap">
+<link rel="stylesheet" href="style.css">
+<script src="site.js"></script>
+<script src="icones.js"></script>
+<script src="moteur.js"></script>
+</head>
+<body data-page="accueil">
+<div id="site-header"></div>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <h1 class="hero-title">Bienvenue<span>!</span><a class="sticker" data-link="youtube" href="#" target="_blank" rel="noopener">@LeNoobInconnu</a></h1>
+      <div class="video" id="video-slot"></div>
+    </div>
+  </section>
+
+  <section class="section" id="section-annonces" hidden>
+    <div class="wrap">
+      <p class="eyebrow">Actualités</p>
+      <h2 class="h2">Annonces et <em>questionnaires</em></h2>
+      <div class="adm-bar" id="adm-bar" hidden></div>
+      <div id="annonces-contenu"></div>
+    </div>
+  </section>
+
+  <section class="section partners" id="section-partenaires" style="padding-bottom:0"></section>
+
+  <section class="section" id="section-vedette" style="padding-bottom:0">
+    <div class="wrap">
+      <p class="eyebrow">À la une</p>
+      <h2 class="h2">Le projet <em>du moment</em></h2>
+      <div id="projet-vedette"></div>
+    </div>
+  </section>
+
+  <section class="section" id="section-projets">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Projets</p>
+          <h2 class="h2">À regarder <em>en priorité</em></h2>
+        </div>
+        <a class="btn-solid" href="series.html" data-icon="series">&nbsp;Tous les projets</a>
+      </div>
+      <ul class="cards" id="projets-accueil"></ul>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0">
+    <div class="wrap">
+      <p class="eyebrow">Explorer le site</p>
+      <h2 class="h2">Par où <em>commencer ?</em></h2>
+      <div class="tiles">
+        <a class="tile" href="programme.html">
+          <span class="ic" data-icon="calendar"></span>
+          <h3>Programme</h3>
+          <p>Les vidéos, les directs et les formats courts de la semaine.</p>
+          <span class="go">Voir le programme</span>
+        </a>
+        <a class="tile" href="series.html">
+          <span class="ic" data-icon="series"></span>
+          <h3>Séries</h3>
+          <p>Tous les projets de la chaîne, à regarder dans l'ordre ou au hasard.</p>
+          <span class="go">Voir les séries</span>
+        </a>
+        <a class="tile" href="communaute.html">
+          <span class="ic" data-icon="people"></span>
+          <h3>Communauté</h3>
+          <p>Le Discord, le chat Twitch et tous les réseaux de la chaîne.</p>
+          <span class="go">Rejoindre la team</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+</body>
+</html>
