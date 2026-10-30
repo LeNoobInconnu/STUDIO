@@ -449,11 +449,30 @@
     brancherReglages();
     brancherMenuMobile();
 
-    // Système de connexion
+    // Système de connexion (avec le serveur s'il est configuré)
     if (SITE.connexion && SITE.connexion.actif) {
-      var sa = document.createElement("script");
-      sa.src = "auth.js";
-      document.body.appendChild(sa);
+      var lancerAuth = function () {
+        var sa = document.createElement("script");
+        sa.src = "auth.js";
+        document.body.appendChild(sa);
+      };
+      var avecServeur = SITE.serveur && SITE.serveur.url;
+      if (avecServeur && !window.LNI) {
+        var sv = document.createElement("script");
+        sv.src = "serveur.js";
+        sv.onload = function () { window.LNI.ready.then(lancerAuth); };
+        sv.onerror = lancerAuth;
+        document.body.appendChild(sv);
+      } else if (avecServeur) {
+        window.LNI.ready.then(lancerAuth);
+      } else { lancerAuth(); }
+    }
+
+    // Annonces et questionnaires (accueil)
+    if (document.getElementById("section-annonces") && SITE.actualites && SITE.actualites.actif && SITE.actualites.urlApi) {
+      var sn = document.createElement("script");
+      sn.src = "annonces.js";
+      document.body.appendChild(sn);
     }
 
     // Chatbot (chargé seulement s'il est activé et que la page n'est pas en maintenance)

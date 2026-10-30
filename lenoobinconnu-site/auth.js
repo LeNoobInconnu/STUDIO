@@ -8,9 +8,10 @@
   var enc = new TextEncoder();
 
   /* ----- Stockage ----- */
+  var SRV = window.LNI && window.LNI.sb ? window.LNI : null;
   function lire(k, def) { try { return JSON.parse(localStorage.getItem(k)) || def; } catch (e) { return def; } }
   function ecrire(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } }
-  function utilisateur() { return lire(CLE_SESSION, null); }
+  function utilisateur() { return SRV ? SRV.user : lire(CLE_SESSION, null); }
 
   function hex(buf) { return Array.prototype.map.call(new Uint8Array(buf), function (b) { return ("0" + b.toString(16)).slice(-2); }).join(""); }
   function hash(mdp, sel) {
@@ -20,6 +21,12 @@
   }
 
   function inscrire(pseudo, email, mdp) {
+    if (SRV) {
+      return SRV.sb.auth.signUp({ email: email, password: mdp, options: { data: { pseudo: pseudo }, emailRedirectTo: location.href.split("#")[0] } }).then(function (r) {
+        if (r.error) throw r.error.message === "User already registered" ? "Un compte existe déjà avec cet e-mail." : r.error.message;
+        if (!r.data.session) throw "Compte créé ! Vérifie ta boîte mail pour confirmer ton adresse, puis connecte-toi.";
+      });
+    }
     var c = lire(CLE_COMPTES, {}), id = email.toLowerCase();
     if (c[id]) return Promise.reject("Un compte existe déjà avec cet e-mail.");
     var sel = hex(crypto.getRandomValues(new Uint8Array(16)));
@@ -30,6 +37,11 @@
     });
   }
   function connecter(email, mdp) {
+    if (SRV) {
+      return SRV.sb.auth.signInWithPassword({ email: email, password: mdp }).then(function (r) {
+        if (r.error) throw /confirm/i.test(r.error.message) ? "Confirme d'abord ton adresse e-mail (regarde ta boîte mail)." : "E-mail ou mot de passe incorrect.";
+      });
+    }
     var a = lire(CLE_COMPTES, {})[email.toLowerCase()];
     if (!a) return Promise.reject("E-mail ou mot de passe incorrect.");
     return hash(mdp, a.sel).then(function (h) {
@@ -42,7 +54,12 @@
   function ouvrirSession(u) { return ecrire(CLE_SESSION, u); }
 
   /* Discord (flux "implicit" : tout se passe dans le navigateur) */
+  function lancerOAuth(fournisseur) {
+    SRV.sb.auth.signInWithOAuth({ provider: fournisseur, options: { redirectTo: location.href.split("#")[0], scopes: fournisseur === "discord" ? "identify email" : undefined } });
+    return "";
+  }
   function lancerDiscord() {
+    if (SRV) return lancerOAuth("discord");
     if (!CFG.discordClientId) return "Connexion Discord pas encore configurée (discordClientId dans site.js).";
     var st = hex(crypto.getRandomValues(new Uint8Array(16)));
     try { sessionStorage.setItem("lni_oauth_state", st); sessionStorage.setItem("lni_oauth_page", location.href.split("#")[0]); } catch (e) {}
@@ -60,7 +77,7 @@
     return fetch("https://discord.com/api/users/@me", { headers: { Authorization: "Bearer " + h.get("access_token") } })
       .then(function (r) { if (!r.ok) throw 0; return r.json(); })
       .then(function (d) {
-        ouvrirSession({ pseudo: d.global_name || d.username, email: d.email || "", fournisseur: "discord",
+        ouvrirSession({ pseudo: d.global_name || d.username, email: d.email || "", fournisseur: "discord", id: "discord:" + d.id, jeton: h.get("access_token"),
           avatar: d.avatar ? "https://cdn.discordapp.com/avatars/" + d.id + "/" + d.avatar + ".png?size=64" : "" });
         if (page && page !== location.href.split("#")[0]) location.href = page;
       }, function () { throw "Impossible de récupérer ton profil Discord."; });
@@ -71,6 +88,7 @@
     var b = t.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
     return JSON.parse(decodeURIComponent(atob(b).split("").map(function (c) { return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2); }).join("")));
   }
+  var GOOGLE_BTN = '<button class="btn-google" type="button"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M23 12.3c0-.8-.1-1.500-.2-2.200H12v4.200h6.200a5.300 5.300 0 0 1-2.300 3.500v2.900h3.700c2.200-2 3.400-5 3.400-8.400z"/><path fill="#34A853" d="M12 24c3.100 0 5.700-1 7.600-2.800l-3.700-2.900c-1 .7-2.300 1.100-3.900 1.100-3 0-5.500-2-6.400-4.700H1.800v3A12 12 0 0 0 12 24z"/><path fill="#FBBC05" d="M5.600 14.700a7.200 7.200 0 0 1 0-4.600v-3H1.800a12 12 0 0 0 0 10.600z"/><path fill="#EA4335" d="M12 4.800c1.700 0 3.200.6 4.400 1.700l3.300-3.300A11.900 11.900 0 0 0 12 0 12 12 0 0 0 1.800 7.100l3.800 3C6.500 6.800 9 4.800 12 4.800z"/></svg>Continuer avec Google</button>';
   var gsiPret = null;
   function chargerGoogle() {
     if (gsiPret) return gsiPret;
@@ -88,7 +106,7 @@
       google.accounts.id.initialize({ client_id: CFG.googleClientId, callback: function (r) {
         try {
           var d = jwt(r.credential);
-          ouvrirSession({ pseudo: d.given_name || d.name || d.email, email: d.email || "", fournisseur: "google", avatar: d.picture || "" });
+          ouvrirSession({ pseudo: d.given_name || d.name || d.email, email: d.email || "", fournisseur: "google", id: "google:" + d.sub, jeton: r.credential, avatar: d.picture || "" });
           surSucces();
         } catch (e) { surErreur("Connexion Google impossible."); }
       } });
@@ -96,7 +114,10 @@
     }, function () { surErreur("Impossible de charger Google (bloqueur de pub ?)."); });
   }
 
-  function deconnecter() { try { localStorage.removeItem(CLE_SESSION); } catch (e) {} }
+  function deconnecter() {
+    if (SRV) return SRV.sb.auth.signOut();
+    try { localStorage.removeItem(CLE_SESSION); } catch (e) {}
+  }
 
   /* ----- Interface ----- */
   var btns = Array.prototype.slice.call(document.querySelectorAll(".js-compte"));
@@ -109,6 +130,7 @@
   function majBouton() {
     var u = utilisateur();
     btns.forEach(function (b) { b.innerHTML = contenuBouton(u); });
+    document.dispatchEvent(new Event("lni:session"));
   }
   function contenuBouton(u) {
     return u ? (u.avatar ? '<img class="avatar" src="' + esc(u.avatar) + '" alt="" referrerpolicy="no-referrer">' : ICON.user) + esc(u.pseudo) : "Se connecter";
@@ -122,8 +144,13 @@
     if (menu) { fermerMenu(); return; }
     menu = document.createElement("div");
     menu.className = "compte-menu";
-    menu.innerHTML = "<p>Connecté" + (u.fournisseur ? " via " + (u.fournisseur === "google" ? "Google" : "Discord") : "") + (u.email ? " : " + esc(u.email) : "") + '</p><button type="button">' + ICON.logout + "Se déconnecter</button>";
-    menu.querySelector("button").addEventListener("click", function () { deconnecter(); fermerMenu(); majBouton(); });
+    menu.innerHTML = "<p>Connecté" + (u.fournisseur ? " via " + (u.fournisseur === "google" ? "Google" : "Discord") : "") + (u.email ? " : " + esc(u.email) : "") + '</p>' + (u.id && SITE.actualites && SITE.actualites.urlApi ? '<p class="compte-id">ID admin : <code>' + esc(u.id) + '</code></p>' : "") + '<button type="button">' + ICON.logout + "Se déconnecter</button>";
+    if (SRV && SRV.admin) {
+      var a = document.createElement("a");
+      a.href = "admin.html"; a.className = "compte-lien"; a.innerHTML = ICON.news + "Administration";
+      menu.insertBefore(a, menu.querySelector("button"));
+    }
+    menu.querySelector("button").addEventListener("click", function () { Promise.resolve(deconnecter()).then(function () { fermerMenu(); majBouton(); }); });
     wrap.appendChild(menu);
   }
   document.addEventListener("click", function (e) { if (menu && !e.target.closest(".compte-wrap")) fermerMenu(); });
@@ -185,14 +212,20 @@
     if (message) err.textContent = message;
     var sso = fond.querySelector(".sso"), gcible = fond.querySelector(".sso-google");
     fond.querySelector(".btn-discord").addEventListener("click", function () { var m = lancerDiscord(); if (m) err.textContent = m; });
-    if (CFG.googleClientId) {
+    if (SRV) {
+      gcible.innerHTML = GOOGLE_BTN;
+      gcible.firstChild.addEventListener("click", function () { lancerOAuth("google"); });
+    } else if (CFG.googleClientId) {
       boutonGoogle(gcible, function () { fermer(); majBouton(); }, function (m) { err.textContent = m; });
     } else {
-      gcible.innerHTML = '<button class="btn-google" type="button"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M23 12.3c0-.8-.1-1.500-.2-2.200H12v4.200h6.200a5.300 5.300 0 0 1-2.300 3.500v2.900h3.700c2.200-2 3.400-5 3.400-8.400z"/><path fill="#34A853" d="M12 24c3.100 0 5.700-1 7.600-2.800l-3.700-2.900c-1 .7-2.300 1.100-3.900 1.100-3 0-5.500-2-6.400-4.700H1.800v3A12 12 0 0 0 12 24z"/><path fill="#FBBC05" d="M5.600 14.700a7.200 7.200 0 0 1 0-4.600v-3H1.800a12 12 0 0 0 0 10.600z"/><path fill="#EA4335" d="M12 4.800c1.700 0 3.200.6 4.400 1.700l3.300-3.300A11.900 11.900 0 0 0 12 0 12 12 0 0 0 1.800 7.100l3.800 3C6.500 6.800 9 4.800 12 4.800z"/></svg>Continuer avec Google</button>';
+      gcible.innerHTML = GOOGLE_BTN;
       gcible.firstChild.addEventListener("click", function () { err.textContent = "Connexion Google pas encore configurée (googleClientId dans site.js)."; });
     }
     form.elements[mode === "connexion" ? "email" : "pseudo"].focus();
   }
+  document.addEventListener("lni:ouvrir-connexion", function () { if (!utilisateur()) ouvrirModal("connexion"); });
+  if (SRV) { document.addEventListener("lni:auth", majBouton); majBouton(); return; }
+  window.LNI_AUTH = { deconnecter: function () { deconnecter(); majBouton(); } };
   var retour = null;
   try { retour = retourDiscord(); } catch (e) {}
   majBouton();

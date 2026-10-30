@@ -141,7 +141,7 @@ var SITE = {
      Les publications se font ensuite depuis le site, connecté avec un compte administrateur. */
   actualites: {
     actif: true,
-    urlApi: "https://lni-donnees.contact-lenoobinconnu.workers.dev/"
+    urlApi: ""
   },
 
   /* ---------- MUSIQUE ----------
