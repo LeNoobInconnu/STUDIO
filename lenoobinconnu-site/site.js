@@ -126,6 +126,24 @@ var SITE = {
     urlRetour: ""
   },
 
+  /* ---------- SERVEUR (annonces, questionnaires, vrais comptes) ----------
+     Voir le fichier GUIDE-SERVEUR.txt. Crée un projet gratuit sur https://supabase.com, puis colle ici
+     l'adresse du projet (Project URL) et la clé publique "anon public" (Project Settings > API).
+     Cette clé est faite pour être publique : la sécurité vient des règles de supabase.sql.
+     Laisse "" pour désactiver (le site garde alors la connexion locale). */
+  serveur: {
+    url: "",
+    cleAnon: ""
+  },
+
+  /* ---------- ANNONCES ET QUESTIONNAIRES (accueil) ----------
+     urlApi : l'adresse de ton Worker (voir LISEZMOI-ANNONCES.txt). Laisse "" pour tout cacher.
+     Les publications se font ensuite depuis le site, connecté avec un compte administrateur. */
+  actualites: {
+    actif: true,
+    urlApi: ""
+  },
+
   /* ---------- MUSIQUE ----------
      Dépose ton fichier .mp3 dans "assets" avec ce nom (ou change le nom ici).
      volume : de 0 (muet) à 1 (maximum), c'est le volume de départ. */
@@ -169,6 +187,8 @@ var SITE = {
     series: true,
     communaute: false,
     affiliation: false,
+    actualites: false,
+    admin: false,
     contact: false,
     mentions: false
   },
