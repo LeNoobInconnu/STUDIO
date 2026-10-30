@@ -117,7 +117,7 @@ var SITE = {
        https://discord.com/developers/applications, puis dans OAuth2 > Redirects ajoute
        exactement l'adresse de ta page d'accueil (ex : https://lenoobinconnu.github.io/STUDIO/lenoobinconnu-site/index.html).
        Laisse "" pour désactiver. */
-    discordClientId: "",
+    discordClientId: "1565696763501748274",
     /* Connexion avec Google : colle l'identifiant client OAuth (Client ID, type "Application Web")
        créé sur https://console.cloud.google.com/apis/credentials, et ajoute l'adresse de ton site
        dans "Origines JavaScript autorisées" (ex : https://lenoobinconnu.github.io). Laisse "" pour désactiver. */
