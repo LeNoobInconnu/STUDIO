@@ -121,7 +121,7 @@ var SITE = {
     /* Connexion avec Google : colle l'identifiant client OAuth (Client ID, type "Application Web")
        créé sur https://console.cloud.google.com/apis/credentials, et ajoute l'adresse de ton site
        dans "Origines JavaScript autorisées" (ex : https://lenoobinconnu.github.io). Laisse "" pour désactiver. */
-    googleClientId: "",
+    googleClientId: "196518312947-5ibfodt5r1d1ogpm9rcqd9g0rnffq6ve.apps.googleusercontent.com",
     /* Adresse de retour de Discord. Laisse "" pour utiliser index.html du site. */
     urlRetour: ""
   },
