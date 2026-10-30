@@ -105,6 +105,27 @@ var SITE = {
     ]
   },
 
+  /* ---------- CONNEXION ----------
+     actif : true pour afficher le bouton "Se connecter" dans la barre du haut.
+     Les comptes sont enregistrés dans le navigateur du visiteur (localStorage) :
+     ils ne sont pas partagés entre appareils. Pour de vrais comptes en ligne,
+     il faudra brancher un serveur (voir auth.js). */
+  connexion: {
+    actif: true,
+    motDePasseMin: 8,
+    /* Connexion avec Discord : colle l'identifiant d'application (Client ID) créé sur
+       https://discord.com/developers/applications, puis dans OAuth2 > Redirects ajoute
+       exactement l'adresse de ta page d'accueil (ex : https://lenoobinconnu.github.io/STUDIO/lenoobinconnu-site/index.html).
+       Laisse "" pour désactiver. */
+    discordClientId: "",
+    /* Connexion avec Google : colle l'identifiant client OAuth (Client ID, type "Application Web")
+       créé sur https://console.cloud.google.com/apis/credentials, et ajoute l'adresse de ton site
+       dans "Origines JavaScript autorisées" (ex : https://lenoobinconnu.github.io). Laisse "" pour désactiver. */
+    googleClientId: "",
+    /* Adresse de retour de Discord. Laisse "" pour utiliser index.html du site. */
+    urlRetour: ""
+  },
+
   /* ---------- MUSIQUE ----------
      Dépose ton fichier .mp3 dans "assets" avec ce nom (ou change le nom ici).
      volume : de 0 (muet) à 1 (maximum), c'est le volume de départ. */

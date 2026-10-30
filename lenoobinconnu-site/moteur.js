@@ -149,16 +149,34 @@
       '</div></div>';
   }
 
+  /* Bouton "Se connecter" (le fonctionnement est dans auth.js) */
+  function compteHtml() {
+    if (!(SITE.connexion && SITE.connexion.actif)) return "";
+    return '<div class="compte-wrap" id="compte-wrap"><button class="btn-login js-compte" type="button">Se connecter</button></div>';
+  }
+
   function renderHeader(courant) {
     var liens = pages().map(function (p) {
       var pastille = SITE.maintenance && SITE.maintenance[p.id] ? '<span class="dot" title="En maintenance"></span>' : "";
       return '<li><a href="' + esc(p.href) + '"' + cible(p) + (p.id === courant ? ' aria-current="page"' : '') + '>' + ICON[p.icon] + esc(p.label) + pastille + '</a></li>';
     }).join("");
+    var connexion = SITE.connexion && SITE.connexion.actif;
+    var liensM = pages().map(function (p, i) {
+      return '<li><a href="' + esc(p.href) + '"' + cible(p) + (p.id === courant ? ' aria-current="page"' : '') + '>' + esc(p.label) + '<span class="num-m">0' + (i + 1) + '</span></a></li>';
+    }).join("");
+    var menuMobile = '<div class="menu-mobile" id="menu-mobile" hidden>' +
+      '<div class="mm-top">' + logoHtml() + '<button class="btn-icon" id="menu-fermer" type="button" aria-label="Fermer le menu">' + ICON.close + '</button></div>' +
+      '<ul class="mm-links">' + liensM + '</ul>' +
+      '<div class="mm-actions">' +
+        (connexion ? '<div class="compte-wrap"><button class="btn-login js-compte" type="button">Se connecter</button></div>' : '') +
+        '<a class="btn-outline" href="' + esc(lien("discord")) + '" target="_blank" rel="noopener">' + ICON.discord + 'Rejoindre le Discord</a>' +
+      '</div></div>';
+    var burger = '<button class="btn-icon burger" id="menu-ouvrir" type="button" aria-expanded="false" aria-controls="menu-mobile" aria-label="Ouvrir le menu">' + ICON.menu + '</button>';
     return annonceHtml() +
       '<header class="nav"><div class="wrap">' + logoHtml() +
       '<ul class="links">' + liens + '</ul>' +
-      '<div class="nav-right"><a class="btn-outline" href="' + esc(lien("discord")) + '" target="_blank" rel="noopener">' + ICON.discord + 'Discord</a>' + reglagesHtml() + '</div>' +
-      '</div></header>';
+      '<div class="nav-right"><a class="btn-outline" href="' + esc(lien("discord")) + '" target="_blank" rel="noopener">' + ICON.discord + 'Discord</a>' + compteHtml() + reglagesHtml() + burger + '</div>' +
+      '</div>' + menuMobile + '</header>';
   }
 
   function renderFooter() {
@@ -300,6 +318,22 @@
     }
   }
 
+  function brancherMenuMobile() {
+    var m = document.getElementById("menu-mobile"), o = document.getElementById("menu-ouvrir"), f = document.getElementById("menu-fermer");
+    if (!m || !o) return;
+    function basculer(v) {
+      m.hidden = !v; o.setAttribute("aria-expanded", v ? "true" : "false");
+      document.documentElement.classList.toggle("menu-ouvert", v);
+      if (v) f.focus(); else o.focus();
+    }
+    o.addEventListener("click", function () { basculer(true); });
+    f.addEventListener("click", function () { basculer(false); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !m.hidden) basculer(false); });
+    window.addEventListener("resize", function () { if (!m.hidden && window.innerWidth >= 900) basculer(false); });
+    m.addEventListener("click", function (e) { if (e.target.closest(".mm-links a")) { m.hidden = true; document.documentElement.classList.remove("menu-ouvert"); } });
+    document.addEventListener("lni:modal", function () { if (!m.hidden) { m.hidden = true; document.documentElement.classList.remove("menu-ouvert"); } });
+  }
+
   function brancherReglages() {
     var btn = document.getElementById("btn-reglages");
     var panel = document.getElementById("panel-reglages");
@@ -413,6 +447,14 @@
     }
 
     brancherReglages();
+    brancherMenuMobile();
+
+    // Système de connexion
+    if (SITE.connexion && SITE.connexion.actif) {
+      var sa = document.createElement("script");
+      sa.src = "auth.js";
+      document.body.appendChild(sa);
+    }
 
     // Chatbot (chargé seulement s'il est activé et que la page n'est pas en maintenance)
     var cb = SITE.chatbot || {};
