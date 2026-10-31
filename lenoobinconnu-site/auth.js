@@ -143,11 +143,14 @@
 
   function majBouton() {
     var u = utilisateur();
-    btns.forEach(function (b) { b.innerHTML = contenuBouton(u); });
+    btns.forEach(function (b) { b.innerHTML = contenuBouton(u); b.classList.toggle("connecte", !!u); });
     document.dispatchEvent(new Event("lni:session"));
   }
   function contenuBouton(u) {
-    return u ? (u.avatar ? '<img class="avatar" src="' + esc(u.avatar) + '" alt="" referrerpolicy="no-referrer">' : ICON.user) + esc(u.pseudo) : "Se connecter";
+    if (!u) return "Se connecter";
+    var photo = u.avatar ? '<img class="avatar" src="' + esc(u.avatar) + '" alt="" referrerpolicy="no-referrer">'
+      : '<span class="avatar ini" aria-hidden="true">' + esc((u.pseudo || "?").charAt(0).toUpperCase()) + '</span>';
+    return photo + '<span class="btn-nom">' + esc(u.pseudo) + '</span>' + ICON.chevron;
   }
 
   btns.forEach(function (b) { b.addEventListener("click", function () { cliquer(b); }); });
@@ -157,11 +160,10 @@
     if (menu) { fermerMenu(); return; }
     menu = document.createElement("div");
     menu.className = "compte-menu";
-    menu.innerHTML = '<div class="cm-tete"><strong>' + esc(u.pseudo) + '</strong><span class="cm-role">' + (u.admin ? "Administrateur" : "Joueur") + '</span></div>' +
-      (u.uid ? '<a class="compte-lien" href="profil.html?id=' + encodeURIComponent(u.uid) + '">' + ICON.user + 'Mon profil</a>' : "") +
-      '<a class="compte-lien" href="fil.html">' + ICON.news + 'Fil</a>' +
+    var profil = u.uid ? "profil.html?id=" + encodeURIComponent(u.uid) : "parametres.html#compte";
+    menu.innerHTML = '<a class="cm-tete" href="' + profil + '"><strong>' + esc(u.pseudo) + '</strong><span class="cm-role">' + (u.admin ? "Admin" : "Joueur") + '</span></a>' +
       '<a class="compte-lien" href="parametres.html">' + ICON.settings + 'Paramètres</a>' +
-      '<button type="button" class="js-logout">' + ICON.logout + "Se déconnecter</button>";
+      '<button type="button" class="compte-lien js-logout">' + ICON.logout + "Se déconnecter</button>";
     menu.querySelector(".js-logout").addEventListener("click", function () { deconnecter(); fermerMenu(); majBouton(); });
     btn_parent(btn).appendChild(menu);
   }

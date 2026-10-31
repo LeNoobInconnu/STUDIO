@@ -273,7 +273,7 @@ html[data-theme="dark"] .chat-msg.moi { background: var(--cream); color: var(--i
 .btn-login { display: inline-flex; align-items: center; gap: 8px; border: 0; border-radius: 8px; padding: 10px 20px; background: #f94144; color: #fff; font: inherit; font-weight: 700; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; transition: background .15s ease; }
 .btn-login:hover { background: var(--red); }
 .btn-login svg { width: 18px; height: 18px; }
-.compte-menu { position: absolute; right: 0; top: calc(100% + 14px); z-index: 50; min-width: 220px; background: var(--surface); color: var(--fg); border: 1px solid var(--line); border-radius: 14px; padding: 14px; box-shadow: 0 18px 50px rgba(0,0,0,.35); }
+.compte-menu { position: absolute; right: 0; top: calc(100% + 10px); z-index: 50; width: 250px; background: var(--surface); color: var(--fg); border: 1px solid var(--line); border-radius: 14px; padding: 0; overflow: hidden; box-shadow: 0 18px 50px rgba(0,0,0,.35); }
 .compte-menu p { margin: 0 0 10px; font-size: .85rem; color: var(--text-soft); word-break: break-all; }
 .compte-menu button { display: flex; align-items: center; gap: 8px; width: 100%; padding: 10px; border: 1px solid var(--line); border-radius: 8px; background: transparent; color: var(--fg); font: inherit; font-weight: 600; cursor: pointer; }
 .compte-menu button:hover { background: var(--red); border-color: var(--red); color: #fff; }
@@ -494,3 +494,20 @@ html[data-theme="dark"] .pr-msg.err { background: #3a1717; color: #feb2b2; }
   .pe-stats dd { font-size: 1.4rem; }
   .com-form { grid-template-columns: 1fr; }
 }
+
+/* Bouton de compte connecté (comme la capture de référence) */
+.btn-login.connecte { background: transparent; border: 2px solid #fff; color: #fff; padding: 6px 12px 6px 6px; gap: 10px; text-transform: none; letter-spacing: .02em; font-size: .9rem; }
+.btn-login.connecte:hover { background: #fff; color: var(--ink); }
+.btn-login.connecte .avatar { width: 30px; height: 30px; border-radius: 6px; object-fit: cover; }
+.btn-login .avatar.ini { display: grid; place-items: center; background: #fff; color: var(--ink); font-weight: 700; }
+.btn-login .btn-nom { font-weight: 700; }
+.btn-login .chev { width: 16px; height: 16px; opacity: .8; }
+.compte-menu .cm-tete { display: grid; gap: 4px; padding: 16px 18px; border-bottom: 1px solid var(--line); text-decoration: none; color: var(--fg); }
+.compte-menu .cm-tete strong { font-size: 1.05rem; overflow-wrap: anywhere; }
+.compte-menu .cm-role { font-family: var(--font-mono); font-size: .66rem; letter-spacing: .16em; text-transform: uppercase; color: var(--gray); }
+.compte-menu .compte-lien { display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px 18px; border: 0; border-top: 1px solid var(--line); background: transparent; color: var(--fg); font: 600 .95rem var(--font-body); text-decoration: none; cursor: pointer; text-align: left; }
+.compte-menu .compte-lien:first-of-type { border-top: 0; }
+.compte-menu .compte-lien:hover { background: var(--bg); }
+.compte-menu .compte-lien svg { width: 18px; height: 18px; color: var(--text-soft); flex: none; }
+.compte-menu .compte-lien.js-logout { color: var(--fg); }
+.compte-menu button + button { margin-top: 0; }
