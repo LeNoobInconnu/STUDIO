@@ -15,6 +15,15 @@
       if (r.chatbot) { SITE.chatbot = SITE.chatbot || {}; SITE.chatbot.actif = !!r.chatbot.actif; }
       if (r.partenaires) { SITE.partenaires = SITE.partenaires || {}; SITE.partenaires.afficher = !!r.partenaires.afficher; }
       if (r.logo !== undefined) SITE.logo = r.logo || "assets/logo.png";
+      if (r.reglagesParDefaut && typeof r.reglagesParDefaut === "object") {
+        SITE.reglagesParDefaut = SITE.reglagesParDefaut || {};
+        if (["normal", "sombre"].indexOf(r.reglagesParDefaut.theme) >= 0) SITE.reglagesParDefaut.theme = r.reglagesParDefaut.theme;
+        if (typeof r.reglagesParDefaut.musique === "boolean") SITE.reglagesParDefaut.musique = r.reglagesParDefaut.musique;
+      }
+      if (r.musique && typeof r.musique.fichier === "string" && /^(?:assets\/[A-Za-z0-9_-]+\/)*[A-Za-z0-9_-]+\.mp3$/.test(r.musique.fichier)) {
+        SITE.musique = SITE.musique || {};
+        SITE.musique.fichier = r.musique.fichier;
+      }
     }
     try { appliquer(JSON.parse(localStorage.getItem(K))); } catch (e) {}
     // Si les réglages ont changé depuis la dernière visite, on recharge une seule fois

@@ -151,6 +151,10 @@ var SITE = {
     fichier: "assets/musique.mp3",
     volume: 0.3
   },
+  /* Musiques proposées dans le panneau d'administration. Ajoute ici chaque fichier .mp3 disponible. */
+  musiquesDisponibles: [
+    { nom: "Musique principale", fichier: "assets/musique.mp3" }
+  ],
 
   /* ---------- CHATBOT ----------
      actif    : true pour afficher la bulle de chat sur toutes les pages.

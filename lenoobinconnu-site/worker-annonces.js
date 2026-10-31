@@ -102,7 +102,7 @@ async function exigerAdmin(req, env) {
 }
 async function assurerProfil(env, c) {
   if (c.profilExiste) return;
-  await ecrire(env, "profil:" + c.uid, { pseudo: (c.nom || "Joueur").slice(0, 24), avatar: c.avatar || "", bio: "" });
+  await ecrire(env, "profil:" + c.uid, { pseudo: (c.nom || "Joueur").slice(0, 24), avatar: c.avatar || "", bio: "", createdAt: Date.now() });
   c.profilExiste = true;
 }
 
@@ -228,6 +228,32 @@ async function route(req, env) {
     await assurerProfil(env, c);
     return { ok: true };
   }
+  if (m === "GET" && r === "admin" && a === "utilisateurs") {
+    await exigerAdmin(req, env);
+    const url = new URL(req.url);
+    const curseur = url.searchParams.get("cursor") || undefined;
+    const page = await env.DATA.list({ prefix: "profil:", limit: 50, cursor: curseur });
+    const admins = liste(env.ADMINS);
+    const utilisateurs = [];
+    for (const cle of page.keys) {
+      const id = cle.name.slice("profil:".length);
+      const profil = await lire(env, cle.name, {});
+      const identites = [...new Set([id, ...(await lire(env, "idents:" + id))])];
+      utilisateurs.push({
+        id,
+        pseudo: profil.pseudo || "Joueur",
+        avatar: profil.avatar || "",
+        bio: profil.bio || "",
+        inscritLe: profil.createdAt || null,
+        fournisseurs: [...new Set(identites.map((x) => x.split(":")[0]))],
+        admin: identites.some((x) => admins.includes(x.toLowerCase())),
+        abonnements: (await lire(env, "suit:" + id)).length,
+        abonnes: (await lire(env, "abonnes:" + id)).length,
+        publications: (await lire(env, "posts:" + id)).length,
+      });
+    }
+    return { utilisateurs, curseur: page.list_complete ? null : page.cursor };
+  }
   if (m === "GET" && r === "moi") {
     const c = await exiger(req, env);
     await assurerProfil(env, c);
@@ -250,7 +276,8 @@ async function route(req, env) {
       if (pseudo.length < 3) throw new Erreur("Le pseudo doit faire au moins 3 caractères.", 400);
       const avatar = String(b.avatar || "");
       if (avatar && (!IMG_RE.test(avatar) || avatar.length > 60000)) throw new Erreur("Photo invalide ou trop lourde.", 400);
-      await ecrire(env, "profil:" + c.uid, { pseudo, avatar, bio: txt(b.bio, 160) });
+      const precedent = await lire(env, "profil:" + c.uid, {});
+      await ecrire(env, "profil:" + c.uid, { pseudo, avatar, bio: txt(b.bio, 160), ...(precedent.createdAt ? { createdAt: precedent.createdAt } : {}) });
       return { ok: true };
     }
   }
@@ -508,12 +535,27 @@ async function route(req, env) {
     }
     if (b.chatbot && typeof b.chatbot.actif === "boolean") out.chatbot = { actif: b.chatbot.actif };
     if (b.partenaires && typeof b.partenaires.afficher === "boolean") out.partenaires = { afficher: b.partenaires.afficher };
+    if (b.reglagesParDefaut && typeof b.reglagesParDefaut === "object") {
+      out.reglagesParDefaut = { ...(out.reglagesParDefaut || {}) };
+      if (b.reglagesParDefaut.theme !== undefined) {
+        if (!["normal", "sombre"].includes(b.reglagesParDefaut.theme)) throw new Erreur("Thème par défaut invalide.", 400);
+        out.reglagesParDefaut.theme = b.reglagesParDefaut.theme;
+      }
+      if (typeof b.reglagesParDefaut.musique === "boolean") out.reglagesParDefaut.musique = b.reglagesParDefaut.musique;
+    }
     if (typeof b.logo === "string") {
       if (b.logo && (!IMG_RE.test(b.logo) || b.logo.length > 300000)) throw new Erreur("Logo invalide ou trop lourd (environ 200 Ko maximum).", 400);
       out.logo = b.logo;
     }
     if (typeof b.musique === "object" && b.musique) {
-      out.musique = { volume: Math.max(0, Math.min(1, Number(b.musique.volume) || 0)) };
+      out.musique = { ...(out.musique || {}) };
+      if (b.musique.volume !== undefined) out.musique.volume = Math.max(0, Math.min(1, Number(b.musique.volume) || 0));
+      if (b.musique.fichier !== undefined) {
+        if (typeof b.musique.fichier !== "string" || !/^(?:assets\/[A-Za-z0-9_-]+\/)*[A-Za-z0-9_-]+\.mp3$/.test(b.musique.fichier)) {
+          throw new Erreur("Fichier de musique invalide.", 400);
+        }
+        out.musique.fichier = b.musique.fichier;
+      }
     }
     await ecrire(env, "reglages", out);
     return { ok: true };

@@ -238,8 +238,7 @@
     var moiP = K.connecte() ? K.appel("GET", "/api/moi").then(function (d) { etat.moi = d; }, function () { etat.moi = null; }) : (etat.moi = null, Promise.resolve());
     return moiP.then(function () {
       var admin = !!(etat.moi && etat.moi.admin);
-      $('[data-section="admin"]').hidden = !admin;
-      $('[data-bloc="admin"]').hidden = !admin;
+      $("#pr-lien-admin").hidden = !admin;
       rendreConnexions();
       rendreAffichage();
       return remplirCompte();

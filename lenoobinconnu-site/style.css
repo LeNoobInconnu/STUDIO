@@ -454,9 +454,9 @@ html.menu-ouvert .chat-fab, html.menu-ouvert .chat-panel { display: none; }
 .pr-hero .pr-retour { display: inline-block; margin-top: 14px; text-decoration: none; font-weight: 600; }
 .pr-layout { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 24px; align-items: start; margin-top: 8px; }
 .pr-nav { display: grid; gap: 6px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 8px; position: sticky; top: 90px; }
-.pr-nav button { text-align: left; border: 0; border-radius: 10px; background: transparent; color: var(--fg); padding: 12px 14px; font: 600 .95rem var(--font-body); cursor: pointer; }
+.pr-nav button, .pr-nav-lien { text-align: left; border: 0; border-radius: 10px; background: transparent; color: var(--fg); padding: 12px 14px; font: 600 .95rem var(--font-body); cursor: pointer; text-decoration: none; }
 .pr-nav button[aria-current="true"] { background: var(--btn-bg); color: var(--btn-fg); }
-.pr-nav button[hidden] { display: none; }
+.pr-nav button[hidden], .pr-nav-lien[hidden] { display: none; }
 .pr-contenu { display: grid; gap: 16px; min-width: 0; }
 .pr-card { display: grid; gap: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 22px; }
 .pr-card[hidden] { display: none; }
@@ -486,7 +486,7 @@ html[data-theme="dark"] .pr-msg.err { background: #3a1717; color: #feb2b2; }
 @media (max-width: 860px) {
   .pr-layout { grid-template-columns: minmax(0, 1fr); }
   .pr-nav { position: static; grid-auto-flow: column; grid-auto-columns: max-content; overflow-x: auto; }
-  .pr-nav button { white-space: nowrap; }
+  .pr-nav button, .pr-nav-lien { white-space: nowrap; }
   .pr-ligne { grid-template-columns: auto 1fr; }
   .pr-actions { grid-column: 1 / -1; justify-content: flex-start; }
 }
