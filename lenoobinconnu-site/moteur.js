@@ -498,6 +498,93 @@
 
   document.addEventListener("DOMContentLoaded", function () {
     var page = document.body.getAttribute("data-page");
+    function initialiserAnalytics() {
+      var api = SITE.actualites && SITE.actualites.urlApi;
+      if (!api || page === "admin") return;
+      var sessionId;
+      try {
+        sessionId = sessionStorage.getItem("lni_analytics_session");
+        if (!sessionId) {
+          var valeurs = new Uint8Array(16);
+          if (!window.crypto || !window.crypto.getRandomValues) throw new Error("Générateur aléatoire indisponible.");
+          window.crypto.getRandomValues(valeurs);
+          valeurs[6] = (valeurs[6] & 15) | 64;
+          valeurs[8] = (valeurs[8] & 63) | 128;
+          var hex = Array.prototype.map.call(valeurs, function (x) { return x.toString(16).padStart(2, "0"); }).join("");
+          sessionId = hex.slice(0, 8) + "-" + hex.slice(8, 12) + "-" + hex.slice(12, 16) + "-" + hex.slice(16, 20) + "-" + hex.slice(20);
+          sessionStorage.setItem("lni_analytics_session", sessionId);
+        }
+      } catch (e) {
+        console.warn("Statistiques désactivées : impossible de créer une session anonyme.", e);
+        return;
+      }
+
+      var url = api.replace(/\/+$/, "") + "/api/analytics";
+      var viewId = "";
+      var actifDepuis = document.visibilityState === "hidden" ? 0 : Date.now();
+      var dureeVisible = 0;
+      var averti = false;
+      function envoyer(donnees, keepalive) {
+        return fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(Object.assign({ sessionId: sessionId }, donnees)),
+          keepalive: !!keepalive
+        }).then(function (reponse) {
+          if (!reponse.ok) throw new Error("HTTP " + reponse.status);
+          return reponse.json();
+        }).catch(function (erreur) {
+          if (!averti) {
+            averti = true;
+            console.warn("Les statistiques anonymes n’ont pas pu être envoyées.", erreur);
+          }
+          return null;
+        });
+      }
+      function enregistrerDuree(keepalive) {
+        if (actifDepuis) {
+          dureeVisible += Date.now() - actifDepuis;
+          actifDepuis = 0;
+        }
+        if (viewId && dureeVisible > 0) {
+          envoyer({ action: "duration", viewId: viewId, secondes: Math.floor(dureeVisible / 1000) }, keepalive);
+        }
+      }
+
+      function classerSource() {
+        if (!document.referrer) return "Accès direct";
+        try {
+          var referent = new URL(document.referrer);
+          if (referent.origin === location.origin) return "Navigation interne";
+          var hote = referent.hostname.toLowerCase();
+          if (/google\.|bing\.|yahoo\.|duckduckgo\.|qwant\./.test(hote)) return "Moteur de recherche";
+          if (/facebook\.|instagram\.|tiktok\.|youtube\.|discord\.|twitter\.|x\.com/.test(hote)) return "Réseau social";
+          return "Site référent";
+        } catch (e) { return "Site référent"; }
+      }
+
+      envoyer({ action: "view", path: location.pathname, source: classerSource() }).then(function (reponse) {
+        if (reponse) viewId = reponse.viewId;
+      });
+      var heartbeat = window.setInterval(function () {
+        if (document.visibilityState !== "hidden") envoyer({ action: "heartbeat" });
+      }, 45000);
+      document.addEventListener("visibilitychange", function () {
+        if (document.visibilityState === "hidden") {
+          enregistrerDuree(true);
+          envoyer({ action: "leave" }, true);
+        } else {
+          actifDepuis = Date.now();
+          envoyer({ action: "heartbeat" });
+        }
+      });
+      window.addEventListener("pagehide", function () {
+        window.clearInterval(heartbeat);
+        enregistrerDuree(true);
+        envoyer({ action: "leave" }, true);
+      });
+    }
+    initialiserAnalytics();
     appliquerSeo();
     var destinations = {
       "index.html": "accueil", "programme.html": "programme", "series.html": "series",

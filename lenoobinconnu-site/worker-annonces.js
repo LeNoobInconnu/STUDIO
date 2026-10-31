@@ -17,6 +17,12 @@ const ROUTES = {
   fil: "fil.html", affiliation: "Affiliation.html", contact: "contact.html", mentions: "mentions.html",
   parametres: "parametres.html",
 };
+const ANALYTICS_PATHS = {
+  "/": "accueil", "/index.html": "accueil", "/programme.html": "programme", "/series.html": "series",
+  "/communaute.html": "communaute", "/fil.html": "fil", "/affiliation.html": "affiliation",
+  "/contact.html": "contact", "/mentions.html": "mentions", "/profil.html": "profil",
+  "/parametres.html": "parametres",
+};
 
 export default {
   async fetch(req, env) {
@@ -152,6 +158,91 @@ async function assurerProfil(env, c) {
 const lire = async (env, k, def = []) => (await env.DATA.get(k, "json")) ?? def;
 const ecrire = (env, k, v) => env.DATA.put(k, JSON.stringify(v));
 
+function classerVisiteur(req, sourceDemandee) {
+  const ua = (req.headers.get("User-Agent") || "").toLowerCase();
+  const device = /ipad|tablet|kindle/.test(ua) ? "Tablette" : (/mobile|iphone|android/.test(ua) ? "Mobile" : "Ordinateur");
+  const os = /windows/.test(ua) ? "Windows" : (/android/.test(ua) ? "Android" :
+    (/iphone|ipad|ios/.test(ua) ? "iOS" : (/mac os|macintosh/.test(ua) ? "macOS" : (/cros/.test(ua) ? "ChromeOS" : (/linux/.test(ua) ? "Linux" : "Autre")))));
+  const browser = /edg\//.test(ua) ? "Edge" : (/opr\//.test(ua) ? "Opera" :
+    (/firefox\//.test(ua) ? "Firefox" : (/chrome\//.test(ua) ? "Chrome" : (/safari\//.test(ua) ? "Safari" : "Autre"))));
+  const sources = ["Accès direct", "Navigation interne", "Moteur de recherche", "Réseau social", "Site référent"];
+  const source = sources.includes(sourceDemandee) ? sourceDemandee : "Accès direct";
+  const paysBrut = req.cf && typeof req.cf.country === "string" ? req.cf.country.toUpperCase() : "";
+  const pays = /^[A-Z]{2}$/.test(paysBrut) ? paysBrut : "Autre/Inconnu";
+  return { device, os, browser, source, pays };
+}
+
+async function lireStatistiques(env, jours) {
+  const aujourdhui = new Date();
+  const debut = new Date(aujourdhui.getTime() - (jours - 1) * 86400000).toISOString().slice(0, 10);
+  const parJour = {};
+  const parPage = {}, sources = {}, appareils = {}, systemes = {}, navigateurs = {}, pays = {};
+  let cles = [];
+  let curseur;
+  const MAX_EVENEMENTS = 500;
+  do {
+    const page = await env.DATA.list({ prefix: "analytics:event:", limit: 1000, cursor: curseur });
+    for (const cle of page.keys) {
+      const date = cle.name.slice("analytics:event:".length, "analytics:event:".length + 10);
+      if (date < debut) continue;
+      cles.push(cle.name);
+    }
+    if (page.list_complete) break;
+    curseur = page.cursor;
+  } while (curseur);
+  const limite = cles.length > MAX_EVENEMENTS;
+  cles = cles.sort().slice(-MAX_EVENEMENTS);
+
+  let total = 0, tempsTotal = 0, vuesAvecDuree = 0;
+  for (let i = 0; i < cles.length; i += 50) {
+    const evenements = await Promise.all(cles.slice(i, i + 50).map((cle) => lire(env, cle, null)));
+    for (const event of evenements) {
+      if (!event) continue;
+      total++;
+      const date = event.date;
+      parJour[date] = (parJour[date] || 0) + 1;
+      parPage[event.page] = (parPage[event.page] || 0) + 1;
+      sources[event.source] = (sources[event.source] || 0) + 1;
+      appareils[event.device] = (appareils[event.device] || 0) + 1;
+      systemes[event.os] = (systemes[event.os] || 0) + 1;
+      navigateurs[event.browser] = (navigateurs[event.browser] || 0) + 1;
+      pays[event.pays || "Autre/Inconnu"] = (pays[event.pays || "Autre/Inconnu"] || 0) + 1;
+      if (event.secondes > 0) {
+        tempsTotal += event.secondes;
+        vuesAvecDuree++;
+      }
+    }
+  }
+
+  const online = await lireSessionsActives(env);
+  const trier = (obj) => Object.keys(obj).map((nom) => ({ nom, total: obj[nom] })).sort((a, b) => b.total - a.total);
+  const joursList = [];
+  for (let i = jours - 1; i >= 0; i--) {
+    const date = new Date(aujourdhui.getTime() - i * 86400000).toISOString().slice(0, 10);
+    joursList.push({ date, total: parJour[date] || 0 });
+  }
+  return {
+    jours,
+    visites: total,
+    visiteursEnLigne: online.visiteursEnLigne,
+    sessionsEnLigneLimitees: online.limiteAtteinte,
+    tempsMoyenSecondes: vuesAvecDuree ? Math.round(tempsTotal / vuesAvecDuree) : 0,
+    pages: trier(parPage),
+    sources: trier(sources),
+    appareils: trier(appareils),
+    systemes: trier(systemes),
+    navigateurs: trier(navigateurs),
+    pays: trier(pays),
+    statistiquesJournalieres: joursList,
+    donneesLimitees: limite,
+  };
+}
+
+async function lireSessionsActives(env) {
+  const page = await env.DATA.list({ prefix: "analytics:online:", limit: 1000 });
+  return { visiteursEnLigne: page.keys.length, limiteAtteinte: !page.list_complete };
+}
+
 async function infos(env, uids) {
   const out = {};
   for (const u of [...new Set(uids)]) {
@@ -254,6 +345,62 @@ async function route(req, env) {
   const m = req.method, r = p[1], a = p[2], b2 = p[3], c2 = p[4];
   const corps = async () => { try { return await req.json(); } catch (e) { throw new Erreur("Requête invalide.", 400); } };
   for (const x of [a, b2, c2]) if (x !== undefined && !ID_OK.test(x) && !TID_OK.test(x)) throw new Erreur("Requête invalide.", 400);
+
+  if (m === "POST" && r === "analytics") {
+    const origine = (req.headers.get("Origin") || "").toLowerCase();
+    if (!origine || !liste(env.ORIGINES).includes(origine)) throw new Erreur("Origine non autorisée.", 403);
+    const taille = Number(req.headers.get("Content-Length") || 0);
+    if (taille > 2048) throw new Erreur("Requête trop volumineuse.", 413);
+    const b = await corps();
+    if (!b || !/^[0-9a-f-]{36}$/i.test(b.sessionId || "")) throw new Erreur("Session invalide.", 400);
+    const sessionId = b.sessionId.toLowerCase();
+    const onlineKey = "analytics:online:" + sessionId;
+    if (b.action === "leave") {
+      await env.DATA.delete(onlineKey);
+      return { ok: true };
+    }
+    if (b.action === "heartbeat") {
+      await env.DATA.put(onlineKey, "1", { expirationTtl: 120 });
+      return { ok: true };
+    }
+    if (b.action === "view") {
+      const path = String(b.path || "").toLowerCase();
+      const page = ANALYTICS_PATHS[path];
+      if (!page) throw new Erreur("Page non suivie.", 400);
+      const date = new Date().toISOString().slice(0, 10);
+      const id = date + "_" + crypto.randomUUID();
+      const categories = classerVisiteur(req, b.source);
+      await env.DATA.put("analytics:event:" + date + ":" + id.slice(11), JSON.stringify({
+        date, page, secondes: 0, ...categories,
+      }), { expirationTtl: 60 * 60 * 24 * 90 });
+      await env.DATA.put(onlineKey, "1", { expirationTtl: 120 });
+      return { ok: true, viewId: id };
+    }
+    if (b.action === "duration") {
+      if (!/^\d{4}-\d{2}-\d{2}_[0-9a-f-]{36}$/i.test(b.viewId || "")) throw new Erreur("Visite invalide.", 400);
+      const date = b.viewId.slice(0, 10);
+      const secondes = Math.max(0, Math.min(7200, Math.floor(Number(b.secondes) || 0)));
+      const key = "analytics:event:" + date + ":" + b.viewId.slice(11);
+      const event = await lire(env, key, null);
+      if (event) {
+        event.secondes = Math.max(Number(event.secondes) || 0, secondes);
+        await env.DATA.put(key, JSON.stringify(event), { expirationTtl: 60 * 60 * 24 * 90 });
+      }
+      return { ok: true };
+    }
+    throw new Erreur("Action inconnue.", 400);
+  }
+
+  if (m === "GET" && r === "admin" && a === "analytics") {
+    await exigerAdmin(req, env);
+    const jours = Number(new URL(req.url).searchParams.get("jours") || 7);
+    if (![7, 30, 90].includes(jours)) throw new Erreur("Période invalide.", 400);
+    return lireStatistiques(env, jours);
+  }
+  if (m === "GET" && r === "admin" && a === "analytics-live") {
+    await exigerAdmin(req, env);
+    return lireSessionsActives(env);
+  }
 
   /* Contenu public */
   if (m === "GET" && r === "contenu") {

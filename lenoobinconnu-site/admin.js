@@ -80,6 +80,7 @@
         '<div class="adm-section-heading"><h2>Administration du site</h2><p>Chaque réglage se trouve dans sa page dédiée.</p></div>' +
         '<div class="adm-grid adm-tool-grid">' +
           '<article class="adm-card adm-tool-card"><h3>' + ICO.user + 'Utilisateurs</h3><p>Consulter les comptes et gérer les rôles, permissions et suspensions.</p><a class="adm-action" href="admin-utilisateurs.html">Gérer les utilisateurs</a></article>' +
+          '<article class="adm-card adm-tool-card"><h3>' + ICO.fil + 'Statistiques</h3><p>Consulter les visites, les pages populaires et les catégories d’audience anonymes.</p><a class="adm-action" href="admin-analytics.html">Voir les statistiques</a></article>' +
           '<article class="adm-card adm-tool-card"><h3>' + ICO.set + 'Réglages du site</h3><p>Configurer la bannière, la popup, le message d’accueil et le SEO.</p><a class="adm-action" href="admin-site.html">Ouvrir les réglages</a></article>' +
           '<article class="adm-card adm-tool-card"><h3>' + ICO.maint + 'Pages et maintenance</h3><p>Gérer la disponibilité, la maintenance et les redirections des pages.</p><a class="adm-action" href="admin-maintenance.html">Gérer les pages</a></article>' +
           '<article class="adm-card adm-tool-card"><h3>' + ICO.theme + 'Thème par défaut</h3><p>Choisir le thème proposé par défaut aux visiteurs.</p><a class="adm-action" href="admin-theme.html">Régler le thème</a></article>' +

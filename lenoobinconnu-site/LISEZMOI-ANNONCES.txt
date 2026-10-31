@@ -69,3 +69,17 @@ MISE A JOUR 3 (utilisateurs et réglages par défaut de l'administration)
 - Pour proposer d'autres musiques, ajoute les fichiers .mp3 dans assets, puis ajoute leur nom et
   chemin dans musiquesDisponibles dans site.js. Le choix de l'admin concerne le réglage par défaut;
   les visiteurs qui ont déjà choisi leurs préférences les conservent.
+
+MISE A JOUR 4 (statistiques anonymes)
+- Redéploie worker-annonces.js sur Cloudflare et publie admin-analytics.html, admin-analytics.js,
+  admin-pages.css, admin.js, admin.html, les pages admin avec leur menu mis à jour, moteur.js et
+  mentions.html.
+- Aucun nouvel identifiant, secret ou binding n'est nécessaire. Vérifie que ORIGINES contient
+  l'origine exacte du site (par exemple https://lenoobinconnu.github.io, sans slash final).
+- « Statistiques » dans le menu admin affiche les vues, sessions actives estimées (actualisées
+  automatiquement toutes les 30 secondes), durée visible moyenne, pages, sources générales,
+  pays estimé (sans ville ni coordonnées), catégories d'appareils, systèmes et navigateurs.
+- Les données sont anonymisées et supprimées après 90 jours. Pour limiter les lectures du KV,
+  au maximum 500 vues sont analysées par période ; la page le signale si cette limite est atteinte.
+  Les totaux ne sont donc pas complets dans ce cas.
+- La politique de confidentialité a été complétée dans mentions.html.
