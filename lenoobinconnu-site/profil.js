@@ -23,13 +23,22 @@
   function dessiner(p, publications) {
     document.title = p.pseudo + " - LeNoobInconnu";
     titre.textContent = p.pseudo;
+    var nomsRoles = { utilisateur: "Utilisateur", moderateur: "Modérateur", createur: "Créateur", vip: "VIP", premium: "Premium", personnalise: "Personnalisé" };
+    var badges = (p.badges || []).map(function (badge) {
+      return '<span class="profil-badge">' + K.esc(badge) + '</span>';
+    }).join("");
+    var roles = (p.roles || []).filter(function (role) { return nomsRoles[role] && role !== "utilisateur"; }).map(function (role) {
+      return '<span class="profil-badge profil-role">' + K.esc(nomsRoles[role]) + '</span>';
+    }).join("");
+    if (p.verifie) badges = '<span class="profil-badge profil-verifie" title="Compte vérifié">✓ Compte vérifié</span>' + badges;
     var action;
     if (p.estMoi) action = '<a class="mini plein" href="parametres.html#compte">Modifier mon profil</a>';
     else if (p.connecte) action = '<button class="mini plein" type="button" data-suivre>' + (p.jeSuis ? "Ne plus suivre" : "Suivre") + '</button>';
     else action = '<button class="mini plein" type="button" data-login>Connecte-toi pour suivre</button>';
     entete.innerHTML =
-      '<div class="pe-haut">' + K.avatar(p.avatar, "pe-photo") +
-        '<div class="pe-infos"><h2>' + K.esc(p.pseudo) + '</h2>' + (p.bio ? '<p class="pe-bio">' + K.esc(p.bio) + '</p>' : "") + '</div>' + action + '</div>' +
+      '<div class="pe-haut" style="--profil-couleur:' + K.esc(p.couleur || "#e84b3c") + '">' + K.avatar(p.avatar, "pe-photo") +
+        '<div class="pe-infos"><h2>' + K.esc(p.pseudo) + '</h2>' + (p.bio ? '<p class="pe-bio">' + K.esc(p.bio) + '</p>' : "") +
+        (badges || roles ? '<div class="profil-badges">' + badges + roles + '</div>' : "") + '</div>' + action + '</div>' +
       '<dl class="pe-stats">' +
         '<div><dt>Abonnés</dt><dd>' + p.abonnes + '</dd></div>' +
         '<div><dt>Abonnements</dt><dd>' + p.abonnements + '</dd></div>' +

@@ -10,6 +10,8 @@
   var utilisateursCharges = [];
   var chargementExport = false;
   var chargementRecherche = false;
+  var avatarsActuels = {};
+  var avatarsModifies = {};
   var dateFR = function (t) {
     try { return new Date(t).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }); }
     catch (e) { return "Date inconnue"; }
@@ -46,6 +48,8 @@
       return;
     }
     liste.insertAdjacentHTML("beforeend", utilisateurs.map(function (u) {
+      avatarsActuels[u.id] = u.avatar || "";
+      delete avatarsModifies[u.id];
       var fournisseurs = (u.fournisseurs || []).join(", ") || "Non précisé";
       var date = u.inscritLe ? dateFR(u.inscritLe) : "Date d’inscription non renseignée";
       var comptes = u.comptes || [];
@@ -56,12 +60,25 @@
         return c.fournisseur + (c.nom ? " : " + c.nom : "") + (c.identifiant ? " · ID " + c.identifiant : "");
       }).join(" | ") || "Aucun fournisseur externe lié";
       var role = u.role || "utilisateur";
+      var roles = Array.isArray(u.roles) && u.roles.length ? u.roles : [role];
       var permissions = u.permissions || {};
       var resume = [u.pseudo, u.id, u.bio, fournisseurs, identites, emails, u.admin ? "admin" : ""].join(" ").toLowerCase();
       var dernier = u.derniereActivite ? new Date(u.derniereActivite).toLocaleString("fr-FR") : "Aucune activité enregistrée";
-      var etat = u.admin ? "Administrateur protégé" : (u.banni ? "Banni" :
+      var etat = u.admin ? "Administrateur protégé" : (u.banni ? "Banni définitivement" :
         (u.suspenduJusqua > Date.now() ? "Suspendu jusqu’au " + new Date(u.suspenduJusqua).toLocaleString("fr-FR") : "Actif"));
-      return '<li data-q="' + K.esc(resume) + '" data-provider="' + K.esc((u.fournisseurs || []).join(",")) + '" data-role="' + K.esc(role) + '" data-verified="' + (comptes.some(function (c) { return c.verifie; }) ? "true" : "false") + '">' + K.avatar(u.avatar, "av") +
+      if (!u.admin && u.commentairesMutesJusqua > Date.now()) etat += " · Commentaires muets jusqu’au " + new Date(u.commentairesMutesJusqua).toLocaleString("fr-FR");
+      if (!u.admin && u.contenuBloqueJusqua > Date.now()) etat += " · Publications bloquées jusqu’au " + new Date(u.contenuBloqueJusqua).toLocaleString("fr-FR");
+      var historiqueSanctions = (u.sanctions || []).length ? '<details><summary>Casier des sanctions (' + u.sanctions.length + ')</summary><ul class="adm-sanction-history">' +
+        u.sanctions.map(function (s) {
+          return '<li><strong>' + K.esc(String(s.type || "Sanction").replace(/_/g, " ")) + '</strong> · ' +
+            K.esc(new Date(s.date).toLocaleString("fr-FR")) + '<br>' + K.esc(s.raison || "Motif non renseigné") +
+            (s.admin ? '<br><small>Admin : ' + K.esc(s.admin) + '</small>' : "") + '</li>';
+        }).join("") + '</ul></details>' : "";
+      var rolesOptions = [
+        ["utilisateur", "Utilisateur"], ["moderateur", "Modérateur"], ["createur", "Créateur"],
+        ["vip", "VIP"], ["premium", "Premium"], ["personnalise", "Personnalisé"]
+      ];
+      return '<li data-q="' + K.esc(resume) + '" data-provider="' + K.esc((u.fournisseurs || []).join(",")) + '" data-role="' + K.esc(role) + '" data-verified="' + (u.verifie || comptes.some(function (c) { return c.verifie; }) ? "true" : "false") + '">' + K.avatar(u.avatar, "av") +
         '<div class="txt"><strong>' + K.esc(u.pseudo || "Joueur") + (u.admin ? " · Administrateur" : "") + '</strong>' +
         '<span>' + K.esc(u.bio || "Aucune bio") + '</span>' +
         '<small>' + K.esc(fournisseurs) + ' · ' + K.esc(date) + '</small>' +
@@ -69,16 +86,46 @@
         '<small>' + K.esc(identites) + '</small>' +
         '<small>' + K.esc(emails) + '</small><small>Dernière activité : ' + K.esc(dernier) + ' · ' + K.esc(etat) + '</small>' +
         '<small>ID : ' + K.esc(u.id) + '</small>' +
+        historiqueSanctions +
         (u.historique && u.historique.length ? '<details><summary>Historique des connexions (' + u.historique.length + ')</summary><small>' +
           u.historique.map(function (x) { return K.esc(new Date(x.date).toLocaleString("fr-FR") + " · " + x.fournisseur); }).join("<br>") +
           '</small></details>' : '') + '</div>' +
         (u.admin ? '' : '<div class="adm-user-controls" data-user="' + K.esc(u.id) + '">' +
-          '<label class="adm-page-field">Rôle<select data-role-select><option value="utilisateur"' + (role === "utilisateur" ? " selected" : "") + '>Utilisateur</option><option value="moderateur"' + (role === "moderateur" ? " selected" : "") + '>Modérateur</option><option value="personnalise"' + (role === "personnalise" ? " selected" : "") + '>Personnalisé</option></select></label>' +
+          '<details class="adm-user-profile"><summary>Profil, rôles et notes privées</summary>' +
+          '<label class="adm-page-field">Pseudo<input data-profile-pseudo maxlength="24" minlength="3" value="' + K.esc(u.pseudo || "") + '"></label>' +
+          '<label class="adm-page-field">Adresse HTTPS de l’avatar<input data-profile-avatar-url type="url" maxlength="2048" placeholder="https://..." value="' + K.esc(/^https:\/\//i.test(u.avatar || "") ? u.avatar : "") + '"></label>' +
+          '<label class="adm-page-field">Téléverser un avatar<input data-profile-avatar-file type="file" accept="image/*"></label>' +
+          '<img class="adm-user-avatar-preview" data-profile-avatar-preview src="' + K.esc(u.avatar || "") + '" alt="Aperçu de l’avatar"' + (u.avatar ? "" : " hidden") + '>' +
+          '<button class="mini" type="button" data-profile-avatar-clear>Retirer l’avatar</button>' +
+          '<label class="adm-page-field">Présentation<textarea data-profile-bio rows="3" maxlength="160">' + K.esc(u.bio || "") + '</textarea></label>' +
+          '<label class="adm-page-field">Couleur du profil<input data-profile-color type="color" value="' + K.esc(u.couleur || "#e84b3c") + '"></label>' +
+          '<label class="adm-user-check"><input data-profile-verified type="checkbox"' + (u.verifie ? " checked" : "") + '> Compte vérifié par l’administration</label>' +
+          '<label class="adm-page-field">Badges publics (5 maximum, séparés par des virgules)<input data-profile-badges maxlength="129" value="' + K.esc((u.badges || []).join(", ")) + '" placeholder="Ex. Créateur, Bêta-testeur"></label>' +
+          '<label class="adm-page-field">Rôles (sélection multiple)<select data-roles-select multiple size="4">' +
+          rolesOptions.map(function (option) { return '<option value="' + option[0] + '"' + (roles.indexOf(option[0]) >= 0 ? " selected" : "") + '>' + option[1] + '</option>'; }).join("") +
+          '</select></label><small>Les rôles servent d’étiquettes de profil ; les permissions de modération se règlent séparément.</small>' +
+          '<button class="mini" type="button" data-user-action="profile-save">Enregistrer le profil</button>' +
+          '<a class="mini" target="_blank" rel="noopener" href="profil.html?id=' + encodeURIComponent(u.id) + '">Voir le profil public</a>' +
+          '<label class="adm-page-field">Notes privées, visibles uniquement par les administrateurs<textarea data-private-notes rows="3" maxlength="2000">' + K.esc(u.notesPrivees || "") + '</textarea></label>' +
+          '<button class="mini" type="button" data-user-action="notes-save">Enregistrer les notes privées</button></details>' +
           '<label><input type="checkbox" data-perm="gererPublications"' + (permissions.gererPublications ? " checked" : "") + '> Gérer les publications</label>' +
           '<label><input type="checkbox" data-perm="gererCommentaires"' + (permissions.gererCommentaires ? " checked" : "") + '> Gérer les commentaires</label>' +
-          '<div class="adm-user-actions"><button class="mini" type="button" data-user-action="save">Enregistrer rôle et permissions</button>' +
-          '<button class="mini danger" type="button" data-user-action="ban">' + (u.banni ? "Débannir" : "Bannir") + '</button>' +
-          '<button class="mini" type="button" data-user-action="suspend">' + (u.suspenduJusqua > Date.now() ? "Lever la suspension" : "Suspendre 7 jours") + '</button></div></div>') + '</li>';
+          '<div class="adm-user-actions"><button class="mini" type="button" data-user-action="save">Enregistrer rôle et permissions</button></div>' +
+          '<details class="adm-user-moderation"><summary>Modération et sanctions</summary>' +
+          '<label class="adm-page-field">Durée<select data-sanction-duration><option value="86400">24 heures</option><option value="604800" selected>7 jours</option><option value="2592000">30 jours</option><option value="31536000">365 jours</option></select></label>' +
+          '<label class="adm-page-field">Motif obligatoire<textarea data-sanction-reason rows="2" maxlength="300" placeholder="Indique la raison de cette action"></textarea></label>' +
+          '<div class="adm-user-actions">' +
+          '<button class="mini" type="button" data-sanction="avertissement">Avertir</button>' +
+          '<button class="mini" type="button" data-sanction="suspension">' + (u.suspenduJusqua > Date.now() ? "Prolonger la suspension" : "Suspendre le compte") + '</button>' +
+          (u.banni
+            ? '<button class="mini" type="button" data-sanction="lever_bannissement">Lever le bannissement</button>'
+            : '<button class="mini danger" type="button" data-sanction="bannissement">Bannir définitivement</button>') +
+          (u.suspenduJusqua > Date.now() ? '<button class="mini" type="button" data-sanction="lever_suspension">Lever la suspension</button>' : "") +
+          '<button class="mini" type="button" data-sanction="mute_commentaires">' + (u.commentairesMutesJusqua > Date.now() ? "Prolonger le mute commentaires" : "Muter les commentaires") + '</button>' +
+          '<button class="mini" type="button" data-sanction="blocage_contenu">' + (u.contenuBloqueJusqua > Date.now() ? "Prolonger le blocage publications" : "Bloquer les publications") + '</button>' +
+          (u.commentairesMutesJusqua > Date.now() ? '<button class="mini" type="button" data-sanction="lever_mute_commentaires">Lever le mute commentaires</button>' : "") +
+          (u.contenuBloqueJusqua > Date.now() ? '<button class="mini" type="button" data-sanction="lever_blocage_contenu">Lever le blocage des publications</button>' : "") +
+          '</div><p class="adm-user-moderation-note">Les messages privés ne sont pas disponibles sur ce site. Les actions de modération sont appliquées par le serveur et consignées dans le casier.</p></details></div>') + '</li>';
     }).join(""));
   }
 
@@ -189,7 +236,36 @@
     });
     document.getElementById("adm-users-list").addEventListener("click", function (e) {
       var bouton = e.target.closest("[data-user-action]");
-      if (!bouton) return;
+      var actionSanction = e.target.closest("[data-sanction]");
+      if (!bouton && !actionSanction) return;
+      if (actionSanction) {
+        var blocSanction = actionSanction.closest("[data-user]");
+        var uidSanction = blocSanction.getAttribute("data-user");
+        var typeSanction = actionSanction.getAttribute("data-sanction");
+        var raison = blocSanction.querySelector("[data-sanction-reason]").value.trim();
+        if (!raison) {
+          afficherMessage(document.getElementById("adm-users-message"), "Indique le motif avant d’appliquer la sanction.", false);
+          blocSanction.querySelector("[data-sanction-reason]").focus();
+          return;
+        }
+        if (typeSanction === "bannissement" &&
+            !confirm("Bannir définitivement cet utilisateur ? Il ne pourra plus effectuer d’actions avec son compte.")) return;
+        actionSanction.disabled = true;
+        K.appel("PATCH", "/api/admin/utilisateurs/" + encodeURIComponent(uidSanction), {
+          sanction: {
+            type: typeSanction,
+            raison: raison,
+            duree: Number(blocSanction.querySelector("[data-sanction-duration]").value)
+          }
+        }).then(function () {
+          afficherMessage(document.getElementById("adm-users-message"), "Sanction enregistrée et appliquée.", true);
+          utilisateursCharges = [];
+          return chargerUtilisateurs(null, false);
+        }, function (erreur) {
+          afficherMessage(document.getElementById("adm-users-message"), "Sanction impossible : " + erreur.message, false);
+        }).then(function () { actionSanction.disabled = false; });
+        return;
+      }
       var bloc = bouton.closest("[data-user]");
       var uid = bloc.getAttribute("data-user");
       var action = bouton.getAttribute("data-user-action");
@@ -197,20 +273,41 @@
       if (action === "save") {
         var permissions = {};
         bloc.querySelectorAll("[data-perm]").forEach(function (input) { permissions[input.getAttribute("data-perm")] = input.checked; });
-        demande = { role: bloc.querySelector("[data-role-select]").value, permissions: permissions };
-      } else if (action === "ban") {
-        var utilisateur = utilisateursCharges.find(function (u) { return u.id === uid; });
-        var banni = !(utilisateur && utilisateur.banni);
-        if (banni && !confirm("Bannir cet utilisateur ? Il ne pourra plus effectuer d’actions avec son compte.")) return;
-        demande = { banni: banni, suspenduJusqua: 0 };
-      } else {
-        var compte = utilisateursCharges.find(function (u) { return u.id === uid; });
-        demande = compte && compte.suspenduJusqua > Date.now() ? { suspenduJusqua: 0 } :
-          { suspenduJusqua: Date.now() + 7 * 24 * 60 * 60 * 1000 };
+        var rolesSelectionnes = Array.prototype.map.call(bloc.querySelector("[data-roles-select]").selectedOptions, function (option) { return option.value; });
+        if (!rolesSelectionnes.length) {
+          afficherMessage(document.getElementById("adm-users-message"), "Choisis au moins un rôle.", false);
+          return;
+        }
+        demande = { roles: rolesSelectionnes, permissions: permissions };
+      } else if (action === "profile-save") {
+        var pseudoAdmin = bloc.querySelector("[data-profile-pseudo]").value.trim();
+        if (pseudoAdmin.length < 3) {
+          afficherMessage(document.getElementById("adm-users-message"), "Le pseudo doit faire au moins 3 caractères.", false);
+          return;
+        }
+        var badges = bloc.querySelector("[data-profile-badges]").value.split(",").map(function (badge) { return badge.trim(); }).filter(Boolean);
+        if (badges.length > 5) {
+          afficherMessage(document.getElementById("adm-users-message"), "Tu peux attribuer 5 badges au maximum.", false);
+          return;
+        }
+        demande = {
+          profil: {
+            pseudo: pseudoAdmin,
+            avatar: Object.prototype.hasOwnProperty.call(avatarsModifies, uid) ? avatarsModifies[uid] : (avatarsActuels[uid] || ""),
+            bio: bloc.querySelector("[data-profile-bio]").value,
+            couleur: bloc.querySelector("[data-profile-color]").value,
+            verifie: bloc.querySelector("[data-profile-verified]").checked,
+            badges: badges
+          }
+        };
+      } else if (action === "notes-save") {
+        demande = { notesPrivees: bloc.querySelector("[data-private-notes]").value };
       }
       bouton.disabled = true;
       K.appel("PATCH", "/api/admin/utilisateurs/" + encodeURIComponent(uid), demande).then(function () {
-        afficherMessage(document.getElementById("adm-users-message"), "Informations du compte mises à jour.", true);
+        afficherMessage(document.getElementById("adm-users-message"), action === "notes-save"
+          ? "Notes privées enregistrées."
+          : (action === "profile-save" ? "Profil enregistré." : "Rôles et permissions enregistrés."), true);
         utilisateursCharges = [];
         return chargerUtilisateurs(null, false);
       }, function (erreur) {
@@ -218,14 +315,37 @@
       }).then(function () { bouton.disabled = false; });
     });
     document.getElementById("adm-users-list").addEventListener("change", function (e) {
-      var select = e.target.closest("[data-role-select]");
-      if (!select) return;
-      var permissions = select.closest("[data-user]").querySelectorAll("[data-perm]");
-      if (select.value === "moderateur") {
-        permissions.forEach(function (input) { input.checked = true; });
-      } else if (select.value === "utilisateur") {
-        permissions.forEach(function (input) { input.checked = false; });
-      }
+      var champFichier = e.target.closest("[data-profile-avatar-file]");
+      if (!champFichier || !champFichier.files || !champFichier.files[0]) return;
+      var carte = champFichier.closest("[data-user]");
+      var fichier = champFichier.files[0];
+      K.imageVersDataUrl(fichier).then(function (avatar) {
+        avatarsModifies[carte.getAttribute("data-user")] = avatar;
+        carte.querySelector("[data-profile-avatar-url]").value = "";
+        carte.querySelector("[data-profile-avatar-preview]").src = avatar;
+        carte.querySelector("[data-profile-avatar-preview]").hidden = false;
+        afficherMessage(document.getElementById("adm-users-message"), "Aperçu de l’avatar prêt. Enregistre le profil pour valider.", true);
+      }, function (erreur) {
+        afficherMessage(document.getElementById("adm-users-message"), "Impossible de préparer l’avatar : " + (erreur.message || "image invalide"), false);
+      });
+    });
+    document.getElementById("adm-users-list").addEventListener("input", function (e) {
+      var url = e.target.closest("[data-profile-avatar-url]");
+      if (!url) return;
+      var carte = url.closest("[data-user]");
+      avatarsModifies[carte.getAttribute("data-user")] = url.value.trim();
+      var apercu = carte.querySelector("[data-profile-avatar-preview]");
+      if (url.value.trim()) { apercu.src = url.value.trim(); apercu.hidden = false; }
+      else apercu.hidden = true;
+    });
+    document.getElementById("adm-users-list").addEventListener("click", function (e) {
+      var retirer = e.target.closest("[data-profile-avatar-clear]");
+      if (!retirer) return;
+      var carte = retirer.closest("[data-user]");
+      avatarsModifies[carte.getAttribute("data-user")] = "";
+      carte.querySelector("[data-profile-avatar-url]").value = "";
+      carte.querySelector("[data-profile-avatar-file]").value = "";
+      carte.querySelector("[data-profile-avatar-preview]").hidden = true;
     });
     chargerUtilisateurs(null, false);
   }

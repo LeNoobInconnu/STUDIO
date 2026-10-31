@@ -47,9 +47,29 @@ html[data-theme="dark"] .adm-page-msg.err { color: #feb2b2; background: #3a1717;
 .adm-page-status-row input { width: 18px; height: 18px; accent-color: var(--red); }
 .adm-page-users .adm-user-controls { grid-column: 2; display: grid; gap: 10px; }
 .adm-page-users .adm-user-controls select { max-width: 260px; }
+.adm-user-profile { display: grid; gap: 12px; padding: 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); }
+.adm-user-profile > summary { cursor: pointer; font-weight: 700; }
+.adm-user-profile .adm-page-field { max-width: 520px; }
+.adm-page-users .adm-user-profile label.adm-page-field { display: grid; }
+.adm-user-profile input:not([type="checkbox"]):not([type="file"]):not([type="color"]), .adm-user-profile textarea { width: 100%; padding: 11px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--fg); font: 1rem var(--font-body); letter-spacing: normal; text-transform: none; }
+.adm-user-profile input[type="file"] { max-width: 100%; color: var(--fg); font: .9rem var(--font-body); letter-spacing: normal; text-transform: none; }
+.adm-user-profile input[type="color"] { width: 64px; height: 40px; padding: 3px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+.adm-user-profile textarea { resize: vertical; }
+.adm-user-profile select[multiple] { min-height: 120px; }
+.adm-user-profile small { color: var(--text-soft); }
+.adm-user-avatar-preview { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; background: var(--line); }
+.adm-user-check { display: flex; align-items: center; gap: 8px; font-weight: 600; }
 .adm-page-users .adm-user-controls label { display: flex; align-items: center; gap: 8px; }
 .adm-page-users .adm-user-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .adm-page-users .adm-user-actions button { min-height: 36px; }
+.adm-user-moderation { display: grid; gap: 12px; padding: 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); }
+.adm-user-moderation > summary { cursor: pointer; font-weight: 700; }
+.adm-user-moderation .adm-page-field { max-width: 520px; }
+.adm-user-moderation textarea { width: 100%; padding: 11px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--fg); font: 1rem var(--font-body); letter-spacing: normal; text-transform: none; resize: vertical; }
+.adm-user-moderation-note { margin: 0; color: var(--text-soft); font-size: .85rem; }
+.adm-sanction-history { display: grid; gap: 8px; margin: 8px 0; padding-left: 18px; }
+.adm-sanction-history li { display: list-item; padding: 8px 0; border-top: 1px solid var(--line); overflow-wrap: anywhere; }
+.adm-sanction-history small { color: var(--text-soft); }
 .adm-page-maintenance { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
 .adm-page-audio { width: 100%; }
 .adm-page-login { max-width: 600px; margin: 36px auto; }

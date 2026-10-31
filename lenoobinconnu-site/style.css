@@ -444,6 +444,11 @@ html.menu-ouvert .chat-fab, html.menu-ouvert .chat-panel { display: none; }
 .pe-infos { flex: 1; min-width: 180px; display: grid; gap: 4px; }
 .pe-infos h2 { margin: 0; font-family: var(--font-head); text-transform: uppercase; font-size: 2rem; line-height: 1; overflow-wrap: anywhere; }
 .pe-bio { margin: 0; color: var(--text-soft); overflow-wrap: anywhere; }
+.pe-haut .pe-photo { outline: 3px solid var(--profil-couleur, var(--red)); outline-offset: 3px; }
+.profil-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.profil-badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 9px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); color: var(--fg); font: 600 .72rem var(--font-mono); }
+.profil-badge.profil-verifie { border-color: #31875a; color: #17633a; }
+.profil-badge.profil-role { border-color: var(--profil-couleur, var(--red)); }
 .pe-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 0; }
 .pe-stats div { border: 1px solid var(--line); border-radius: 12px; padding: 12px; text-align: center; }
 .pe-stats dt { font-family: var(--font-mono); font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--gray); }

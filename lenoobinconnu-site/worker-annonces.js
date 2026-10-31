@@ -9,6 +9,7 @@ const txt = (s, n) => String(s == null ? "" : s).trim().slice(0, n);
 const liste = (s) => String(s || "").split(",").map((x) => x.trim().toLowerCase()).filter(Boolean);
 const nouvelId = () => crypto.randomUUID().slice(0, 8);
 const IMG_RE = /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/;
+const ROLES_ADMIN = ["utilisateur", "moderateur", "createur", "vip", "premium", "personnalise"];
 const PAGES = ["accueil", "programme", "series", "communaute", "fil", "affiliation", "contact", "mentions", "profil", "parametres"];
 const ID_OK = /^[A-Za-z0-9:_-]{1,80}$/;
 const TID_OK = /^(post|annonce):[A-Za-z0-9-]{1,20}$/;
@@ -452,9 +453,17 @@ async function route(req, env) {
           };
         }),
         role: gestion.role || "utilisateur",
+        roles: Array.isArray(gestion.roles) && gestion.roles.length ? gestion.roles : [gestion.role || "utilisateur"],
         permissions: gestion.permissions || {},
+        notesPrivees: txt(gestion.notesPrivees, 2000),
+        verifie: !!profil.verifie,
+        badges: Array.isArray(profil.badges) ? profil.badges : [],
+        couleur: /^#[0-9a-f]{6}$/i.test(profil.couleur || "") ? profil.couleur : "#e84b3c",
         banni: !!gestion.banni,
         suspenduJusqua: Number(gestion.suspenduJusqua) || 0,
+        commentairesMutesJusqua: Number(gestion.commentairesMutesJusqua) || 0,
+        contenuBloqueJusqua: Number(gestion.contenuBloqueJusqua) || 0,
+        sanctions: Array.isArray(gestion.sanctions) ? gestion.sanctions.slice(0, 50) : [],
         derniereActivite: Number(gestion.derniereActivite) || null,
         historique: (await lire(env, "historique:" + id)) || [],
         admin: identites.some((x) => admins.includes(x.toLowerCase())),
@@ -466,7 +475,7 @@ async function route(req, env) {
     return { utilisateurs, curseur: page.list_complete ? null : page.cursor };
   }
   if (m === "PATCH" && r === "admin" && a === "utilisateurs" && b2) {
-    await exigerAdmin(req, env);
+    const admin = await exigerAdmin(req, env);
     const uid = b2;
     if (!(await env.DATA.get("profil:" + uid))) throw new Erreur("Utilisateur introuvable.", 404);
     const admins = liste(env.ADMINS);
@@ -479,8 +488,17 @@ async function route(req, env) {
     if (b.role !== undefined) {
       if (!["utilisateur", "moderateur", "personnalise"].includes(b.role)) throw new Erreur("Rôle invalide.", 400);
       gestion.role = b.role;
+      gestion.roles = [b.role];
       if (b.role === "moderateur") gestion.permissions = { gererPublications: true, gererCommentaires: true };
       if (b.role === "utilisateur") gestion.permissions = {};
+    }
+    if (b.roles !== undefined) {
+      if (!Array.isArray(b.roles) || !b.roles.length || b.roles.length > 5 ||
+          b.roles.some((role) => !ROLES_ADMIN.includes(role)) || new Set(b.roles).size !== b.roles.length) {
+        throw new Erreur("Liste de rôles invalide.", 400);
+      }
+      gestion.roles = b.roles;
+      gestion.role = b.roles[0];
     }
     if (b.permissions !== undefined) {
       if (!b.permissions || typeof b.permissions !== "object" || Array.isArray(b.permissions)) throw new Erreur("Permissions invalides.", 400);
@@ -501,6 +519,99 @@ async function route(req, env) {
       gestion.suspenduJusqua = jusqua;
       if (jusqua) gestion.banni = false;
     }
+    if (b.sanction !== undefined) {
+      const sanction = b.sanction;
+      const types = ["avertissement", "suspension", "bannissement", "mute_commentaires", "blocage_contenu", "lever_suspension", "lever_bannissement", "lever_mute_commentaires", "lever_blocage_contenu"];
+      if (!sanction || typeof sanction !== "object" || !types.includes(sanction.type)) throw new Erreur("Sanction invalide.", 400);
+      const raison = txt(sanction.raison, 300);
+      if (!raison) throw new Erreur("Indique le motif de la sanction.", 400);
+      if (["suspension", "mute_commentaires", "blocage_contenu"].includes(sanction.type)) {
+        const duree = Number(sanction.duree);
+        if (![86400, 604800, 2592000, 31536000].includes(duree)) throw new Erreur("Durée de sanction invalide.", 400);
+        const jusqua = Date.now() + duree * 1000;
+        if (sanction.type === "suspension") {
+          gestion.suspenduJusqua = jusqua;
+          gestion.banni = false;
+        } else if (sanction.type === "mute_commentaires") {
+          gestion.commentairesMutesJusqua = jusqua;
+        } else {
+          gestion.contenuBloqueJusqua = jusqua;
+        }
+      } else if (sanction.type === "bannissement") {
+        gestion.banni = true;
+        gestion.suspenduJusqua = 0;
+      } else if (sanction.type === "lever_suspension") {
+        gestion.suspenduJusqua = 0;
+      } else if (sanction.type === "lever_bannissement") {
+        gestion.banni = false;
+      } else if (sanction.type === "lever_mute_commentaires") {
+        gestion.commentairesMutesJusqua = 0;
+      } else if (sanction.type === "lever_blocage_contenu") {
+        gestion.contenuBloqueJusqua = 0;
+      }
+      const historiqueSanctions = Array.isArray(gestion.sanctions) ? gestion.sanctions : [];
+      historiqueSanctions.unshift({
+        type: sanction.type,
+        raison,
+        date: Date.now(),
+        admin: admin.uid,
+        duree: Number(sanction.duree) || 0,
+      });
+      gestion.sanctions = historiqueSanctions.slice(0, 50);
+    }
+
+    if (b.notesPrivees !== undefined) {
+      if (typeof b.notesPrivees !== "string" || b.notesPrivees.length > 2000) throw new Erreur("Notes privées invalides.", 400);
+      gestion.notesPrivees = txt(b.notesPrivees, 2000);
+    }
+
+    const profil = (await lire(env, "profil:" + uid, {})) || {};
+    let profilModifie = false;
+    if (b.profil !== undefined) {
+      const modifications = b.profil;
+      if (!modifications || typeof modifications !== "object" || Array.isArray(modifications)) throw new Erreur("Profil invalide.", 400);
+      if (modifications.pseudo !== undefined) {
+        const pseudo = txt(modifications.pseudo, 24);
+        if (pseudo.length < 3) throw new Erreur("Le pseudo doit faire entre 3 et 24 caractères.", 400);
+        profil.pseudo = pseudo;
+        profilModifie = true;
+      }
+      if (modifications.avatar !== undefined) {
+        const avatar = String(modifications.avatar || "");
+        const imageData = IMG_RE.test(avatar) && avatar.length <= 300000;
+        let urlValide = false;
+        if (avatar && avatar.length <= 2048) {
+          try { urlValide = new URL(avatar).protocol === "https:"; } catch (e) {}
+        }
+        if (avatar && !imageData && !urlValide) throw new Erreur("Avatar invalide : utilise une image téléversée ou une adresse HTTPS.", 400);
+        profil.avatar = avatar;
+        profilModifie = true;
+      }
+      if (modifications.bio !== undefined) {
+        if (typeof modifications.bio !== "string" || modifications.bio.length > 160) throw new Erreur("La présentation doit contenir au maximum 160 caractères.", 400);
+        profil.bio = txt(modifications.bio, 160);
+        profilModifie = true;
+      }
+      if (modifications.couleur !== undefined) {
+        if (typeof modifications.couleur !== "string" || !/^#[0-9a-f]{6}$/i.test(modifications.couleur)) throw new Erreur("Couleur de profil invalide.", 400);
+        profil.couleur = modifications.couleur.toLowerCase();
+        profilModifie = true;
+      }
+      if (modifications.verifie !== undefined) {
+        if (typeof modifications.verifie !== "boolean") throw new Erreur("État de vérification invalide.", 400);
+        profil.verifie = modifications.verifie;
+        profilModifie = true;
+      }
+      if (modifications.badges !== undefined) {
+        if (!Array.isArray(modifications.badges) || modifications.badges.length > 5 ||
+            modifications.badges.some((badge) => typeof badge !== "string" || txt(badge, 24).length < 1)) {
+          throw new Erreur("Les badges doivent être au maximum 5 et contenir chacun 1 à 24 caractères.", 400);
+        }
+        profil.badges = [...new Set(modifications.badges.map((badge) => txt(badge, 24)))];
+        profilModifie = true;
+      }
+    }
+    if (profilModifie) await ecrire(env, "profil:" + uid, profil);
     await ecrire(env, "gestion:" + uid, gestion);
     return { ok: true };
   }
@@ -527,7 +638,13 @@ async function route(req, env) {
       const avatar = String(b.avatar || "");
       if (avatar && (!IMG_RE.test(avatar) || avatar.length > 60000)) throw new Erreur("Photo invalide ou trop lourde.", 400);
       const precedent = await lire(env, "profil:" + c.uid, {});
-      await ecrire(env, "profil:" + c.uid, { pseudo, avatar, bio: txt(b.bio, 160), ...(precedent.createdAt ? { createdAt: precedent.createdAt } : {}) });
+      await ecrire(env, "profil:" + c.uid, {
+        pseudo, avatar, bio: txt(b.bio, 160),
+        ...(precedent.createdAt ? { createdAt: precedent.createdAt } : {}),
+        ...(precedent.verifie ? { verifie: true } : {}),
+        ...(Array.isArray(precedent.badges) ? { badges: precedent.badges } : {}),
+        ...(precedent.couleur ? { couleur: precedent.couleur } : {}),
+      });
       return { ok: true };
     }
   }
@@ -536,8 +653,14 @@ async function route(req, env) {
     const pr = await lire(env, "profil:" + a, null);
     if (!pr) throw new Erreur("Profil introuvable.", 404);
     const abonnes = await lire(env, "abonnes:" + a);
+    const gestion = (await lire(env, "gestion:" + a, {})) || {};
+    const roles = Array.isArray(gestion.roles) && gestion.roles.length ? gestion.roles : [gestion.role || "utilisateur"];
     return {
       id: a, pseudo: pr.pseudo || "Joueur", avatar: pr.avatar || "", bio: pr.bio || "",
+      verifie: !!pr.verifie,
+      badges: Array.isArray(pr.badges) ? pr.badges.slice(0, 5) : [],
+      roles: roles.filter((role) => ROLES_ADMIN.includes(role)).slice(0, 5),
+      couleur: /^#[0-9a-f]{6}$/i.test(pr.couleur || "") ? pr.couleur : "#e84b3c",
       abonnes: abonnes.length, abonnements: (await lire(env, "suit:" + a)).length,
       publications: (await lire(env, "posts:" + a)).length,
       estMoi: !!c && c.uid === a,
@@ -630,6 +753,10 @@ async function route(req, env) {
   }
   if (m === "POST" && r === "posts" && !a) {
     const c = await exiger(req, env);
+    const gestion = (await lire(env, "gestion:" + c.uid, {})) || {};
+    if (!c.admin && Number(gestion.contenuBloqueJusqua) > Date.now()) {
+      throw new Erreur("La création de publications est temporairement bloquée sur ton compte.", 403);
+    }
     await assurerProfil(env, c);
     const b = await corps();
     const texte = txt(b.texte, 500), image = String(b.image || "");
@@ -686,6 +813,10 @@ async function route(req, env) {
     }
     if (m === "POST" && !b2) {
       const c = await exiger(req, env);
+      const gestion = (await lire(env, "gestion:" + c.uid, {})) || {};
+      if (!c.admin && Number(gestion.commentairesMutesJusqua) > Date.now()) {
+        throw new Erreur("Les commentaires sont temporairement désactivés sur ton compte.", 403);
+      }
       await assurerProfil(env, c);
       const b = await corps();
       const texte = txt(b.texte, 300);

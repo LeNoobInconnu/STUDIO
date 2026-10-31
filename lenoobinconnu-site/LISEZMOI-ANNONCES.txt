@@ -70,6 +70,32 @@ MISE A JOUR 3 (utilisateurs et réglages par défaut de l'administration)
   chemin dans musiquesDisponibles dans site.js. Le choix de l'admin concerne le réglage par défaut;
   les visiteurs qui ont déjà choisi leurs préférences les conservent.
 
+MISE A JOUR 5 (modération)
+- Redéploie worker-annonces.js et publie admin-pages.js, admin-pages.css, admin-utilisateurs.html
+  et mentions.html.
+- Dans « Utilisateurs > Modération et sanctions », l'admin peut enregistrer un avertissement,
+  suspendre temporairement ou bannir définitivement un compte, muter ses commentaires ou bloquer
+  ses nouvelles publications. Les durées proposées sont 24 h, 7 jours, 30 jours et 365 jours.
+- Un motif est obligatoire. Les sanctions sont appliquées par le Worker et les 50 actions les plus
+  récentes sont visibles dans le casier de l'utilisateur. Les admins configurés dans ADMINS restent
+  protégés.
+- Les messages privés ne sont pas implémentés par le site : leur modération n'est donc pas proposée.
+- Aucun bannissement IP/appareil n'est utilisé. Cela évite de collecter des identifiants réseau ou
+  des empreintes d'appareil.
+
+MISE A JOUR 6 (profil utilisateur dans l'administration)
+- Redéploie worker-annonces.js et publie admin-pages.js, admin-pages.css, admin-utilisateurs.html,
+  profil.js et style.css.
+- Dans « Utilisateurs > Profil, rôles et notes privées », un admin peut modifier le pseudo, l'avatar
+  (URL HTTPS ou téléversement), la présentation, la couleur, le badge de vérification et jusqu'à
+  cinq badges publics.
+- Plusieurs rôles d'affichage peuvent être associés au même profil. Les permissions de modération
+  restent réglées séparément et les rôles ne donnent pas accès aux fonctions administrateur.
+- Les notes privées sont limitées à 2 000 caractères, visibles uniquement depuis l'API
+  administrateur, et ne figurent pas dans le profil public.
+- Le bouton « Voir le profil public » ouvre le profil tel que les visiteurs le voient; les badges
+  et le statut vérifié s'affichent sur ce profil.
+
 MISE A JOUR 4 (statistiques anonymes)
 - Redéploie worker-annonces.js sur Cloudflare et publie admin-analytics.html, admin-analytics.js,
   admin-pages.css, admin.js, admin.html, les pages admin avec leur menu mis à jour, moteur.js et
