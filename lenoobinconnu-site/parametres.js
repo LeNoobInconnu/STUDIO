@@ -27,16 +27,38 @@
   }
   $$("[data-section]").forEach(function (b) { b.addEventListener("click", function () { montrer(b.dataset.section); }); });
 
-  /* ----- Compte : pseudo, bio, photo ----- */
+  /* ----- Compte : profil local ou profil en ligne ----- */
   function remplirCompte() {
     var form = $("#pr-form"), note = $("#pr-note-compte"), session = K.session() || {};
-    var actif = K.connecte();
+    var auth = window.LNI_AUTH, local = !!(auth && auth.compteLocalActuel && auth.compteLocalActuel());
+    var actif = K.connecte() || local;
     ["pseudo", "bio"].forEach(function (c) { form.elements[c].disabled = !actif; });
     form.querySelector("button[type=submit]").disabled = !actif;
     $("#pr-fichier").disabled = !actif;
     $("#pr-retirer-photo").disabled = !actif;
+    $("#pr-profil-public").disabled = !K.connecte();
+    $("#pr-verification-form").hidden = !K.connecte();
+    $("#pr-email-form").hidden = !local;
+    $("#pr-password-form").hidden = !local;
+    $("#pr-exporter").disabled = !actif;
+    $("#pr-desactiver").disabled = !actif;
+    $("#pr-note-visibilite").textContent = local
+      ? "Les comptes e-mail sont enregistrés uniquement dans ce navigateur : leur profil ne peut pas être publié en ligne."
+      : (K.connecte() ? "" : "Connecte-toi pour régler la visibilité de ton profil.");
+    $("#pr-identifiants-note").textContent = local
+      ? "Ce compte e-mail est stocké dans ce navigateur. Un changement d’adresse ou de mot de passe ne le synchronise pas avec d’autres appareils."
+      : (K.connecte() ? "L’adresse e-mail et le mot de passe des comptes Google ou Discord se gèrent auprès de leur fournisseur." : "Connecte-toi pour gérer tes identifiants.");
     if (!actif) {
-      note.textContent = "Connecte-toi avec Discord ou Google pour avoir un profil en ligne. Les comptes e-mail ne peuvent pas modifier leur profil en ligne.";
+      note.textContent = "Connecte-toi pour modifier ton profil et gérer les données de ton compte.";
+      return Promise.resolve();
+    }
+    if (local) {
+      etat.profil = auth.profilLocal();
+      form.pseudo.value = etat.profil.pseudo || "";
+      form.bio.value = etat.profil.bio || "";
+      apercuAvatar(etat.profil.avatar || "");
+      $("#pr-lien-profil").hidden = true;
+      note.textContent = "Profil local à cet appareil, non visible publiquement.";
       return Promise.resolve();
     }
     // Valeurs de départ : la session, puis le profil du serveur dès qu'il répond
@@ -49,6 +71,7 @@
       apercuAvatar(p.avatar);
       $("#pr-lien-profil").href = "profil.html?id=" + encodeURIComponent(etat.moi ? etat.moi.id : "");
       $("#pr-lien-profil").hidden = !etat.moi;
+      $("#pr-profil-public").checked = etat.compteOptions ? etat.compteOptions.profilPublic !== false : true;
       note.textContent = "";
     }, function (e) {
       note.textContent = "Impossible de charger ton profil : " + erreurTexte(e) + " (réessaie, ou vérifie que le Worker est à jour).";
@@ -92,7 +115,11 @@
     if (pseudo.length < 3 || pseudo.length > 24) { msg("Le pseudo doit faire entre 3 et 24 caractères.", false); return; }
     var avatar = etat.avatar !== undefined ? etat.avatar : (etat.profil && etat.profil.avatar) || "";
     var btn = f.querySelector("button[type=submit]"); btn.disabled = true;
-    K.appel("PUT", "/api/profil", { pseudo: pseudo, bio: bio, avatar: avatar }).then(function () {
+    var auth = window.LNI_AUTH;
+    var sauvegarde = auth && auth.compteLocalActuel()
+      ? auth.sauverProfilLocal({ pseudo: pseudo, bio: bio, avatar: avatar })
+      : K.appel("PUT", "/api/profil", { pseudo: pseudo, bio: bio, avatar: avatar });
+    sauvegarde.then(function () {
       etat.avatar = undefined;
       if (window.LNI_AUTH) window.LNI_AUTH.synchroniser();
       msg("Profil enregistré.", true);
@@ -100,9 +127,152 @@
     }).then(function () { btn.disabled = false; }, function (er) { btn.disabled = false; msg(erreurTexte(er), false); });
   });
 
+  /* ----- Confidentialité, vérification, export et désactivation ----- */
+  var PREFS_DEFAUT = {
+    emailConnexion: true, emailSecurite: true, navigateur: false, mobile: false, discord: false,
+    nouveautes: true, evenements: true, messages: true, commentaires: true, silencieux: false
+  };
+  var CLE_PREFS_LOCALES = "lni_preferences_notifications";
+  function preferencesDepuisFormulaire() {
+    var prefs = {};
+    Object.keys(PREFS_DEFAUT).forEach(function (cle) { prefs[cle] = $("#pr-notifications-form").elements[cle].checked; });
+    return prefs;
+  }
+  function afficherPreferences(prefs) {
+    prefs = prefs || {};
+    Object.keys(PREFS_DEFAUT).forEach(function (cle) {
+      $("#pr-notifications-form").elements[cle].checked = prefs[cle] === undefined ? PREFS_DEFAUT[cle] : !!prefs[cle];
+    });
+  }
+  function chargerCompteOptions() {
+    var auth = window.LNI_AUTH, local = !!(auth && auth.compteLocalActuel());
+    if (K.connecte()) {
+      etat.compteOptions = null;
+      return K.appel("GET", "/api/mon-compte").then(function (d) {
+        etat.compteOptions = d;
+        $("#pr-profil-public").checked = d.profilPublic !== false;
+        afficherPreferences(d.preferences);
+        var demande = d.demandeVerification;
+        $("#pr-verification-status").textContent = demande
+          ? (demande.traiteeLe ? (demande.acceptee ? "Ta demande a été acceptée." : "Ta demande n’a pas été acceptée.") : "Une demande est déjà en attente depuis le " + new Date(demande.date).toLocaleDateString("fr-FR") + ".")
+          : "La demande sera examinée par un administrateur.";
+        $("#pr-verification-submit").disabled = !!(demande && !demande.traiteeLe);
+      }, function (e) {
+        $("#pr-notifications-status").textContent = "Impossible de charger les préférences du compte : " + erreurTexte(e);
+      });
+    }
+    etat.compteOptions = null;
+    if (local) {
+      try { afficherPreferences(JSON.parse(localStorage.getItem(CLE_PREFS_LOCALES)) || {}); }
+      catch (e) { afficherPreferences({}); }
+      $("#pr-verification-status").textContent = "La vérification est disponible uniquement pour les comptes en ligne.";
+      $("#pr-verification-submit").disabled = true;
+    } else {
+      afficherPreferences({});
+      $("#pr-verification-status").textContent = "Connecte-toi avec Discord ou Google pour demander une vérification.";
+      $("#pr-verification-submit").disabled = true;
+    }
+    return Promise.resolve();
+  }
+  $("#pr-profil-public").addEventListener("change", function () {
+    var controle = this, valeur = controle.checked;
+    if (!K.connecte()) { controle.checked = !valeur; return; }
+    controle.disabled = true;
+    K.appel("PUT", "/api/mon-compte", { profilPublic: valeur }).then(function () {
+      if (etat.compteOptions) etat.compteOptions.profilPublic = valeur;
+      $("#pr-note-visibilite").textContent = valeur ? "Ton profil est visible publiquement." : "Ton profil est masqué aux autres visiteurs.";
+    }, function (e) {
+      controle.checked = !valeur;
+      msg("Impossible de modifier la visibilité : " + erreurTexte(e), false);
+    }).then(function () { controle.disabled = false; }, function () { controle.disabled = false; });
+  });
+  $("#pr-notifications-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var prefs = preferencesDepuisFormulaire(), status = $("#pr-notifications-status"), auth = window.LNI_AUTH;
+    var local = !!(auth && auth.compteLocalActuel()), btn = this.querySelector("button[type=submit]");
+    btn.disabled = true;
+    var sauver;
+    if (K.connecte()) sauver = K.appel("PUT", "/api/mon-compte", { preferences: prefs });
+    else {
+      try { localStorage.setItem(CLE_PREFS_LOCALES, JSON.stringify(prefs)); sauver = Promise.resolve(); }
+      catch (er) { sauver = Promise.reject("Impossible d’enregistrer les préférences dans ce navigateur."); }
+    }
+    sauver.then(function () {
+      status.textContent = "Préférences enregistrées. Aucun envoi de notification n’est activé pour l’instant.";
+      if (etat.compteOptions) etat.compteOptions.preferences = prefs;
+    }, function (er) { status.textContent = "Échec de l’enregistrement : " + erreurTexte(er); })
+      .then(function () { btn.disabled = false; }, function () { btn.disabled = false; });
+  });
+  $("#pr-verification-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (!K.connecte()) { msg("Connecte-toi avec Discord ou Google pour demander une vérification.", false); return; }
+    var form = this, btn = $("#pr-verification-submit");
+    btn.disabled = true;
+    K.appel("POST", "/api/verification", { note: form.elements.note.value.trim() }).then(function () {
+      form.elements.note.value = "";
+      $("#pr-verification-status").textContent = "Demande envoyée. Un administrateur la vérifiera.";
+      msg("Demande de vérification envoyée.", true);
+      return chargerCompteOptions();
+    }, function (er) {
+      btn.disabled = false;
+      msg(erreurTexte(er), false);
+    });
+  });
+  function telechargerJson(donnees, nom) {
+    var url = URL.createObjectURL(new Blob([JSON.stringify(donnees, null, 2)], { type: "application/json" }));
+    var a = document.createElement("a");
+    a.href = url; a.download = nom; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+  }
+  $("#pr-exporter").addEventListener("click", function () {
+    var bouton = this, auth = window.LNI_AUTH;
+    bouton.disabled = true;
+    var exporter = K.connecte() ? K.appel("GET", "/api/mon-compte/export")
+      : (auth && auth.exporterCompteLocal ? auth.exporterCompteLocal() : Promise.reject("Connecte-toi pour exporter tes données."));
+    exporter.then(function (d) {
+      telechargerJson(d, "mes-donnees-lni.json");
+      msg("Export téléchargé. Il contient les données disponibles pour ce type de compte.", true);
+    }, function (e) { msg("Impossible d’exporter les données : " + erreurTexte(e), false); })
+      .then(function () { bouton.disabled = false; }, function () { bouton.disabled = false; });
+  });
+  $("#pr-desactiver").addEventListener("click", function () {
+    if (!window.confirm("Désactiver temporairement ton compte ? Tu seras déconnecté. Tu pourras le réactiver en te reconnectant.")) return;
+    var bouton = this, auth = window.LNI_AUTH, local = !!(auth && auth.compteLocalActuel());
+    bouton.disabled = true;
+    var desactiver = local ? auth.desactiverCompteLocal() : K.appel("PUT", "/api/mon-compte", { desactive: true });
+    desactiver.then(function () {
+      if (!local && auth) auth.deconnecter();
+      msg("Compte désactivé. Reconnecte-toi pour le réactiver.", true);
+      setTimeout(function () { location.href = "index.html"; }, 900);
+    }, function (e) {
+      bouton.disabled = false;
+      msg("Impossible de désactiver le compte : " + erreurTexte(e), false);
+    });
+  });
+  $("#pr-email-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var form = this, btn = form.querySelector("button[type=submit]");
+    btn.disabled = true;
+    window.LNI_AUTH.changerEmailLocal(form.elements.email.value, form.elements.currentPassword.value).then(function () {
+      form.reset(); msg("Adresse e-mail modifiée sur cet appareil.", true); return remplirCompte();
+    }, function (er) { msg(erreurTexte(er), false); })
+      .then(function () { btn.disabled = false; }, function () { btn.disabled = false; });
+  });
+  $("#pr-password-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var form = this, btn = form.querySelector("button[type=submit]");
+    if (form.elements.newPassword.value !== form.elements.confirmPassword.value) { msg("Les deux nouveaux mots de passe ne correspondent pas.", false); return; }
+    btn.disabled = true;
+    window.LNI_AUTH.changerMotDePasseLocal(form.elements.currentPassword.value, form.elements.newPassword.value).then(function () {
+      form.reset(); msg("Mot de passe modifié pour ce compte local.", true);
+    }, function (er) { msg(erreurTexte(er), false); })
+      .then(function () { btn.disabled = false; }, function () { btn.disabled = false; });
+  });
+
   /* ----- Connexions : Discord et Google sur le même profil ----- */
   function rendreConnexions() {
     var moi = etat.moi, connecte = K.connecte();
+    var compteLocal = window.LNI_AUTH && window.LNI_AUTH.compteLocalActuel && window.LNI_AUTH.compteLocalActuel();
     var fs = (moi && moi.fournisseurs) || [], principal = moi && moi.principal;
     ["discord", "google"].forEach(function (f) {
       var ligne = document.querySelector('[data-f="' + f + '"]');
@@ -112,7 +282,12 @@
       ligne.querySelector("[data-etat]").textContent = libelle;
       var act = ligne.querySelector(".pr-actions");
       act.innerHTML = "";
-      if (!connecte) { act.innerHTML = '<span class="pr-note">Connecte-toi pour gérer les connexions.</span>'; return; }
+      if (!connecte) {
+        act.innerHTML = '<span class="pr-note">' + (compteLocal
+          ? "Les comptes e-mail locaux ne peuvent pas lier Discord ou Google."
+          : "Connecte-toi pour gérer les connexions.") + '</span>';
+        return;
+      }
       if (!lie) {
         var b = document.createElement("button");
         b.type = "button"; b.className = "mini plein"; b.textContent = "Lier " + nomF;
@@ -241,7 +416,7 @@
       $("#pr-lien-admin").hidden = !admin;
       rendreConnexions();
       rendreAffichage();
-      return remplirCompte();
+      return Promise.all([remplirCompte(), chargerCompteOptions()]);
     }).then(function () {
       if (etat.moi && etat.moi.admin) {
         return K.appel("GET", "/api/reglages").then(remplirAdmin, function (er) { msg(erreurTexte(er), false); });
@@ -250,11 +425,12 @@
   }
 
   // Recharge seulement si la connexion a changé (sinon on effacerait la saisie en cours)
-  var dernierJeton = (K.session() && K.session().jeton) || null;
+  var derniereSession = (K.session() && (K.session().jeton || K.session().email)) || null;
   document.addEventListener("lni:session", function () {
-    var j = (K.session() && K.session().jeton) || null;
-    if (j !== dernierJeton) { dernierJeton = j; charger(); }
+    var session = K.session() || {}, identifiant = session.jeton || session.email || null;
+    if (identifiant !== derniereSession) { derniereSession = identifiant; charger(); }
   });
+  document.addEventListener("lni:auth-ready", function () { charger(); });
 
   // Message laissé par une action précédente (liaison, enregistrement…)
   try {

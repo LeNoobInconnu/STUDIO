@@ -131,6 +131,7 @@ async function contexte(req, env) {
     permissions: gestion.permissions || {},
     suspenduJusqua: Number(gestion.suspenduJusqua) || 0,
     banni: !!gestion.banni,
+    desactive: !!gestion.desactive,
     fournisseurs: [...new Set(ids.map((k) => k.split(":")[0]))],
     profilExiste: !!pr.pseudo,
     fournisseurReq: type === "Google" ? "google" : "discord",
@@ -139,8 +140,8 @@ async function contexte(req, env) {
 async function exiger(req, env) {
   const c = await contexte(req, env);
   if (!c) throw new Erreur("Connexion requise ou expirée.", 401);
-  if (!c.admin && (c.banni || c.suspenduJusqua > Date.now())) {
-    throw new Erreur(c.banni ? "Ce compte est banni." : "Ce compte est temporairement suspendu.", 403);
+  if (!c.admin && (c.banni || c.suspenduJusqua > Date.now() || c.desactive)) {
+    throw new Erreur(c.banni ? "Ce compte est banni." : (c.desactive ? "Ce compte est désactivé. Reconnecte-toi pour le réactiver." : "Ce compte est temporairement suspendu."), 403);
   }
   return c;
 }
@@ -414,12 +415,123 @@ async function route(req, env) {
 
   /* Session et compte */
   if (m === "POST" && r === "session") {
-    const c = await exiger(req, env);
+    const c = await contexte(req, env);
+    if (!c) throw new Erreur("Connexion requise ou expirée.", 401);
+    if (!c.admin && (c.banni || c.suspenduJusqua > Date.now())) {
+      throw new Erreur(c.banni ? "Ce compte est banni." : "Ce compte est temporairement suspendu.", 403);
+    }
+    if (c.desactive) {
+      c.gestion.desactive = false;
+      await ecrire(env, "gestion:" + c.uid, c.gestion);
+    }
     await assurerProfil(env, c);
     const historique = (await lire(env, "historique:" + c.uid)) || [];
     historique.unshift({ date: Date.now(), fournisseur: c.fournisseurReq });
     await ecrire(env, "historique:" + c.uid, historique.slice(0, 30));
     return { ok: true };
+  }
+  if (m === "GET" && r === "mon-compte" && !a) {
+    const c = await exiger(req, env);
+    const gestion = (await lire(env, "gestion:" + c.uid, {})) || {};
+    const profil = (await lire(env, "profil:" + c.uid, {})) || {};
+    return {
+      profilPublic: profil.public !== false,
+      preferences: gestion.preferencesNotifications || null,
+      demandeVerification: gestion.demandeVerification || null,
+      desactive: !!gestion.desactive,
+    };
+  }
+  if (m === "PUT" && r === "mon-compte" && !a) {
+    const c = await exiger(req, env);
+    const b = await corps();
+    const gestion = (await lire(env, "gestion:" + c.uid, {})) || {};
+    const profil = (await lire(env, "profil:" + c.uid, {})) || {};
+    if (b.profilPublic !== undefined) {
+      if (typeof b.profilPublic !== "boolean") throw new Erreur("Visibilité du profil invalide.", 400);
+      profil.public = b.profilPublic;
+      await ecrire(env, "profil:" + c.uid, profil);
+    }
+    if (b.preferences !== undefined) {
+      if (!b.preferences || typeof b.preferences !== "object" || Array.isArray(b.preferences)) throw new Erreur("Préférences invalides.", 400);
+      const cles = ["emailConnexion", "emailSecurite", "navigateur", "mobile", "discord", "nouveautes", "evenements", "messages", "commentaires", "silencieux"];
+      const preferences = { ...(gestion.preferencesNotifications || {}) };
+      for (const cle of cles) {
+        if (b.preferences[cle] === undefined) continue;
+        if (typeof b.preferences[cle] !== "boolean") throw new Erreur("Préférence invalide : " + cle + ".", 400);
+        preferences[cle] = b.preferences[cle];
+      }
+      gestion.preferencesNotifications = preferences;
+      await ecrire(env, "gestion:" + c.uid, gestion);
+    }
+    if (b.desactive !== undefined) {
+      if (typeof b.desactive !== "boolean") throw new Erreur("État du compte invalide.", 400);
+      gestion.desactive = b.desactive;
+      await ecrire(env, "gestion:" + c.uid, gestion);
+    }
+    return { ok: true };
+  }
+  if (m === "POST" && r === "verification") {
+    const c = await exiger(req, env);
+    const b = await corps();
+    const note = txt(b.note, 300);
+    const gestion = (await lire(env, "gestion:" + c.uid, {})) || {};
+    if (gestion.demandeVerification && !gestion.demandeVerification.traiteeLe) {
+      throw new Erreur("Une demande de vérification est déjà en attente.", 409);
+    }
+    gestion.demandeVerification = { date: Date.now(), note, traiteeLe: 0 };
+    await ecrire(env, "gestion:" + c.uid, gestion);
+    return { ok: true };
+  }
+  if (m === "GET" && r === "mon-compte" && a === "export") {
+    const c = await exiger(req, env);
+    const profil = (await lire(env, "profil:" + c.uid, {})) || {};
+    const gestion = (await lire(env, "gestion:" + c.uid, {})) || {};
+    const identites = [...new Set([c.uid, ...(await lire(env, "idents:" + c.uid))])];
+    const comptes = (await lire(env, "comptes:" + c.uid, {})) || {};
+    const posts = [];
+    for (const id of await lire(env, "posts:" + c.uid)) {
+      const post = await lire(env, "post:" + id, null);
+      if (post) posts.push(post);
+    }
+    const commentaires = [];
+    for (const post of posts) {
+      const coms = await lire(env, "com:post:" + post.id);
+      commentaires.push(...coms.filter((commentaire) => commentaire.uid === c.uid).map((commentaire) => ({
+        publicationId: post.id, texte: commentaire.texte, date: commentaire.date,
+      })));
+    }
+    const contenu = await lire(env, "contenu", { questionnaires: [] });
+    const reponsesQuestionnaires = [];
+    for (const questionnaire of contenu.questionnaires || []) {
+      const reponse = await lire(env, "rep:" + questionnaire.id + ":" + c.uid, null);
+      if (reponse) reponsesQuestionnaires.push({ questionnaire: questionnaire.titre, ...reponse });
+    }
+    return {
+      exporteLe: new Date().toISOString(),
+      compte: {
+        id: c.uid, pseudo: profil.pseudo || c.nom, fournisseurs: identites.map((identite) => identite.split(":")[0]),
+        comptesLies: identites.map((identite) => {
+          const fournisseur = identite.split(":")[0], info = comptes[fournisseur] || {};
+          return { fournisseur, identifiant: identite, nom: info.nom || "", email: info.email || "", verifie: !!info.verifie };
+        }),
+        profil: {
+          avatar: profil.avatar || "", bio: profil.bio || "", public: profil.public !== false,
+          badgeVerifie: !!profil.verifie, badges: profil.badges || [], couleur: profil.couleur || "",
+        },
+        role: gestion.role || "utilisateur",
+        preferencesNotifications: gestion.preferencesNotifications || {},
+        demandeVerification: gestion.demandeVerification || null,
+        sanctions: Array.isArray(gestion.sanctions) ? gestion.sanctions.slice(0, 50) : [],
+        dateInscription: profil.createdAt || null,
+      },
+      connexionsRecentes: (await lire(env, "historique:" + c.uid)).slice(0, 30),
+      publications: posts.map((post) => ({ texte: post.texte, date: post.date, aime: post.aime.length })),
+      commentairesSurTesPublications: commentaires,
+      abonnements: await lire(env, "suit:" + c.uid),
+      abonnes: await lire(env, "abonnes:" + c.uid),
+      reponsesQuestionnaires,
+      securite: "Les jetons de connexion, mots de passe et notes privées des administrateurs ne sont pas inclus.",
+    };
   }
   if (m === "GET" && r === "admin" && a === "utilisateurs") {
     await exigerAdmin(req, env);
@@ -439,6 +551,7 @@ async function route(req, env) {
         pseudo: profil.pseudo || "Joueur",
         avatar: profil.avatar || "",
         bio: profil.bio || "",
+        profilPublic: profil.public !== false,
         inscritLe: profil.createdAt || null,
         fournisseurs: [...new Set(identites.map((x) => x.split(":")[0]))],
         comptes: identites.map((identite) => {
@@ -456,6 +569,8 @@ async function route(req, env) {
         roles: Array.isArray(gestion.roles) && gestion.roles.length ? gestion.roles : [gestion.role || "utilisateur"],
         permissions: gestion.permissions || {},
         notesPrivees: txt(gestion.notesPrivees, 2000),
+        demandeVerification: gestion.demandeVerification || null,
+        desactive: !!gestion.desactive,
         verifie: !!profil.verifie,
         badges: Array.isArray(profil.badges) ? profil.badges : [],
         couleur: /^#[0-9a-f]{6}$/i.test(profil.couleur || "") ? profil.couleur : "#e84b3c",
@@ -567,6 +682,18 @@ async function route(req, env) {
 
     const profil = (await lire(env, "profil:" + uid, {})) || {};
     let profilModifie = false;
+    if (b.decisionVerification !== undefined) {
+      if (!["accepter", "refuser"].includes(b.decisionVerification)) throw new Erreur("Décision de vérification invalide.", 400);
+      if (!gestion.demandeVerification || gestion.demandeVerification.traiteeLe) {
+        throw new Erreur("Aucune demande de vérification en attente.", 409);
+      }
+      gestion.demandeVerification.traiteeLe = Date.now();
+      gestion.demandeVerification.acceptee = b.decisionVerification === "accepter";
+      if (gestion.demandeVerification.acceptee) {
+        profil.verifie = true;
+        profilModifie = true;
+      }
+    }
     if (b.profil !== undefined) {
       const modifications = b.profil;
       if (!modifications || typeof modifications !== "object" || Array.isArray(modifications)) throw new Erreur("Profil invalide.", 400);
@@ -600,6 +727,10 @@ async function route(req, env) {
       if (modifications.verifie !== undefined) {
         if (typeof modifications.verifie !== "boolean") throw new Erreur("État de vérification invalide.", 400);
         profil.verifie = modifications.verifie;
+        if (modifications.verifie && gestion.demandeVerification && !gestion.demandeVerification.traiteeLe) {
+          gestion.demandeVerification.traiteeLe = Date.now();
+          gestion.demandeVerification.acceptee = true;
+        }
         profilModifie = true;
       }
       if (modifications.badges !== undefined) {
@@ -644,6 +775,7 @@ async function route(req, env) {
         ...(precedent.verifie ? { verifie: true } : {}),
         ...(Array.isArray(precedent.badges) ? { badges: precedent.badges } : {}),
         ...(precedent.couleur ? { couleur: precedent.couleur } : {}),
+        ...(precedent.public === false ? { public: false } : {}),
       });
       return { ok: true };
     }
@@ -652,6 +784,7 @@ async function route(req, env) {
     const c = await contexte(req, env);
     const pr = await lire(env, "profil:" + a, null);
     if (!pr) throw new Erreur("Profil introuvable.", 404);
+    if (pr.public === false && (!c || (c.uid !== a && !c.admin))) throw new Erreur("Ce profil est privé.", 404);
     const abonnes = await lire(env, "abonnes:" + a);
     const gestion = (await lire(env, "gestion:" + a, {})) || {};
     const roles = Array.isArray(gestion.roles) && gestion.roles.length ? gestion.roles : [gestion.role || "utilisateur"];
@@ -690,6 +823,8 @@ async function route(req, env) {
   if (m === "GET" && r === "utilisateur" && a === undefined) throw new Erreur("Introuvable.", 404);
   if (m === "GET" && r === "utilisateur" && a && b2 === "posts") {
     const c = await contexte(req, env);
+    const profil = (await lire(env, "profil:" + a, null)) || {};
+    if (profil.public === false && (!c || (c.uid !== a && !c.admin))) throw new Erreur("Ce profil est privé.", 404);
     const ids = (await lire(env, "posts:" + a)).slice(0, 100);
     return publications(env, ids, c);
   }

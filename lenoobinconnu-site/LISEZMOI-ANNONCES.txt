@@ -96,6 +96,24 @@ MISE A JOUR 6 (profil utilisateur dans l'administration)
 - Le bouton « Voir le profil public » ouvre le profil tel que les visiteurs le voient; les badges
   et le statut vérifié s'affichent sur ce profil.
 
+MISE A JOUR 7 (paramètres de compte et notifications)
+- Redéploie worker-annonces.js et publie auth.js, parametres.html, parametres.js,
+  admin-pages.js, admin-pages.css, admin-utilisateurs.html, style.css et mentions.html.
+- Les comptes Google/Discord peuvent masquer leur profil public, demander une vérification,
+  exporter les données disponibles sur le Worker et désactiver temporairement leur compte.
+  Une reconnexion réactive un compte désactivé. Les demandes de vérification apparaissent dans
+  la liste admin des utilisateurs et peuvent y être acceptées ou refusées.
+- Les préférences de notifications des comptes Google/Discord sont stockées sur le Worker.
+  Pour les comptes e-mail locaux, elles et le profil restent dans le navigateur concerné; ils
+  ne sont pas publiés et ne sont pas partagés entre appareils. Les changements d'e-mail et de
+  mot de passe locaux demandent le mot de passe actuel.
+- Les paramètres de notifications sont des préférences enregistrées uniquement : aucun envoi
+  d'e-mail, notification navigateur/mobile ou message Discord n'est activé par ces options.
+- La suppression de compte reste hors service. Les comptes e-mail locaux peuvent être désactivés
+  sur cet appareil et sont réactivés à leur prochaine connexion.
+- Vérifie que le Worker et tous les fichiers listés ci-dessus sont publiés ensemble. La politique
+  de confidentialité correspondante se trouve dans mentions.html.
+
 MISE A JOUR 4 (statistiques anonymes)
 - Redéploie worker-annonces.js sur Cloudflare et publie admin-analytics.html, admin-analytics.js,
   admin-pages.css, admin.js, admin.html, les pages admin avec leur menu mis à jour, moteur.js et

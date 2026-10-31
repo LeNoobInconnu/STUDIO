@@ -33,12 +33,94 @@
     });
   }
   function connecter(email, mdp) {
-    var a = lire(CLE_COMPTES, {})[email.toLowerCase()];
+    var comptes = lire(CLE_COMPTES, {}), a = comptes[email.toLowerCase()];
     if (!a) return Promise.reject("E-mail ou mot de passe incorrect.");
     return hash(mdp, a.sel).then(function (h) {
       if (h !== a.hash) throw "E-mail ou mot de passe incorrect.";
+      if (a.desactive) {
+        delete a.desactive;
+        comptes[email.toLowerCase()] = a;
+        if (!ecrire(CLE_COMPTES, comptes)) throw "Impossible de réactiver le compte (stockage bloqué).";
+      }
       ecrire(CLE_SESSION, { pseudo: a.pseudo, email: a.email, avatar: a.avatar || "" });
     });
+  }
+
+  function compteLocalActuel() {
+    var session = utilisateur();
+    return !!(session && !session.jeton && session.email && lire(CLE_COMPTES, {})[String(session.email).toLowerCase()]);
+  }
+  function profilLocal() {
+    var session = utilisateur(), compte = session && session.email && lire(CLE_COMPTES, {})[String(session.email).toLowerCase()];
+    if (!compte) return null;
+    return { pseudo: compte.pseudo || session.pseudo || "", email: compte.email || session.email, avatar: compte.avatar || "", bio: compte.bio || "" };
+  }
+  function sauverProfilLocal(profil) {
+    var session = utilisateur(), comptes = lire(CLE_COMPTES, {}), cle = session && session.email && String(session.email).toLowerCase();
+    var compte = cle && comptes[cle];
+    if (!compte) return Promise.reject("Compte e-mail local introuvable dans ce navigateur.");
+    var pseudo = String(profil.pseudo || "").trim(), bio = String(profil.bio || "").trim(), avatar = String(profil.avatar || "");
+    if (pseudo.length < 3 || pseudo.length > 24 || bio.length > 160 || (avatar && (!/^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(avatar) || avatar.length > 60000))) {
+      return Promise.reject("Les informations du profil sont invalides.");
+    }
+    compte.pseudo = pseudo; compte.bio = bio; compte.avatar = avatar;
+    comptes[cle] = compte;
+    if (!ecrire(CLE_COMPTES, comptes)) return Promise.reject("Impossible d’enregistrer le profil local.");
+    session.pseudo = pseudo; session.avatar = avatar;
+    ecrire(CLE_SESSION, session);
+    return Promise.resolve();
+  }
+  function changerEmailLocal(nouvelEmail, motDePasse) {
+    var session = utilisateur(), comptes = lire(CLE_COMPTES, {});
+    if (!session || session.jeton || !session.email) return Promise.reject("Cette opération concerne uniquement un compte e-mail local.");
+    var ancienId = String(session.email).toLowerCase(), compte = comptes[ancienId], email = String(nouvelEmail || "").trim().toLowerCase();
+    if (!compte || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return Promise.reject("Adresse e-mail ou compte invalide.");
+    if (email === ancienId) return Promise.reject("Cette adresse e-mail est déjà utilisée par ton compte.");
+    if (comptes[email]) return Promise.reject("Un compte existe déjà avec cette adresse e-mail.");
+    return hash(motDePasse, compte.sel).then(function (h) {
+      if (h !== compte.hash) throw "Le mot de passe actuel est incorrect.";
+      compte.email = email;
+      comptes[email] = compte;
+      delete comptes[ancienId];
+      if (!ecrire(CLE_COMPTES, comptes)) throw "Impossible de changer l’adresse e-mail (stockage bloqué).";
+      session.email = email;
+      ecrire(CLE_SESSION, session);
+      majBouton();
+    });
+  }
+  function changerMotDePasseLocal(motDePasseActuel, nouveauMotDePasse) {
+    var session = utilisateur(), comptes = lire(CLE_COMPTES, {});
+    var cle = session && !session.jeton && session.email && String(session.email).toLowerCase(), compte = cle && comptes[cle];
+    if (!compte) return Promise.reject("Cette opération concerne uniquement un compte e-mail local.");
+    if (String(nouveauMotDePasse || "").length < MIN) return Promise.reject("Le nouveau mot de passe doit faire au moins " + MIN + " caractères.");
+    return hash(motDePasseActuel, compte.sel).then(function (h) {
+      if (h !== compte.hash) throw "Le mot de passe actuel est incorrect.";
+      var sel = hex(crypto.getRandomValues(new Uint8Array(16)));
+      return hash(nouveauMotDePasse, sel).then(function (nouveauHash) {
+        compte.sel = sel; compte.hash = nouveauHash; comptes[cle] = compte;
+        if (!ecrire(CLE_COMPTES, comptes)) throw "Impossible d’enregistrer le nouveau mot de passe.";
+      });
+    });
+  }
+  function exporterCompteLocal() {
+    var profil = profilLocal();
+    if (!profil) return Promise.reject("Aucun compte e-mail local n’est disponible dans ce navigateur.");
+    return Promise.resolve({
+      exporteLe: new Date().toISOString(),
+      compte: { pseudo: profil.pseudo, email: profil.email, fournisseur: "local", profil: { avatar: profil.avatar, bio: profil.bio } },
+      preferencesNotifications: lire("lni_preferences_notifications", {}),
+      securite: "Le mot de passe, son dérivé cryptographique et le sel ne sont pas inclus.",
+      stockage: "Ce compte e-mail est stocké uniquement dans ce navigateur."
+    });
+  }
+  function desactiverCompteLocal() {
+    var session = utilisateur(), comptes = lire(CLE_COMPTES, {});
+    var cle = session && !session.jeton && session.email && String(session.email).toLowerCase(), compte = cle && comptes[cle];
+    if (!compte) return Promise.reject("Compte e-mail local introuvable.");
+    compte.desactive = true; comptes[cle] = compte;
+    if (!ecrire(CLE_COMPTES, comptes)) return Promise.reject("Impossible de désactiver ce compte.");
+    deconnecter(); majBouton();
+    return Promise.resolve();
   }
 
   /* ----- Discord (flux "implicit", dans le navigateur) ----- */
@@ -258,9 +340,17 @@
     boutonGoogle: boutonGoogle,
     chargerGoogle: chargerGoogle,
     deconnecter: function () { deconnecter(); majBouton(); },
-    synchroniser: synchroniser
+    synchroniser: synchroniser,
+    compteLocalActuel: compteLocalActuel,
+    profilLocal: profilLocal,
+    sauverProfilLocal: sauverProfilLocal,
+    changerEmailLocal: changerEmailLocal,
+    changerMotDePasseLocal: changerMotDePasseLocal,
+    exporterCompteLocal: exporterCompteLocal,
+    desactiverCompteLocal: desactiverCompteLocal
   };
 
+  document.dispatchEvent(new Event("lni:auth-ready"));
   majBouton();
   var retour = null;
   try { retour = retourDiscord(); } catch (e) {}

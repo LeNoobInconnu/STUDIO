@@ -27,6 +27,7 @@
       <nav class="pr-nav" aria-label="Sections des paramètres">
         <button type="button" data-section="compte">Compte</button>
         <button type="button" data-section="connexions">Connexions</button>
+        <button type="button" data-section="notifications">Notifications</button>
         <button type="button" data-section="affichage">Affichage</button>
         <a class="pr-nav-lien" id="pr-lien-admin" href="admin.html" hidden>Administration</a>
       </nav>
@@ -48,7 +49,35 @@
             <label>Bio (160 caractères max)<textarea name="bio" rows="3" maxlength="160"></textarea></label>
             <button class="btn-login" type="submit">Enregistrer</button>
           </form>
+          <label class="coche pr-public-option"><input id="pr-profil-public" type="checkbox" checked> Afficher mon profil publiquement</label>
+          <p class="pr-note" id="pr-note-visibilite"></p>
           <a class="ac-lien" id="pr-lien-profil" href="profil.html">Voir mon profil public</a>
+          <form id="pr-verification-form" class="pr-form-annexe">
+            <label>Demander le badge « compte vérifié » (facultatif)<input name="note" maxlength="300" placeholder="Indique brièvement pourquoi"></label>
+            <button type="submit" class="mini" id="pr-verification-submit">Demander une vérification</button>
+            <p class="pr-note" id="pr-verification-status"></p>
+          </form>
+          <section class="pr-subsection">
+            <h3>Adresse e-mail et mot de passe</h3>
+            <p class="pr-note" id="pr-identifiants-note"></p>
+            <form id="pr-email-form" class="pr-form-annexe" hidden>
+              <label>Nouvelle adresse e-mail<input name="email" type="email" autocomplete="email" required></label>
+              <label>Mot de passe actuel<input name="currentPassword" type="password" autocomplete="current-password" required></label>
+              <button type="submit" class="mini">Changer l’adresse e-mail</button>
+            </form>
+            <form id="pr-password-form" class="pr-form-annexe" hidden>
+              <label>Mot de passe actuel<input name="currentPassword" type="password" autocomplete="current-password" required></label>
+              <label>Nouveau mot de passe<input name="newPassword" type="password" autocomplete="new-password" required></label>
+              <label>Confirmer le nouveau mot de passe<input name="confirmPassword" type="password" autocomplete="new-password" required></label>
+              <button type="submit" class="mini">Changer le mot de passe</button>
+            </form>
+          </section>
+          <section class="pr-subsection">
+            <h3>Données et compte</h3>
+            <button type="button" class="mini" id="pr-exporter">Télécharger mes données (JSON)</button>
+            <p class="pr-note">La suppression du compte n’est pas encore proposée. Les comptes Google et Discord se gèrent auprès de leur fournisseur.</p>
+            <button type="button" class="mini danger" id="pr-desactiver">Désactiver temporairement mon compte</button>
+          </section>
         </section>
 
         <section class="pr-card" data-bloc="connexions" hidden>
@@ -67,6 +96,31 @@
             </div>
           </div>
           <div id="pr-google-zone" hidden></div>
+        </section>
+
+        <section class="pr-card" data-bloc="notifications" hidden>
+          <h2>Notifications</h2>
+          <p class="pr-note">Ces choix enregistrent tes préférences, mais ne déclenchent pas encore d’envoi. Les canaux e-mail, Discord, navigateur et mobile nécessitent des services ou une application qui ne sont pas configurés sur ce site.</p>
+          <form id="pr-notifications-form">
+            <fieldset class="rg-bloc">
+              <legend>Canaux souhaités</legend>
+              <label class="coche"><input type="checkbox" name="emailConnexion"> E-mail de connexion</label>
+              <label class="coche"><input type="checkbox" name="emailSecurite"> E-mail de sécurité</label>
+              <label class="coche"><input type="checkbox" name="navigateur"> Notifications navigateur</label>
+              <label class="coche"><input type="checkbox" name="mobile"> Notifications mobile</label>
+              <label class="coche"><input type="checkbox" name="discord"> Notifications Discord</label>
+            </fieldset>
+            <fieldset class="rg-bloc">
+              <legend>Types de notifications</legend>
+              <label class="coche"><input type="checkbox" name="nouveautes"> Nouveautés</label>
+              <label class="coche"><input type="checkbox" name="evenements"> Événements</label>
+              <label class="coche"><input type="checkbox" name="messages"> Messages</label>
+              <label class="coche"><input type="checkbox" name="commentaires"> Commentaires</label>
+              <label class="coche"><input type="checkbox" name="silencieux"> Mode silencieux</label>
+            </fieldset>
+            <button type="submit" class="btn-login">Enregistrer mes préférences</button>
+          </form>
+          <p class="pr-note" id="pr-notifications-status"></p>
         </section>
 
         <section class="pr-card" data-bloc="affichage" hidden>

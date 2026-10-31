@@ -46,6 +46,8 @@ html[data-theme="dark"] .adm-page-msg.err { color: #feb2b2; background: #3a1717;
 .adm-page-status-row > label:not(.adm-page-field) { display: flex; align-items: center; gap: 8px; font-weight: 600; }
 .adm-page-status-row input { width: 18px; height: 18px; accent-color: var(--red); }
 .adm-page-users .adm-user-controls { grid-column: 2; display: grid; gap: 10px; }
+.adm-user-verification { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); }
+.adm-user-verification strong { width: 100%; }
 .adm-page-users .adm-user-controls select { max-width: 260px; }
 .adm-user-profile { display: grid; gap: 12px; padding: 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); }
 .adm-user-profile > summary { cursor: pointer; font-weight: 700; }

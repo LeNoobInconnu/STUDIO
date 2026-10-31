@@ -59,6 +59,12 @@
       var identites = comptes.map(function (c) {
         return c.fournisseur + (c.nom ? " : " + c.nom : "") + (c.identifiant ? " · ID " + c.identifiant : "");
       }).join(" | ") || "Aucun fournisseur externe lié";
+      var demandeVerification = u.demandeVerification;
+      var verificationHtml = demandeVerification
+        ? '<small>Demande de vérification · ' + K.esc(dateFR(demandeVerification.date)) + ' · ' +
+          K.esc(demandeVerification.traiteeLe ? (demandeVerification.acceptee ? "acceptée" : "traitée") : "en attente") +
+          (demandeVerification.note ? '<br>Motif : ' + K.esc(demandeVerification.note) : "") + '</small>'
+        : "";
       var role = u.role || "utilisateur";
       var roles = Array.isArray(u.roles) && u.roles.length ? u.roles : [role];
       var permissions = u.permissions || {};
@@ -81,16 +87,22 @@
       return '<li data-q="' + K.esc(resume) + '" data-provider="' + K.esc((u.fournisseurs || []).join(",")) + '" data-role="' + K.esc(role) + '" data-verified="' + (u.verifie || comptes.some(function (c) { return c.verifie; }) ? "true" : "false") + '">' + K.avatar(u.avatar, "av") +
         '<div class="txt"><strong>' + K.esc(u.pseudo || "Joueur") + (u.admin ? " · Administrateur" : "") + '</strong>' +
         '<span>' + K.esc(u.bio || "Aucune bio") + '</span>' +
-        '<small>' + K.esc(fournisseurs) + ' · ' + K.esc(date) + '</small>' +
+        '<small>' + K.esc(fournisseurs) + ' · ' + K.esc(date) + ' · Profil ' + (u.profilPublic === false ? "privé" : "public") + '</small>' +
         '<small>' + (u.publications || 0) + ' publication(s) · ' + (u.abonnes || 0) + ' abonné(s) · ' + (u.abonnements || 0) + ' abonnement(s)</small>' +
         '<small>' + K.esc(identites) + '</small>' +
         '<small>' + K.esc(emails) + '</small><small>Dernière activité : ' + K.esc(dernier) + ' · ' + K.esc(etat) + '</small>' +
+        verificationHtml +
         '<small>ID : ' + K.esc(u.id) + '</small>' +
         historiqueSanctions +
         (u.historique && u.historique.length ? '<details><summary>Historique des connexions (' + u.historique.length + ')</summary><small>' +
           u.historique.map(function (x) { return K.esc(new Date(x.date).toLocaleString("fr-FR") + " · " + x.fournisseur); }).join("<br>") +
           '</small></details>' : '') + '</div>' +
         (u.admin ? '' : '<div class="adm-user-controls" data-user="' + K.esc(u.id) + '">' +
+          (demandeVerification && !demandeVerification.traiteeLe
+            ? '<div class="adm-user-verification"><strong>Demande de vérification en attente</strong>' +
+              '<button class="mini" type="button" data-user-action="verification-accept">Accepter et vérifier</button>' +
+              '<button class="mini" type="button" data-user-action="verification-reject">Refuser</button></div>'
+            : '') +
           '<details class="adm-user-profile"><summary>Profil, rôles et notes privées</summary>' +
           '<label class="adm-page-field">Pseudo<input data-profile-pseudo maxlength="24" minlength="3" value="' + K.esc(u.pseudo || "") + '"></label>' +
           '<label class="adm-page-field">Adresse HTTPS de l’avatar<input data-profile-avatar-url type="url" maxlength="2048" placeholder="https://..." value="' + K.esc(/^https:\/\//i.test(u.avatar || "") ? u.avatar : "") + '"></label>' +
@@ -270,7 +282,12 @@
       var uid = bloc.getAttribute("data-user");
       var action = bouton.getAttribute("data-user-action");
       var demande;
-      if (action === "save") {
+      if (action === "verification-accept" || action === "verification-reject") {
+        var decision = action === "verification-accept" ? "accepter" : "refuser";
+        if (decision === "accepter" && !confirm("Accepter cette demande et afficher le badge de compte vérifié ?")) return;
+        if (decision === "refuser" && !confirm("Refuser cette demande de vérification ?")) return;
+        demande = { decisionVerification: decision };
+      } else if (action === "save") {
         var permissions = {};
         bloc.querySelectorAll("[data-perm]").forEach(function (input) { permissions[input.getAttribute("data-perm")] = input.checked; });
         var rolesSelectionnes = Array.prototype.map.call(bloc.querySelector("[data-roles-select]").selectedOptions, function (option) { return option.value; });
@@ -305,9 +322,11 @@
       }
       bouton.disabled = true;
       K.appel("PATCH", "/api/admin/utilisateurs/" + encodeURIComponent(uid), demande).then(function () {
-        afficherMessage(document.getElementById("adm-users-message"), action === "notes-save"
+        afficherMessage(document.getElementById("adm-users-message"), action === "verification-accept" || action === "verification-reject"
+          ? (action === "verification-accept" ? "Demande acceptée et compte vérifié." : "Demande refusée.")
+          : (action === "notes-save"
           ? "Notes privées enregistrées."
-          : (action === "profile-save" ? "Profil enregistré." : "Rôles et permissions enregistrés."), true);
+          : (action === "profile-save" ? "Profil enregistré." : "Rôles et permissions enregistrés.")), true);
         utilisateursCharges = [];
         return chargerUtilisateurs(null, false);
       }, function (erreur) {
