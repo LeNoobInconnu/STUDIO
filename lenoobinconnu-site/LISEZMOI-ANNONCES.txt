@@ -45,7 +45,12 @@ Les anciennes publications et réponses sont conservées.
 MISE A JOUR 3 (utilisateurs et réglages par défaut de l'administration)
 - Redéploie worker-annonces.js sur Cloudflare pour activer la liste des comptes Discord/Google
   et l'enregistrement du thème et de la musique par défaut.
-- Publie aussi admin.html, admin.js, parametres.html, parametres.js, moteur.js, site.js et style.css.
+- Publie aussi admin.html, admin.js, admin-pages.js, admin-pages.css, admin-utilisateurs.html,
+  admin-maintenance.html, admin-theme.html, admin-musique.html, parametres.html, parametres.js,
+  moteur.js, site.js et style.css.
+- Chaque entrée du menu latéral ouvre maintenant sa propre page : tableau de bord, utilisateurs,
+  maintenance, thème par défaut et musique par défaut. La maintenance peut être réglée séparément
+  pour toutes les pages visiteurs, y compris le fil, les profils publics et les paramètres de compte.
 - Les comptes e-mail restent enregistrés dans le navigateur où ils ont été créés : ils ne sont
   pas visibles dans la liste globale des utilisateurs. Aucun mot de passe ni jeton n'est affiché.
 - Pour proposer d'autres musiques, ajoute les fichiers .mp3 dans assets, puis ajoute leur nom et

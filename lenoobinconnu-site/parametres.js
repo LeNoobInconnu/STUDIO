@@ -166,7 +166,7 @@
   $("#pr-musique").addEventListener("change", function () { LNI_PREFS.musique(this.checked); rendreAffichage(); });
   $("#pr-volume").addEventListener("input", function () { LNI_PREFS.volume(this.value / 100); });
   /* ----- Administration : maintenance, bandeau, fonctions, logo ----- */
-  var PAGES = [["accueil", "Accueil"], ["programme", "Programme"], ["series", "Séries"], ["communaute", "Communauté"], ["affiliation", "Affiliation"], ["contact", "Contact"], ["mentions", "Mentions légales"], ["fil", "Fil"]];
+  var PAGES = [["accueil", "Accueil"], ["programme", "Programme"], ["series", "Séries"], ["communaute", "Communauté"], ["affiliation", "Affiliation"], ["contact", "Contact"], ["mentions", "Mentions légales"], ["fil", "Fil"], ["profil", "Profil public"], ["parametres", "Paramètres du compte"]];
   function remplirAdmin(r) {
     var m = r.maintenance || {}, a = r.annonce || {}, cb = r.chatbot || {}, pa = r.partenaires || {};
     var box = $("#adm-maint");

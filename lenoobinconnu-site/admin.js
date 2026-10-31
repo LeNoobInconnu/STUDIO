@@ -5,8 +5,6 @@
   var corps = document.getElementById("adm-corps");
   var etat = document.getElementById("adm-etat");
   var recherche = document.getElementById("adm-recherche");
-  var curseurUtilisateurs = null;
-  var chargementUtilisateurs = false;
   var dateFR = function (t) { try { return new Date(t).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }); } catch (e) { return ""; } };
   var heure = function (t) { try { return new Date(t).toLocaleString("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }); } catch (e) { return ""; } };
   var esc = K.esc;
@@ -101,8 +99,8 @@
             '<button type="button" class="fort" data-aller="adm-annonce">' + ICO.send + 'Publier une annonce</button>' +
             '<a href="index.html#section-annonces">' + ICO.quest + 'Nouveau questionnaire</a>' +
             '<a href="fil.html">' + ICO.fil + 'Voir le fil</a>' +
-            '<a href="#adm-theme">' + ICO.theme + 'Thème par défaut</a>' +
-            '<a href="#adm-musique">' + ICO.theme + 'Musique par défaut</a>' +
+            '<a href="admin-theme.html">' + ICO.theme + 'Thème par défaut</a>' +
+            '<a href="admin-musique.html">' + ICO.theme + 'Musique par défaut</a>' +
             '<a class="jaune" href="profil.html?id=' + encodeURIComponent(moi.id) + '">' + ICO.user + 'Mon profil</a>' +
           '</div></article>' +
 
@@ -117,78 +115,6 @@
           '<p>Les visites du site ne sont pas comptées : seuls les contenus publiés sont affichés ici.</p></article>' +
       '</section>';
 
-    var defauts = reglages.reglagesParDefaut || SITE.reglagesParDefaut || {};
-    var pistes = (SITE.musiquesDisponibles || []).filter(function (p) {
-      return p && typeof p.fichier === "string" && /^(?:assets\/[A-Za-z0-9_-]+\/)*[A-Za-z0-9_-]+\.mp3$/.test(p.fichier);
-    });
-    var fichierMusique = reglages.musique && reglages.musique.fichier || (SITE.musique && SITE.musique.fichier) || "";
-    var choixMusique = pistes.map(function (p) {
-      return '<option value="' + esc(p.fichier) + '"' + (p.fichier === fichierMusique ? " selected" : "") + '>' + esc(p.nom || p.fichier) + '</option>';
-    }).join("");
-    if (fichierMusique && !pistes.some(function (p) { return p.fichier === fichierMusique; })) {
-      choixMusique = '<option value="' + esc(fichierMusique) + '" selected>' + esc(fichierMusique) + ' (non listée)</option>' + choixMusique;
-    }
-    corps.insertAdjacentHTML("beforeend",
-      '<section class="adm-card large" id="adm-utilisateurs"><h2>' + ICO.user + 'Utilisateurs inscrits</h2>' +
-        '<p>Comptes Discord et Google enregistrés sur le serveur. Les comptes e-mail sont stockés uniquement dans le navigateur où ils ont été créés et ne peuvent pas être listés ici. Le serveur ne conserve pas les adresses e-mail ni les secrets de connexion.</p>' +
-        '<ul class="adm-users" id="adm-utilisateurs-liste"><li data-q="" id="adm-utilisateurs-attente">Chargement des utilisateurs…</li></ul>' +
-        '<p class="adm-msg" id="adm-utilisateurs-msg" role="status" hidden></p>' +
-        '<button class="mini adm-action" id="adm-utilisateurs-suite" type="button" hidden>Charger la suite</button></section>' +
-      '<form class="adm-grid" id="adm-reglages-defaut" novalidate>' +
-        '<article class="adm-card" id="adm-theme"><h2>' + ICO.theme + 'Thème par défaut</h2>' +
-          '<p>Ce thème s’applique aux visiteurs qui n’ont pas encore choisi leur affichage.</p>' +
-          '<label class="adm-champ">Thème<select name="theme"><option value="normal"' + (defauts.theme !== "sombre" ? " selected" : "") + '>Normal</option><option value="sombre"' + (defauts.theme === "sombre" ? " selected" : "") + '>Sombre</option></select></label>' +
-        '</article>' +
-        '<article class="adm-card" id="adm-musique"><h2>' + ICO.theme + 'Musique par défaut</h2>' +
-          '<p>La musique choisie est proposée sur toutes les pages. Le navigateur peut demander un clic avant de la lancer.</p>' +
-          '<label class="adm-champ">Fichier disponible<select name="fichier"' + (choixMusique ? "" : " disabled") + '>' + (choixMusique || '<option value="">Aucun fichier .mp3 configuré</option>') + '</select></label>' +
-          '<label class="adm-sw"><span>Activée par défaut pour les nouveaux visiteurs</span><input type="checkbox" name="musique"' + (defauts.musique ? " checked" : "") + '></label>' +
-        '</article>' +
-        '<div class="adm-card large"><p class="adm-msg" id="adm-reglages-defaut-msg" role="status" hidden></p>' +
-          '<button class="btn-solid" type="submit" style="margin-top:0">Enregistrer les réglages par défaut</button></div>' +
-      '</form>');
-    chargerUtilisateurs(null, false);
-  }
-
-  function rendreUtilisateurs(utilisateurs, ajouter) {
-    var liste = document.getElementById("adm-utilisateurs-liste");
-    if (!ajouter) liste.innerHTML = "";
-    if (!utilisateurs.length && !ajouter) {
-      liste.innerHTML = '<li data-q="">Aucun compte serveur enregistré pour le moment.</li>';
-      return;
-    }
-    liste.insertAdjacentHTML("beforeend", utilisateurs.map(function (u) {
-      var fournisseurs = (u.fournisseurs || []).join(", ") || "Non précisé";
-      var date = u.inscritLe ? dateFR(u.inscritLe) : "Date d’inscription non renseignée";
-      var resume = [u.pseudo, u.id, u.bio, fournisseurs, u.admin ? "admin" : ""].join(" ").toLowerCase();
-      return '<li data-q="' + esc(resume) + '">' + K.avatar(u.avatar, "av") +
-        '<div class="txt"><strong>' + esc(u.pseudo || "Joueur") + (u.admin ? " · Administrateur" : "") + '</strong>' +
-        '<span>' + esc(u.bio || "Aucune bio") + '</span><small>' + esc(fournisseurs) + ' · ' + esc(date) + '</small>' +
-        '<small>' + (u.publications || 0) + ' publication(s) · ' + (u.abonnes || 0) + ' abonné(s) · ' + (u.abonnements || 0) + ' abonnement(s)</small>' +
-        '<small>ID : ' + esc(u.id) + '</small></div></li>';
-    }).join(""));
-  }
-
-  function chargerUtilisateurs(curseur, ajouter) {
-    if (chargementUtilisateurs) return;
-    chargementUtilisateurs = true;
-    var bouton = document.getElementById("adm-utilisateurs-suite");
-    var messageEl = document.getElementById("adm-utilisateurs-msg");
-    if (bouton) bouton.disabled = true;
-    K.appel("GET", "/api/admin/utilisateurs" + (curseur ? "?cursor=" + encodeURIComponent(curseur) : "")).then(function (d) {
-      rendreUtilisateurs(d.utilisateurs || [], ajouter);
-      curseurUtilisateurs = d.curseur || null;
-      bouton.hidden = !curseurUtilisateurs;
-      message(messageEl, "", true);
-    }, function (e) {
-      messageEl.hidden = false;
-      messageEl.textContent = "Impossible de charger la liste : " + e.message;
-      messageEl.className = "adm-msg err";
-      if (bouton) bouton.hidden = true;
-    }).then(function () {
-      chargementUtilisateurs = false;
-      if (bouton) bouton.disabled = false;
-    });
   }
 
   function message(el, texte, ok) {
@@ -230,24 +156,6 @@
       document.querySelectorAll("[data-filtrable] li, .adm-users li[data-q]").forEach(function (li) {
         li.hidden = !!q && (li.getAttribute("data-q") || "").indexOf(q) < 0;
       });
-    });
-
-    document.getElementById("adm-utilisateurs-suite").addEventListener("click", function () {
-      if (curseurUtilisateurs) chargerUtilisateurs(curseurUtilisateurs, true);
-    });
-
-    document.getElementById("adm-reglages-defaut").addEventListener("submit", function (e) {
-      e.preventDefault();
-      var f = this, btn = f.querySelector('button[type="submit"]'), note = document.getElementById("adm-reglages-defaut-msg");
-      btn.disabled = true;
-      K.appel("PUT", "/api/reglages", {
-        reglagesParDefaut: { theme: f.elements.theme.value, musique: f.elements.musique.checked },
-        musique: { fichier: f.elements.fichier.value }
-      }).then(function () {
-        message(note, "Réglages par défaut enregistrés.", true);
-      }, function (e2) {
-        message(note, e2.message, false);
-      }).then(function () { btn.disabled = false; });
     });
 
     document.getElementById("adm-deco").addEventListener("click", function () {

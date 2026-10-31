@@ -9,7 +9,7 @@ const txt = (s, n) => String(s == null ? "" : s).trim().slice(0, n);
 const liste = (s) => String(s || "").split(",").map((x) => x.trim().toLowerCase()).filter(Boolean);
 const nouvelId = () => crypto.randomUUID().slice(0, 8);
 const IMG_RE = /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/;
-const PAGES = ["accueil", "programme", "series", "communaute", "affiliation", "contact", "mentions"];
+const PAGES = ["accueil", "programme", "series", "communaute", "fil", "affiliation", "contact", "mentions", "profil", "parametres"];
 const ID_OK = /^[A-Za-z0-9:_-]{1,80}$/;
 const TID_OK = /^(post|annonce):[A-Za-z0-9-]{1,20}$/;
 
