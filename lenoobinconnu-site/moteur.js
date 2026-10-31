@@ -201,7 +201,7 @@
     return annonceHtml() +
       '<header class="nav"><div class="wrap">' + logoHtml() +
       '<ul class="links">' + liens + '</ul>' +
-      '<div class="nav-right"><a class="btn-outline" href="' + esc(lien("discord")) + '" target="_blank" rel="noopener">' + ICON.discord + 'Discord</a>' + compteHtml() + reglagesHtml() + burger + '</div>' +
+      '<div class="nav-right"><a class="btn-outline" href="' + esc(lien("discord")) + '" target="_blank" rel="noopener">' + ICON.discord + 'Discord</a>' + compteHtml() + burger + '</div>' +
       '</div>' + menuMobile + '</header>';
   }
 

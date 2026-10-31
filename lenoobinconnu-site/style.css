@@ -511,3 +511,24 @@ html[data-theme="dark"] .pr-msg.err { background: #3a1717; color: #feb2b2; }
 .compte-menu .compte-lien svg { width: 18px; height: 18px; color: var(--text-soft); flex: none; }
 .compte-menu .compte-lien.js-logout { color: var(--fg); }
 .compte-menu button + button { margin-top: 0; }
+
+/* Barre de navigation sur une seule ligne (ordinateur), comme la capture de référence */
+@media (min-width: 900px) {
+  .nav .wrap { flex-wrap: nowrap; gap: 24px; padding-block: 12px; }
+  .logo img { height: 48px; }
+  .links { gap: 22px; }
+  .links a { font-size: .78rem; letter-spacing: .06em; padding: 8px 0 6px; }
+  .links a svg { display: none; }
+  .nav-right { gap: 12px; flex: none; }
+  .nav-right .btn-outline { padding: 8px 16px; }
+}
+@media (min-width: 900px) and (max-width: 1180px) {
+  .nav .wrap { gap: 16px; }
+  .links { gap: 14px; }
+  .links a { font-size: .72rem; letter-spacing: .04em; }
+  .nav-right .btn-outline { padding: 8px 12px; }
+  .btn-login.connecte .btn-nom { display: none; }
+}
+.btn-login.connecte { height: 46px; border-radius: 8px; padding: 6px 14px 6px 6px; }
+.btn-login.connecte .avatar.ini { width: 32px; height: 32px; border-radius: 6px; background: #1d2029; color: #fff; border: 1px solid rgba(255,255,255,.25); font-size: .9rem; }
+.btn-login.connecte .btn-nom { font-family: var(--font-body); font-size: .85rem; letter-spacing: .02em; text-transform: none; }

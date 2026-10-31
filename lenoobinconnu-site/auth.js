@@ -162,6 +162,7 @@
     menu.className = "compte-menu";
     var profil = u.uid ? "profil.html?id=" + encodeURIComponent(u.uid) : "parametres.html#compte";
     menu.innerHTML = '<a class="cm-tete" href="' + profil + '"><strong>' + esc(u.pseudo) + '</strong><span class="cm-role">' + (u.admin ? "Admin" : "Joueur") + '</span></a>' +
+      (u.admin ? '<a class="compte-lien" href="admin.html">' + ICON.news + 'Espace admin</a>' : "") +
       '<a class="compte-lien" href="parametres.html">' + ICON.settings + 'Paramètres</a>' +
       '<button type="button" class="compte-lien js-logout">' + ICON.logout + "Se déconnecter</button>";
     menu.querySelector(".js-logout").addEventListener("click", function () { deconnecter(); fermerMenu(); majBouton(); });
