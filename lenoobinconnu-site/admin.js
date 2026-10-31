@@ -27,12 +27,11 @@
       '<div class="txt"><strong>' + esc(titre) + '</strong><span>' + esc(detail) + '</span></div><time>' + esc(heure(date)) + '</time></li>';
   }
 
-  function rendre(moi, fil, contenu, reglages) {
+  function rendre(moi, fil, contenu) {
     var annonces = contenu.annonces || [], quests = contenu.questionnaires || [];
     var reponses = 0;
     quests.forEach(function (q) { reponses += (q.resultats && q.resultats.total) || 0; });
     var nbPub = fil.length;
-    var maint = !!(reglages.maintenance && reglages.maintenance.accueil);
     var session = K.session() || {};
 
     // Barre latérale : identité
@@ -77,43 +76,45 @@
         return '<div class="adm-stat"><span class="adm-ico">' + s[0] + '</span><div><b>' + s[1] + '</b><small>' + s[2] + '</small></div></div>';
       }).join("") + '</section>' +
 
-      '<section class="adm-grid">' +
-        '<article class="adm-card"><h2>' + ICO.maint + 'Mode maintenance</h2>' +
-          '<div class="adm-sw"><span>Accueil en maintenance</span>' +
-            '<label class="switch"><input type="checkbox" id="adm-maint"' + (maint ? " checked" : "") + '><span class="piste"></span><span class="switch-text" id="adm-maint-etat">' + (maint ? "Activé" : "Désactivé") + '</span></label></div>' +
-          '<div class="adm-apercu"><strong>Site en maintenance</strong><p>' + esc(SITE.messageMaintenance || "") + '</p></div>' +
-          '<p>Les réglages par défaut du thème et de la musique sont disponibles dans le menu latéral.</p>' +
-          '<p class="adm-msg" id="adm-maint-msg" hidden></p></article>' +
+      '<section class="adm-section">' +
+        '<div class="adm-section-heading"><h2>Administration du site</h2><p>Chaque réglage se trouve dans sa page dédiée.</p></div>' +
+        '<div class="adm-grid adm-tool-grid">' +
+          '<article class="adm-card adm-tool-card"><h3>' + ICO.user + 'Utilisateurs</h3><p>Consulter les comptes et gérer les rôles, permissions et suspensions.</p><a class="adm-action" href="admin-utilisateurs.html">Gérer les utilisateurs</a></article>' +
+          '<article class="adm-card adm-tool-card"><h3>' + ICO.set + 'Réglages du site</h3><p>Configurer la bannière, la popup, le message d’accueil et le SEO.</p><a class="adm-action" href="admin-site.html">Ouvrir les réglages</a></article>' +
+          '<article class="adm-card adm-tool-card"><h3>' + ICO.maint + 'Pages et maintenance</h3><p>Gérer la disponibilité, la maintenance et les redirections des pages.</p><a class="adm-action" href="admin-maintenance.html">Gérer les pages</a></article>' +
+          '<article class="adm-card adm-tool-card"><h3>' + ICO.theme + 'Thème par défaut</h3><p>Choisir le thème proposé par défaut aux visiteurs.</p><a class="adm-action" href="admin-theme.html">Régler le thème</a></article>' +
+          '<article class="adm-card adm-tool-card"><h3>' + ICO.theme + 'Musique par défaut</h3><p>Choisir la musique proposée par défaut aux visiteurs.</p><a class="adm-action" href="admin-musique.html">Régler la musique</a></article>' +
+          '<article class="adm-card adm-tool-card"><h3>' + ICO.user + 'Mon profil</h3><p>Consulter le profil public associé à ton compte administrateur.</p><a class="adm-action" href="profil.html?id=' + encodeURIComponent(moi.id) + '">Voir mon profil</a></article>' +
+        '</div>' +
+      '</section>' +
 
-        '<article class="adm-card"><h2>' + ICO.send + 'Publier une annonce</h2>' +
-          '<p>Une annonce est visible par tous les visiteurs sur l\'accueil, avec ses commentaires.</p>' +
-          '<form id="adm-annonce" novalidate>' +
-            '<label class="adm-champ">Titre<input name="titre" maxlength="120" required></label>' +
-            '<label class="adm-champ">Texte<textarea name="texte" rows="3" maxlength="2000"></textarea></label>' +
-            '<label class="adm-champ">Lien (facultatif)<input name="lien" type="url" placeholder="https://..."></label>' +
-            '<p class="adm-msg" id="adm-annonce-msg" hidden></p>' +
-            '<button class="btn-solid" type="submit" style="margin-top:0">Publier l\'annonce</button></form></article>' +
+      '<section class="adm-section">' +
+        '<div class="adm-section-heading"><h2>Publication et communauté</h2><p>Outils de publication et d’animation du site.</p></div>' +
+        '<div class="adm-grid adm-tool-grid">' +
+          '<article class="adm-card"><h2>' + ICO.send + 'Publier une annonce</h2>' +
+            '<p>Une annonce est visible par tous les visiteurs sur l’accueil, avec ses commentaires.</p>' +
+            '<form id="adm-annonce" novalidate>' +
+              '<label class="adm-champ">Titre<input name="titre" maxlength="120" required></label>' +
+              '<label class="adm-champ">Texte<textarea name="texte" rows="3" maxlength="2000"></textarea></label>' +
+              '<label class="adm-champ">Lien (facultatif)<input name="lien" type="url" placeholder="https://..."></label>' +
+              '<p class="adm-msg" id="adm-annonce-msg" hidden></p>' +
+              '<button class="btn-solid" type="submit" style="margin-top:0">Publier l’annonce</button></form></article>' +
+          '<article class="adm-card adm-tool-card"><h3>' + ICO.quest + 'Questionnaires</h3><p>Créer et gérer les questionnaires proposés sur la page d’accueil.</p><a class="adm-action" href="index.html#section-annonces">Gérer les questionnaires</a></article>' +
+          '<article class="adm-card adm-tool-card"><h3>' + ICO.fil + 'Fil de publications</h3><p>Consulter les publications et les échanges de la communauté.</p><a class="adm-action" href="fil.html">Ouvrir le fil</a></article>' +
+        '</div>' +
+      '</section>' +
 
-        '<article class="adm-card"><h2>Gestion rapide</h2>' +
-          '<div class="adm-quick">' +
-            '<button type="button" class="fort" data-aller="adm-annonce">' + ICO.send + 'Publier une annonce</button>' +
-            '<a href="index.html#section-annonces">' + ICO.quest + 'Nouveau questionnaire</a>' +
-            '<a href="fil.html">' + ICO.fil + 'Voir le fil</a>' +
-            '<a href="admin-theme.html">' + ICO.theme + 'Thème par défaut</a>' +
-            '<a href="admin-musique.html">' + ICO.theme + 'Musique par défaut</a>' +
-            '<a href="admin-site.html">' + ICO.set + 'Réglages du site</a>' +
-            '<a class="jaune" href="profil.html?id=' + encodeURIComponent(moi.id) + '">' + ICO.user + 'Mon profil</a>' +
-          '</div></article>' +
-
-        '<article class="adm-card large"><h2>' + ICO.fil + 'Dernières publications <a href="fil.html">Voir tout</a></h2>' +
-          (derniers ? '<ul class="adm-liste" data-filtrable>' + derniers + '</ul>' : '<p>Aucune publication pour l\'instant.</p>') + '</article>' +
-
-        '<article class="adm-card"><h2>Activité récente</h2>' +
-          (activite.length ? '<ul class="adm-liste" data-filtrable>' + activite.map(function (x) { return x.html; }).join("") + '</ul>' : '<p>Rien d\'enregistré pour l\'instant.</p>') + '</article>' +
-
-        '<article class="adm-card"><h2>Contenu du site</h2>' +
-          '<div class="adm-barres">' + barre("Publications", nbPub) + barre("Annonces", annonces.length) + barre("Questionnaires", quests.length) + barre("Réponses", reponses) + '</div>' +
-          '<p>Les visites du site ne sont pas comptées : seuls les contenus publiés sont affichés ici.</p></article>' +
+      '<section class="adm-section">' +
+        '<div class="adm-section-heading"><h2>Vue d’ensemble</h2><p>Activité et contenus publiés récemment.</p></div>' +
+        '<div class="adm-grid">' +
+          '<article class="adm-card large"><h2>' + ICO.fil + 'Dernières publications <a href="fil.html">Voir tout</a></h2>' +
+            (derniers ? '<ul class="adm-liste" data-filtrable>' + derniers + '</ul>' : '<p>Aucune publication pour l\'instant.</p>') + '</article>' +
+          '<article class="adm-card"><h2>Activité récente</h2>' +
+            (activite.length ? '<ul class="adm-liste" data-filtrable>' + activite.map(function (x) { return x.html; }).join("") + '</ul>' : '<p>Rien d\'enregistré pour l\'instant.</p>') + '</article>' +
+          '<article class="adm-card"><h2>Contenu du site</h2>' +
+            '<div class="adm-barres">' + barre("Publications", nbPub) + barre("Annonces", annonces.length) + barre("Questionnaires", quests.length) + barre("Réponses", reponses) + '</div>' +
+            '<p>Les visites du site ne sont pas comptées : seuls les contenus publiés sont affichés ici.</p></article>' +
+        '</div>' +
       '</section>';
 
   }
@@ -125,18 +126,6 @@
   }
 
   function brancher() {
-    document.getElementById("adm-maint").addEventListener("change", function () {
-      var coche = this, msgEl = document.getElementById("adm-maint-msg");
-      coche.disabled = true;
-      K.appel("PUT", "/api/reglages", { maintenance: { accueil: coche.checked } }).then(function () {
-        document.getElementById("adm-maint-etat").textContent = coche.checked ? "Activé" : "Désactivé";
-        message(msgEl, "Enregistré. Les visiteurs verront le changement à leur prochaine visite.", true);
-      }, function (e) {
-        coche.checked = !coche.checked;
-        message(msgEl, e.message, false);
-      }).then(function () { coche.disabled = false; });
-    });
-
     var f = document.getElementById("adm-annonce"), msgEl = document.getElementById("adm-annonce-msg");
     f.addEventListener("submit", function (e) {
       e.preventDefault();
@@ -145,11 +134,6 @@
       K.appel("POST", "/api/annonces", { titre: f.titre.value, texte: f.texte.value, lien: f.lien.value }).then(function () {
         f.reset(); message(msgEl, "Annonce publiée. Elle apparaît sur l'accueil.", true); btn.disabled = false;
       }, function (er) { message(msgEl, er.message, false); btn.disabled = false; });
-    });
-
-    corps.addEventListener("click", function (e) {
-      var b = e.target.closest("[data-aller]");
-      if (b) { var cible = document.getElementById(b.getAttribute("data-aller")); if (cible) { cible.scrollIntoView({ behavior: "smooth", block: "start" }); cible.querySelector("input").focus(); } }
     });
 
     recherche.addEventListener("input", function () {
@@ -176,10 +160,10 @@
     return;
   }
 
-  Promise.all([K.appel("GET", "/api/moi"), K.appel("GET", "/api/fil"), K.appel("GET", "/api/contenu"), K.appel("GET", "/api/reglages")])
+  Promise.all([K.appel("GET", "/api/moi"), K.appel("GET", "/api/fil"), K.appel("GET", "/api/contenu")])
     .then(function (r) {
       if (!r[0].admin) { refuser("Cet espace est réservé aux administrateurs.", '<a class="btn-solid" href="fil.html">Retour au fil</a>'); document.getElementById("adm-deco").hidden = false; return; }
-      rendre(r[0], r[1], r[2], r[3]);
+      rendre(r[0], r[1], r[2]);
       brancher();
     }, function (e) {
       refuser("Impossible de charger le tableau de bord : " + e.message + ". Reconnecte-toi puis réessaie.", '<button class="btn-solid" type="button" onclick="location.reload()">Réessayer</button>');

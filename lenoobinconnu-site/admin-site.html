@@ -17,7 +17,7 @@
       <a href="admin.html">Tableau de bord</a>
       <a href="admin-utilisateurs.html">Utilisateurs</a>
       <a href="admin-site.html" aria-current="page">Réglages du site</a>
-      <a href="admin-maintenance.html">Maintenance</a>
+      <a href="admin-maintenance.html">Pages et maintenance</a>
       <a href="admin-theme.html">Thème par défaut</a>
       <a href="admin-musique.html">Musique par défaut</a>
     </nav>
@@ -26,13 +26,8 @@
   <div class="adm-page-main">
     <header class="adm-page-top"><a href="index.html">Voir le site</a></header>
     <main class="adm-page-content" id="adm-page-content">
-      <section class="adm-page-heading"><h1>Réglages du site</h1><p>Maintenance, annonces, pages accessibles et référencement.</p></section>
+      <section class="adm-page-heading"><h1>Réglages du site</h1><p>Annonces, message d’accueil et référencement.</p></section>
       <form class="adm-page-card" id="adm-site-form">
-        <h2>Page de maintenance</h2>
-        <label class="adm-page-field">Message personnalisé<textarea name="maintenanceMessage" rows="3" maxlength="500"></textarea></label>
-        <label class="adm-page-field">Image de maintenance (URL HTTPS)<input name="maintenanceImage" type="url" placeholder="https://..."></label>
-        <label class="adm-page-field">Date et heure de réouverture<input name="maintenanceOuverture" type="datetime-local"></label>
-
         <h2>Bannière globale</h2>
         <label class="coche"><input name="banniereActive" type="checkbox"> Afficher la bannière sur le site</label>
         <label class="adm-page-field">Texte<input name="banniereTexte" maxlength="200"></label>
@@ -46,10 +41,6 @@
         <h2>Message d’accueil</h2>
         <label class="coche"><input name="bienvenueActive" type="checkbox"> Afficher le message sur l’accueil</label>
         <label class="adm-page-field">Message<input name="bienvenueMessage" maxlength="150"></label>
-
-        <h2>Pages et redirections</h2>
-        <p>Décoche une page pour la rendre indisponible. Une redirection ne s’applique que si la page est désactivée.</p>
-        <div class="adm-page-site-pages" id="adm-site-pages"></div>
 
         <h2>Référencement SEO</h2>
         <label class="adm-page-field">Titre du site<input name="seoTitre" maxlength="100"></label>

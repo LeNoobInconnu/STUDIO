@@ -251,33 +251,75 @@
 
   function initialiserMaintenance(reglages) {
     var pages = [
-      ["accueil", "Accueil"],
-      ["programme", "Programme"],
-      ["series", "Séries"],
-      ["communaute", "Communauté"],
-      ["fil", "Fil de publications"],
-      ["affiliation", "Affiliation"],
-      ["contact", "Contact"],
-      ["mentions", "Mentions légales"],
-      ["profil", "Profil public"],
-      ["parametres", "Paramètres du compte"]
+      ["accueil", "Accueil", "index.html"],
+      ["programme", "Programme", "programme.html"],
+      ["series", "Séries", "series.html"],
+      ["communaute", "Communauté", "communaute.html"],
+      ["fil", "Fil de publications", "fil.html"],
+      ["affiliation", "Affiliation", "Affiliation.html"],
+      ["contact", "Contact", "contact.html"],
+      ["mentions", "Mentions légales", "mentions.html"],
+      ["profil", "Profil public", "profil.html"],
+      ["parametres", "Paramètres du compte", "parametres.html"]
     ];
     var form = document.getElementById("adm-maintenance-form");
     var zone = document.getElementById("adm-maintenance-pages");
     var note = document.getElementById("adm-maintenance-message");
     var actives = reglages.maintenance || SITE.maintenance || {};
+    var maintenance = (reglages.siteOptions && reglages.siteOptions.maintenance) || {};
+    var pagesActives = (reglages.siteOptions && reglages.siteOptions.pagesActives) || {};
+    var redirections = (reglages.siteOptions && reglages.siteOptions.redirections) || {};
+    form.elements.maintenanceMessage.value = maintenance.message || "";
+    form.elements.maintenanceImage.value = /^https:\/\//i.test(maintenance.image || "") ? maintenance.image : "";
+    if (maintenance.ouverture > Date.now()) {
+      var d = new Date(maintenance.ouverture);
+      form.elements.maintenanceOuverture.value = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+    }
     zone.innerHTML = pages.map(function (page) {
-      return '<label><input type="checkbox" name="page-' + page[0] + '"' + (actives[page[0]] ? " checked" : "") + '> ' + page[1] + '</label>';
+      var active = pagesActives[page[0]] !== false;
+      var target = redirections[page[0]] || "";
+      return '<div class="adm-page-status-row"><strong>' + page[1] + '</strong>' +
+        '<label><input type="checkbox" name="page-' + page[0] + '"' + (actives[page[0]] && active ? " checked" : "") + '> Maintenance</label>' +
+        '<label><input type="checkbox" name="active-' + page[0] + '"' + (active ? " checked" : "") + '> Page active</label>' +
+        '<label class="adm-page-field">Redirection si désactivée<select name="redirect-' + page[0] + '"><option value="">Aucune</option>' +
+        pages.filter(function (candidate) { return candidate[0] !== page[0] && candidate[0] !== "profil"; }).map(function (candidate) {
+          return '<option value="' + candidate[2] + '"' + (target === candidate[2] ? " selected" : "") + '>' + candidate[1] + '</option>';
+        }).join("") + '</select></label></div>';
     }).join("");
+    zone.addEventListener("change", function (e) {
+      var input = e.target.closest('input[type="checkbox"]');
+      if (!input) return;
+      var row = input.closest(".adm-page-status-row");
+      if (input.name.indexOf("page-") === 0 && input.checked) {
+        row.querySelector('[name="active-' + input.name.slice(5) + '"]').checked = true;
+      } else if (input.name.indexOf("active-") === 0 && !input.checked) {
+        row.querySelector('[name="page-' + input.name.slice(7) + '"]').checked = false;
+      }
+    });
     form.addEventListener("submit", function (e) {
       e.preventDefault();
-      var maintenance = {};
+      var maintenancePages = {};
+      var pagesActivesNouvelles = {};
+      var redirectionsNouvelles = {};
       pages.forEach(function (page) {
-        maintenance[page[0]] = form.elements["page-" + page[0]].checked;
+        maintenancePages[page[0]] = form.elements["page-" + page[0]].checked;
+        pagesActivesNouvelles[page[0]] = form.elements["active-" + page[0]].checked;
+        redirectionsNouvelles[page[0]] = form.elements["redirect-" + page[0]].value;
       });
       var bouton = form.querySelector('button[type="submit"]');
       bouton.disabled = true;
-      K.appel("PUT", "/api/reglages", { maintenance: maintenance }).then(function () {
+      K.appel("PUT", "/api/reglages", {
+        maintenance: maintenancePages,
+        siteOptions: {
+          maintenance: {
+            message: form.elements.maintenanceMessage.value,
+            image: form.elements.maintenanceImage.value,
+            ouverture: form.elements.maintenanceOuverture.value ? new Date(form.elements.maintenanceOuverture.value).toISOString() : ""
+          },
+          pagesActives: pagesActivesNouvelles,
+          redirections: redirectionsNouvelles
+        }
+      }).then(function () {
         afficherMessage(note, "Réglages de maintenance enregistrés. Les visiteurs verront le changement à leur prochaine visite.", true);
       }, function (erreur) {
         afficherMessage(note, "Impossible d’enregistrer la maintenance : " + erreur.message, false);
@@ -286,28 +328,13 @@
   }
 
   function initialiserSite(reglages) {
-    var pages = [
-      ["accueil", "Accueil", "index.html"], ["programme", "Programme", "programme.html"],
-      ["series", "Séries", "series.html"], ["communaute", "Communauté", "communaute.html"],
-      ["fil", "Fil de publications", "fil.html"], ["affiliation", "Affiliation", "Affiliation.html"],
-      ["contact", "Contact", "contact.html"], ["mentions", "Mentions légales", "mentions.html"],
-      ["profil", "Profil public", "profil.html"], ["parametres", "Paramètres du compte", "parametres.html"]
-    ];
     var options = reglages.siteOptions || {};
-    var maintenance = options.maintenance || {};
     var banniere = options.banniere || {};
     var popup = options.popup || {};
     var bienvenue = options.bienvenue || {};
     var seo = options.seo || {};
     var form = document.getElementById("adm-site-form");
     var note = document.getElementById("adm-site-message");
-    var zone = document.getElementById("adm-site-pages");
-    form.elements.maintenanceMessage.value = maintenance.message || "";
-    form.elements.maintenanceImage.value = /^https:\/\//i.test(maintenance.image || "") ? maintenance.image : "";
-    if (maintenance.ouverture > Date.now()) {
-      var d = new Date(maintenance.ouverture);
-      form.elements.maintenanceOuverture.value = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-    }
     form.elements.banniereActive.checked = !!banniere.actif;
     form.elements.banniereTexte.value = banniere.texte || "";
     form.elements.banniereLien.value = banniere.lien || "";
@@ -318,32 +345,12 @@
     form.elements.bienvenueMessage.value = bienvenue.message || "";
     form.elements.seoTitre.value = seo.titre || "";
     form.elements.seoDescription.value = seo.description || "";
-    zone.innerHTML = pages.map(function (page) {
-      var actif = !options.pagesActives || options.pagesActives[page[0]] !== false;
-      var cible = (options.redirections || {})[page[0]] || "";
-      return '<div class="adm-page-site-row"><label><input type="checkbox" name="active-' + page[0] + '"' + (actif ? " checked" : "") + '> ' + page[1] + '</label>' +
-        '<label class="adm-page-field">Redirection si désactivée<select name="redirect-' + page[0] + '"><option value="">Aucune</option>' +
-        pages.filter(function (candidate) { return candidate[0] !== page[0] && candidate[0] !== "profil"; }).map(function (candidate) {
-          return '<option value="' + candidate[2] + '"' + (cible === candidate[2] ? " selected" : "") + '>' + candidate[1] + '</option>';
-        }).join("") + '</select></label></div>';
-    }).join("");
     form.addEventListener("submit", function (e) {
       e.preventDefault();
-      var pagesActives = {};
-      var redirections = {};
-      pages.forEach(function (page) {
-        pagesActives[page[0]] = form.elements["active-" + page[0]].checked;
-        redirections[page[0]] = form.elements["redirect-" + page[0]].value;
-      });
       var bouton = form.querySelector('button[type="submit"]');
       bouton.disabled = true;
       K.appel("PUT", "/api/reglages", {
         siteOptions: {
-          maintenance: {
-            message: form.elements.maintenanceMessage.value,
-            image: form.elements.maintenanceImage.value,
-            ouverture: form.elements.maintenanceOuverture.value ? new Date(form.elements.maintenanceOuverture.value).toISOString() : ""
-          },
           banniere: {
             actif: form.elements.banniereActive.checked,
             texte: form.elements.banniereTexte.value,
@@ -358,8 +365,6 @@
             actif: form.elements.bienvenueActive.checked,
             message: form.elements.bienvenueMessage.value
           },
-          pagesActives: pagesActives,
-          redirections: redirections,
           seo: { titre: form.elements.seoTitre.value, description: form.elements.seoDescription.value }
         }
       }).then(function () {

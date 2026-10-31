@@ -26,11 +26,15 @@
   <div class="adm-page-main">
     <header class="adm-page-top"><a href="index.html">Voir le site</a></header>
     <main class="adm-page-content" id="adm-page-content">
-      <section class="adm-page-heading"><h1>Maintenance des pages</h1><p>Choisis les pages temporairement indisponibles pour les visiteurs.</p></section>
+      <section class="adm-page-heading"><h1>Pages du site</h1><p>Gère au même endroit leur disponibilité, la maintenance et les redirections.</p></section>
       <form class="adm-page-card" id="adm-maintenance-form">
-        <h2>Pages du site</h2>
-        <p>Les visiteurs verront un message de maintenance sur chaque page cochée. Les pages d’administration restent accessibles aux admins.</p>
+        <h2>Disponibilité des pages</h2>
+        <p>Une page ne peut pas être à la fois désactivée et en maintenance : désactiver une page retire la maintenance, et activer la maintenance garde la page accessible pour afficher le message. Une redirection est appliquée si elle est renseignée pour une page désactivée.</p>
         <div class="adm-page-maintenance" id="adm-maintenance-pages"></div>
+        <h2>Contenu de la page maintenance</h2>
+        <label class="adm-page-field">Message personnalisé<textarea name="maintenanceMessage" rows="3" maxlength="500"></textarea></label>
+        <label class="adm-page-field">Image de maintenance (URL HTTPS)<input name="maintenanceImage" type="url" placeholder="https://..."></label>
+        <label class="adm-page-field">Date et heure de réouverture<input name="maintenanceOuverture" type="datetime-local"></label>
         <p class="adm-page-msg" id="adm-maintenance-message" role="status" hidden></p>
         <div class="adm-page-actions"><button class="btn-login" type="submit">Enregistrer la maintenance</button></div>
       </form>
