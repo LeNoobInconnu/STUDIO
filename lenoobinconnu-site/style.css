@@ -532,3 +532,11 @@ html[data-theme="dark"] .pr-msg.err { background: #3a1717; color: #feb2b2; }
 .btn-login.connecte { height: 46px; border-radius: 8px; padding: 6px 14px 6px 6px; }
 .btn-login.connecte .avatar.ini { width: 32px; height: 32px; border-radius: 6px; background: #1d2029; color: #fff; border: 1px solid rgba(255,255,255,.25); font-size: .9rem; }
 .btn-login.connecte .btn-nom { font-family: var(--font-body); font-size: .85rem; letter-spacing: .02em; text-transform: none; }
+.maintenance-image { display: block; max-width: min(100%, 720px); max-height: 360px; object-fit: cover; margin: 24px auto; border-radius: 16px; }
+.maintenance-countdown { margin: 18px 0; font: 600 1.1rem var(--font-mono); }
+.bienvenue-dynamique { margin: 10px 0 24px; color: var(--text-soft); font-size: 1.1rem; }
+.site-popup-overlay { position: fixed; inset: 0; z-index: 9999; display: grid; place-items: center; padding: 20px; background: rgba(15, 17, 24, .76); }
+.site-popup { position: relative; width: min(100%, 520px); padding: 30px; border-radius: 18px; background: var(--surface); color: var(--fg); box-shadow: 0 24px 80px rgba(0,0,0,.35); }
+.site-popup h2 { margin: 0 36px 12px 0; font: 700 1.7rem/1.05 var(--font-head); text-transform: uppercase; }
+.site-popup p { margin: 0; color: var(--text-soft); white-space: pre-wrap; overflow-wrap: anywhere; }
+.site-popup-close { position: absolute; top: 12px; right: 12px; width: 36px; height: 36px; border: 0; border-radius: 50%; background: var(--bg); color: var(--fg); font-size: 1.5rem; cursor: pointer; }

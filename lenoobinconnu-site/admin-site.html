@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Réglages du site - Administration - LeNoobInconnu</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=Syne:wght@800&display=swap">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="admin-pages.css">
+</head>
+<body data-page="admin" data-admin-section="site">
+<div id="site-header"></div>
+<div class="adm-page">
+  <aside class="adm-page-side" aria-label="Menu administrateur">
+    <a class="adm-page-brand" href="admin.html"><strong>LeNoob<br>Inconnu</strong><span>Espace administrateur</span></a>
+    <nav class="adm-page-nav" aria-label="Sections">
+      <a href="admin.html">Tableau de bord</a>
+      <a href="admin-utilisateurs.html">Utilisateurs</a>
+      <a href="admin-site.html" aria-current="page">Réglages du site</a>
+      <a href="admin-maintenance.html">Maintenance</a>
+      <a href="admin-theme.html">Thème par défaut</a>
+      <a href="admin-musique.html">Musique par défaut</a>
+    </nav>
+    <div class="adm-page-footer"><div class="adm-page-user" id="adm-page-user"></div><button class="adm-page-logout" type="button" id="adm-page-logout">Déconnexion</button></div>
+  </aside>
+  <div class="adm-page-main">
+    <header class="adm-page-top"><a href="index.html">Voir le site</a></header>
+    <main class="adm-page-content" id="adm-page-content">
+      <section class="adm-page-heading"><h1>Réglages du site</h1><p>Maintenance, annonces, pages accessibles et référencement.</p></section>
+      <form class="adm-page-card" id="adm-site-form">
+        <h2>Page de maintenance</h2>
+        <label class="adm-page-field">Message personnalisé<textarea name="maintenanceMessage" rows="3" maxlength="500"></textarea></label>
+        <label class="adm-page-field">Image de maintenance (URL HTTPS)<input name="maintenanceImage" type="url" placeholder="https://..."></label>
+        <label class="adm-page-field">Date et heure de réouverture<input name="maintenanceOuverture" type="datetime-local"></label>
+
+        <h2>Bannière globale</h2>
+        <label class="coche"><input name="banniereActive" type="checkbox"> Afficher la bannière sur le site</label>
+        <label class="adm-page-field">Texte<input name="banniereTexte" maxlength="200"></label>
+        <label class="adm-page-field">Lien HTTPS facultatif<input name="banniereLien" type="url" placeholder="https://..."></label>
+
+        <h2>Popup d’annonce</h2>
+        <label class="coche"><input name="popupActive" type="checkbox"> Afficher la popup (une fois par session)</label>
+        <label class="adm-page-field">Titre<input name="popupTitre" maxlength="100"></label>
+        <label class="adm-page-field">Message<textarea name="popupTexte" rows="3" maxlength="600"></textarea></label>
+
+        <h2>Message d’accueil</h2>
+        <label class="coche"><input name="bienvenueActive" type="checkbox"> Afficher le message sur l’accueil</label>
+        <label class="adm-page-field">Message<input name="bienvenueMessage" maxlength="150"></label>
+
+        <h2>Pages et redirections</h2>
+        <p>Décoche une page pour la rendre indisponible. Une redirection ne s’applique que si la page est désactivée.</p>
+        <div class="adm-page-site-pages" id="adm-site-pages"></div>
+
+        <h2>Référencement SEO</h2>
+        <label class="adm-page-field">Titre du site<input name="seoTitre" maxlength="100"></label>
+        <label class="adm-page-field">Description<input name="seoDescription" maxlength="250"></label>
+        <p class="adm-page-msg" id="adm-site-message" role="status" hidden></p>
+        <div class="adm-page-actions"><button class="btn-login" type="submit">Enregistrer les réglages</button></div>
+      </form>
+    </main>
+  </div>
+</div>
+<div id="site-footer"></div>
+<script src="site.js"></script>
+<script src="icones.js"></script>
+<script src="commun.js"></script>
+<script src="moteur.js"></script>
+<script src="admin-pages.js"></script>
+</body>
+</html>

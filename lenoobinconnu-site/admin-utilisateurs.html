@@ -16,6 +16,7 @@
     <nav class="adm-page-nav" aria-label="Sections">
       <a href="admin.html"><svg class="i line" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12l9-8 9 8M5 10v10h14V10"/></svg>Tableau de bord</a>
       <a href="admin-utilisateurs.html" aria-current="page"><svg class="i line" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>Utilisateurs</a>
+      <a href="admin-site.html">Réglages du site</a>
       <a href="admin-maintenance.html"><svg class="i line" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.5-.5-.5-2.5z"/></svg>Maintenance</a>
       <a href="admin-theme.html"><svg class="i line" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg>Thème par défaut</a>
       <a href="admin-musique.html"><svg class="i line" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>Musique par défaut</a>
@@ -27,8 +28,17 @@
     <main class="adm-page-content" id="adm-page-content">
       <section class="adm-page-heading"><h1>Utilisateurs inscrits</h1><p>Consulte les profils de la communauté.</p></section>
       <section class="adm-page-card">
-        <p>Les comptes e-mail créés localement ne peuvent pas être listés ici. Le serveur ne conserve pas les adresses e-mail ni les secrets de connexion.</p>
+        <p>Cette liste est réservée aux admins. Les e-mails fournis par Google ou Discord apparaissent après la prochaine connexion au site. Les comptes e-mail créés localement restent dans le navigateur où ils ont été créés : ils ne sont pas accessibles globalement. Les mots de passe et jetons ne sont jamais affichés.</p>
         <input class="adm-page-search" type="search" id="adm-users-search" placeholder="Rechercher un pseudo, un ID ou un fournisseur" aria-label="Rechercher des utilisateurs">
+        <details>
+          <summary>Recherche avancée</summary>
+          <div class="adm-page-advanced">
+            <label class="adm-page-field">Fournisseur<select id="adm-users-provider"><option value="">Tous</option><option value="google">Google</option><option value="discord">Discord</option></select></label>
+            <label class="adm-page-field">Rôle<select id="adm-users-role"><option value="">Tous</option><option value="utilisateur">Utilisateur</option><option value="moderateur">Modérateur</option><option value="personnalise">Personnalisé</option></select></label>
+            <label class="coche"><input id="adm-users-verified" type="checkbox"> Comptes vérifiés uniquement</label>
+          </div>
+        </details>
+        <button class="mini" id="adm-users-export" type="button">Exporter les utilisateurs CSV</button>
         <ul class="adm-page-users" id="adm-users-list"><li>Chargement des utilisateurs…</li></ul>
         <p class="adm-page-msg" id="adm-users-message" role="status" hidden></p>
         <button class="mini" id="adm-users-more" type="button" hidden>Charger la suite</button>

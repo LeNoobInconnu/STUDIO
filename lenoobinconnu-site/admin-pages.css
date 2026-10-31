@@ -41,6 +41,16 @@ html[data-theme="dark"] .adm-page-msg.err { color: #feb2b2; background: #3a1717;
 .adm-page-users .txt strong, .adm-page-users .txt span, .adm-page-users .txt small { display: block; overflow-wrap: anywhere; }
 .adm-page-users .txt span { color: var(--text-soft); font-size: .9rem; }
 .adm-page-users .txt small { color: var(--gray); font: .68rem var(--font-mono); }
+.adm-page-advanced { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; padding: 14px 0; }
+.adm-page-site-pages { display: grid; gap: 10px; }
+.adm-page-site-row { display: grid; grid-template-columns: minmax(170px, .7fr) minmax(220px, 1fr); align-items: center; gap: 12px; padding: 12px; border: 1px solid var(--line); border-radius: 10px; }
+.adm-page-site-row > label:first-child { display: flex; align-items: center; gap: 10px; }
+.adm-page-site-row input { width: 18px; height: 18px; accent-color: var(--red); }
+.adm-page-users .adm-user-controls { grid-column: 2; display: grid; gap: 10px; }
+.adm-page-users .adm-user-controls select { max-width: 260px; }
+.adm-page-users .adm-user-controls label { display: flex; align-items: center; gap: 8px; }
+.adm-page-users .adm-user-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.adm-page-users .adm-user-actions button { min-height: 36px; }
 .adm-page-maintenance { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
 .adm-page-maintenance label { display: flex; align-items: center; gap: 10px; padding: 13px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); font-weight: 600; }
 .adm-page-maintenance input { width: 18px; height: 18px; accent-color: var(--red); }
@@ -52,4 +62,5 @@ html[data-theme="dark"] .adm-page-msg.err { color: #feb2b2; background: #3a1717;
   .adm-page-nav { grid-auto-flow: column; grid-auto-columns: max-content; overflow-x: auto; }
   .adm-page-top, .adm-page-content { padding-inline: 16px; }
   .adm-page-heading { padding: 20px; }
+  .adm-page-site-row { grid-template-columns: minmax(0, 1fr); }
 }

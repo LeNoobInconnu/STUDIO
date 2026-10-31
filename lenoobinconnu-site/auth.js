@@ -71,9 +71,14 @@
     return fetch("https://discord.com/api/users/@me", { headers: { Authorization: "Bearer " + jeton } })
       .then(function (r) { if (!r.ok) throw 0; return r.json(); })
       .then(function (d) {
-        ecrire(CLE_SESSION, { pseudo: d.global_name || d.username, email: d.email || "", fournisseur: "discord", id: "discord:" + d.id, jeton: jeton,
-          avatar: d.avatar ? "https://cdn.discordapp.com/avatars/" + d.id + "/" + d.avatar + ".png?size=64" : "" });
-        if (page && page !== location.href.split("#")[0]) location.href = page;
+        var serveur = apiBase() ? fetch(apiBase() + "/api/session", { method: "POST", headers: { Authorization: "Discord " + jeton } })
+          .then(function (r) { return r.json().catch(function () { return {}; }).then(function (x) { if (!r.ok) throw x.erreur || "Connexion Discord impossible."; }); }) :
+          Promise.resolve();
+        return serveur.then(function () {
+          ecrire(CLE_SESSION, { pseudo: d.global_name || d.username, email: d.email || "", fournisseur: "discord", id: "discord:" + d.id, jeton: jeton,
+            avatar: d.avatar ? "https://cdn.discordapp.com/avatars/" + d.id + "/" + d.avatar + ".png?size=64" : "" });
+          if (page && page !== location.href.split("#")[0]) location.href = page;
+        });
       }, function () { throw "Impossible de récupérer ton profil Discord."; });
   }
 

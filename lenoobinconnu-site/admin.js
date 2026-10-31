@@ -101,6 +101,7 @@
             '<a href="fil.html">' + ICO.fil + 'Voir le fil</a>' +
             '<a href="admin-theme.html">' + ICO.theme + 'Thème par défaut</a>' +
             '<a href="admin-musique.html">' + ICO.theme + 'Musique par défaut</a>' +
+            '<a href="admin-site.html">' + ICO.set + 'Réglages du site</a>' +
             '<a class="jaune" href="profil.html?id=' + encodeURIComponent(moi.id) + '">' + ICO.user + 'Mon profil</a>' +
           '</div></article>' +
 

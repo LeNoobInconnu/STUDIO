@@ -46,13 +46,25 @@ MISE A JOUR 3 (utilisateurs et réglages par défaut de l'administration)
 - Redéploie worker-annonces.js sur Cloudflare pour activer la liste des comptes Discord/Google
   et l'enregistrement du thème et de la musique par défaut.
 - Publie aussi admin.html, admin.js, admin-pages.js, admin-pages.css, admin-utilisateurs.html,
-  admin-maintenance.html, admin-theme.html, admin-musique.html, parametres.html, parametres.js,
-  moteur.js, site.js et style.css.
+  admin-maintenance.html, admin-site.html, admin-theme.html, admin-musique.html, parametres.html,
+  parametres.js, moteur.js, site.js et style.css.
 - Chaque entrée du menu latéral ouvre maintenant sa propre page : tableau de bord, utilisateurs,
   maintenance, thème par défaut et musique par défaut. La maintenance peut être réglée séparément
   pour toutes les pages visiteurs, y compris le fil, les profils publics et les paramètres de compte.
 - Les comptes e-mail restent enregistrés dans le navigateur où ils ont été créés : ils ne sont
   pas visibles dans la liste globale des utilisateurs. Aucun mot de passe ni jeton n'est affiché.
+- La page Utilisateurs affiche les e-mails communiqués par Google ou Discord, le fournisseur,
+  l'état de vérification, la dernière activité et les connexions récentes. Ces données apparaissent
+  quand la personne se reconnecte ou lie son compte après cette mise à jour.
+- La recherche avancée permet de filtrer les utilisateurs chargés par fournisseur, rôle et
+  vérification. L'export CSV parcourt toutes les pages et inclut les e-mails disponibles : garde
+  ce fichier privé.
+- Les admins peuvent attribuer le rôle modérateur ou des permissions de suppression, bannir et
+  suspendre temporairement un compte. Ces restrictions sont appliquées par le Worker. Les comptes
+  déclarés dans ADMINS sont protégés contre ces actions.
+- La page « Réglages du site » configure le message, l'image et le compte à rebours de maintenance,
+  la bannière, la popup, le message d'accueil, l'activation des pages, leurs redirections internes
+  et le titre/la description SEO.
 - Pour proposer d'autres musiques, ajoute les fichiers .mp3 dans assets, puis ajoute leur nom et
   chemin dans musiquesDisponibles dans site.js. Le choix de l'admin concerne le réglage par défaut;
   les visiteurs qui ont déjà choisi leurs préférences les conservent.

@@ -12,6 +12,11 @@ const IMG_RE = /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/;
 const PAGES = ["accueil", "programme", "series", "communaute", "fil", "affiliation", "contact", "mentions", "profil", "parametres"];
 const ID_OK = /^[A-Za-z0-9:_-]{1,80}$/;
 const TID_OK = /^(post|annonce):[A-Za-z0-9-]{1,20}$/;
+const ROUTES = {
+  accueil: "index.html", programme: "programme.html", series: "series.html", communaute: "communaute.html",
+  fil: "fil.html", affiliation: "Affiliation.html", contact: "contact.html", mentions: "mentions.html",
+  parametres: "parametres.html",
+};
 
 export default {
   async fetch(req, env) {
@@ -50,15 +55,26 @@ async function verifier(type, jeton, env) {
     if (!r.ok) return null;
     const d = await r.json();
     if (d.aud !== env.GOOGLE_CLIENT_ID || d.email_verified === "false") return null;
-    return { key: "google:" + d.sub, fournisseur: "google", nom: d.given_name || d.name || "Joueur", avatar: d.picture || "" };
+    return {
+      key: "google:" + d.sub,
+      fournisseur: "google",
+      nom: d.name || d.given_name || "Joueur",
+      email: d.email || "",
+      avatar: d.picture || "",
+      verifie: d.email_verified === "true",
+    };
   }
   if (type === "Discord") {
     const r = await fetch("https://discord.com/api/oauth2/@me", { headers: { Authorization: "Bearer " + jeton } });
     if (!r.ok) return null;
     const d = await r.json();
     if (!d.user || !d.application || d.application.id !== env.DISCORD_CLIENT_ID) return null;
-    const u = d.user;
+    const profil = await fetch("https://discord.com/api/users/@me", { headers: { Authorization: "Bearer " + jeton } });
+    if (!profil.ok) return null;
+    const u = await profil.json();
+    if (!u || !u.id || !d.user || u.id !== d.user.id) return null;
     return { key: "discord:" + u.id, fournisseur: "discord", nom: u.global_name || u.username || "Joueur",
+      email: u.email || d.user.email || "", verifie: !!u.verified,
       avatar: u.avatar ? "https://cdn.discordapp.com/avatars/" + u.id + "/" + u.avatar + ".png?size=64" : "" };
   }
   return null;
@@ -78,6 +94,24 @@ async function contexte(req, env) {
   const ids = [...new Set([uid, ...idents])];
   const pr = (await lire(env, "profil:" + uid)) || {};
   const admins = liste(env.ADMINS);
+  const gestion = (await lire(env, "gestion:" + uid, {})) || {};
+  if (id.fournisseur) {
+    const comptes = (await lire(env, "comptes:" + uid, {})) || {};
+    comptes[id.fournisseur] = {
+      fournisseur: id.fournisseur,
+      identifiant: id.key,
+      nom: id.nom,
+      email: txt(id.email, 254),
+      verifie: !!id.verifie,
+      avatar: id.avatar || "",
+    };
+    await ecrire(env, "comptes:" + uid, comptes);
+  }
+  const maintenant = Date.now();
+  if (!gestion.derniereActivite || maintenant - gestion.derniereActivite > 60000) {
+    gestion.derniereActivite = maintenant;
+    await ecrire(env, "gestion:" + uid, gestion);
+  }
   return {
     uid,
     ids,
@@ -85,6 +119,11 @@ async function contexte(req, env) {
     nom: pr.pseudo || id.nom,
     avatar: pr.avatar !== undefined ? pr.avatar : id.avatar,
     admin: ids.some((k) => admins.includes(k.toLowerCase())),
+    gestion,
+    role: gestion.role || "utilisateur",
+    permissions: gestion.permissions || {},
+    suspenduJusqua: Number(gestion.suspenduJusqua) || 0,
+    banni: !!gestion.banni,
     fournisseurs: [...new Set(ids.map((k) => k.split(":")[0]))],
     profilExiste: !!pr.pseudo,
     fournisseurReq: type === "Google" ? "google" : "discord",
@@ -93,6 +132,9 @@ async function contexte(req, env) {
 async function exiger(req, env) {
   const c = await contexte(req, env);
   if (!c) throw new Erreur("Connexion requise ou expirée.", 401);
+  if (!c.admin && (c.banni || c.suspenduJusqua > Date.now())) {
+    throw new Erreur(c.banni ? "Ce compte est banni." : "Ce compte est temporairement suspendu.", 403);
+  }
   return c;
 }
 async function exigerAdmin(req, env) {
@@ -133,7 +175,7 @@ async function publications(env, ids, c) {
       aime: p.aime.length,
       jAime: !!c && p.aime.includes(c.uid),
       commentaires: coms.length,
-      peutSupprimer: !!c && (c.uid === p.uid || c.admin),
+      peutSupprimer: !!c && (c.uid === p.uid || c.admin || !!c.permissions.gererPublications),
     });
   }
   return out;
@@ -226,6 +268,9 @@ async function route(req, env) {
   if (m === "POST" && r === "session") {
     const c = await exiger(req, env);
     await assurerProfil(env, c);
+    const historique = (await lire(env, "historique:" + c.uid)) || [];
+    historique.unshift({ date: Date.now(), fournisseur: c.fournisseurReq });
+    await ecrire(env, "historique:" + c.uid, historique.slice(0, 30));
     return { ok: true };
   }
   if (m === "GET" && r === "admin" && a === "utilisateurs") {
@@ -239,6 +284,8 @@ async function route(req, env) {
       const id = cle.name.slice("profil:".length);
       const profil = await lire(env, cle.name, {});
       const identites = [...new Set([id, ...(await lire(env, "idents:" + id))])];
+      const comptes = (await lire(env, "comptes:" + id, {})) || {};
+      const gestion = (await lire(env, "gestion:" + id, {})) || {};
       utilisateurs.push({
         id,
         pseudo: profil.pseudo || "Joueur",
@@ -246,6 +293,23 @@ async function route(req, env) {
         bio: profil.bio || "",
         inscritLe: profil.createdAt || null,
         fournisseurs: [...new Set(identites.map((x) => x.split(":")[0]))],
+        comptes: identites.map((identite) => {
+          const fournisseur = identite.split(":")[0];
+          const info = comptes[fournisseur] || {};
+          return {
+            fournisseur,
+            identifiant: identite,
+            nom: info.nom || "",
+            email: info.email || "",
+            verifie: !!info.verifie,
+          };
+        }),
+        role: gestion.role || "utilisateur",
+        permissions: gestion.permissions || {},
+        banni: !!gestion.banni,
+        suspenduJusqua: Number(gestion.suspenduJusqua) || 0,
+        derniereActivite: Number(gestion.derniereActivite) || null,
+        historique: (await lire(env, "historique:" + id)) || [],
         admin: identites.some((x) => admins.includes(x.toLowerCase())),
         abonnements: (await lire(env, "suit:" + id)).length,
         abonnes: (await lire(env, "abonnes:" + id)).length,
@@ -253,6 +317,45 @@ async function route(req, env) {
       });
     }
     return { utilisateurs, curseur: page.list_complete ? null : page.cursor };
+  }
+  if (m === "PATCH" && r === "admin" && a === "utilisateurs" && b2) {
+    await exigerAdmin(req, env);
+    const uid = b2;
+    if (!(await env.DATA.get("profil:" + uid))) throw new Erreur("Utilisateur introuvable.", 404);
+    const admins = liste(env.ADMINS);
+    const identites = [...new Set([uid, ...(await lire(env, "idents:" + uid))])];
+    if (identites.some((identite) => admins.includes(identite.toLowerCase()))) {
+      throw new Erreur("La gestion d’un compte administrateur doit être faite dans Cloudflare.", 403);
+    }
+    const b = await corps();
+    const gestion = (await lire(env, "gestion:" + uid, {})) || {};
+    if (b.role !== undefined) {
+      if (!["utilisateur", "moderateur", "personnalise"].includes(b.role)) throw new Erreur("Rôle invalide.", 400);
+      gestion.role = b.role;
+      if (b.role === "moderateur") gestion.permissions = { gererPublications: true, gererCommentaires: true };
+      if (b.role === "utilisateur") gestion.permissions = {};
+    }
+    if (b.permissions !== undefined) {
+      if (!b.permissions || typeof b.permissions !== "object" || Array.isArray(b.permissions)) throw new Erreur("Permissions invalides.", 400);
+      gestion.permissions = {
+        gererPublications: !!b.permissions.gererPublications,
+        gererCommentaires: !!b.permissions.gererCommentaires,
+      };
+    }
+    if (typeof b.banni === "boolean") {
+      gestion.banni = b.banni;
+      if (b.banni) gestion.suspenduJusqua = 0;
+    }
+    if (b.suspenduJusqua !== undefined) {
+      const jusqua = Number(b.suspenduJusqua);
+      if (!Number.isFinite(jusqua) || (jusqua !== 0 && (jusqua <= Date.now() || jusqua > Date.now() + 365 * 24 * 60 * 60 * 1000))) {
+        throw new Erreur("Durée de suspension invalide.", 400);
+      }
+      gestion.suspenduJusqua = jusqua;
+      if (jusqua) gestion.banni = false;
+    }
+    await ecrire(env, "gestion:" + uid, gestion);
+    return { ok: true };
   }
   if (m === "GET" && r === "moi") {
     const c = await exiger(req, env);
@@ -341,6 +444,18 @@ async function route(req, env) {
     const idents = await lire(env, "idents:" + c.uid);
     idents.push(info.key);
     await ecrire(env, "idents:" + c.uid, idents);
+    if (info.fournisseur) {
+      const comptes = (await lire(env, "comptes:" + c.uid, {})) || {};
+      comptes[info.fournisseur] = {
+        fournisseur: info.fournisseur,
+        identifiant: info.key,
+        nom: info.nom,
+        email: txt(info.email, 254),
+        verifie: !!info.verifie,
+        avatar: info.avatar || "",
+      };
+      await ecrire(env, "comptes:" + c.uid, comptes);
+    }
     return { ok: true };
   }
   if (m === "POST" && r === "delier") {
@@ -355,6 +470,9 @@ async function route(req, env) {
     if (!cibles.length) throw new Erreur("Aucun compte " + f + " n'est lié.", 404);
     for (const k of cibles) await env.DATA.delete("ident:" + k);
     await ecrire(env, "idents:" + c.uid, idents.filter((k) => !cibles.includes(k)));
+    const comptes = (await lire(env, "comptes:" + c.uid, {})) || {};
+    delete comptes[f];
+    await ecrire(env, "comptes:" + c.uid, comptes);
     return { ok: true };
   }
 
@@ -385,7 +503,7 @@ async function route(req, env) {
       const c = await exiger(req, env);
       const post = await lire(env, "post:" + a, null);
       if (!post) throw new Erreur("Publication introuvable.", 404);
-      if (post.uid !== c.uid && !c.admin) throw new Erreur("Tu ne peux supprimer que tes publications.", 403);
+      if (post.uid !== c.uid && !c.admin && !c.permissions.gererPublications) throw new Erreur("Tu ne peux supprimer que tes publications.", 403);
       await env.DATA.delete("post:" + a);
       await ecrire(env, "fil", (await lire(env, "fil")).filter((x) => x !== a));
       await ecrire(env, "posts:" + post.uid, (await lire(env, "posts:" + post.uid)).filter((x) => x !== a));
@@ -415,7 +533,7 @@ async function route(req, env) {
         commentaires: coms.map((x) => ({
           id: x.id, texte: x.texte, date: x.date, auteur: auteurs[x.uid],
           aime: x.aime.length, jAime: !!c && x.aime.includes(c.uid),
-          peutSupprimer: !!c && (c.uid === x.uid || c.admin),
+          peutSupprimer: !!c && (c.uid === x.uid || c.admin || !!c.permissions.gererCommentaires),
         })),
       };
     }
@@ -444,7 +562,7 @@ async function route(req, env) {
       const coms = await lire(env, cle);
       const x = coms.find((y) => y.id === b2);
       if (!x) throw new Erreur("Commentaire introuvable.", 404);
-      if (x.uid !== c.uid && !c.admin) throw new Erreur("Tu ne peux supprimer que tes commentaires.", 403);
+      if (x.uid !== c.uid && !c.admin && !c.permissions.gererCommentaires) throw new Erreur("Tu ne peux supprimer que tes commentaires.", 403);
       await ecrire(env, cle, coms.filter((y) => y.id !== b2));
       return { ok: true };
     }
@@ -532,6 +650,62 @@ async function route(req, env) {
       const lien = txt(b.annonce.lien, 300);
       if (lien && !/^https?:\/\//i.test(lien)) throw new Erreur("Le lien doit commencer par http:// ou https://", 400);
       out.annonce = { actif: !!b.annonce.actif, texte: txt(b.annonce.texte, 200), lien };
+    }
+    if (b.siteOptions && typeof b.siteOptions === "object") {
+      const current = out.siteOptions || {};
+      const input = b.siteOptions;
+      const next = { ...current };
+      if (input.maintenance && typeof input.maintenance === "object") {
+        const message = txt(input.maintenance.message, 500);
+        const image = txt(input.maintenance.image, 300000);
+        if (image && !/^https:\/\//i.test(image) && !IMG_RE.test(image)) throw new Erreur("L’image de maintenance doit être une URL HTTPS ou une image valide.", 400);
+        const ouverture = input.maintenance.ouverture ? Date.parse(input.maintenance.ouverture) : 0;
+        if (input.maintenance.ouverture && (!Number.isFinite(ouverture) || ouverture <= Date.now())) throw new Erreur("La date de réouverture doit être dans le futur.", 400);
+        next.maintenance = { message, image, ouverture: ouverture || 0 };
+      }
+      if (input.banniere && typeof input.banniere === "object") {
+        const lien = txt(input.banniere.lien, 300);
+        if (lien && !/^https:\/\//i.test(lien)) throw new Erreur("Le lien de la bannière doit commencer par https://.", 400);
+        next.banniere = { actif: !!input.banniere.actif, texte: txt(input.banniere.texte, 200), lien };
+      }
+      if (input.popup && typeof input.popup === "object") {
+        next.popup = { actif: !!input.popup.actif, titre: txt(input.popup.titre, 100), texte: txt(input.popup.texte, 600) };
+      }
+      if (input.bienvenue && typeof input.bienvenue === "object") {
+        next.bienvenue = { actif: !!input.bienvenue.actif, message: txt(input.bienvenue.message, 150) };
+      }
+      if (input.pagesActives && typeof input.pagesActives === "object") {
+        next.pagesActives = { ...(current.pagesActives || {}) };
+        PAGES.forEach((page) => { if (typeof input.pagesActives[page] === "boolean") next.pagesActives[page] = input.pagesActives[page]; });
+      }
+      if (input.redirections && typeof input.redirections === "object") {
+        next.redirections = { ...(current.redirections || {}) };
+        PAGES.forEach((page) => {
+          if (input.redirections[page] === undefined) return;
+          const target = input.redirections[page];
+          if (target !== "" && !Object.values(ROUTES).includes(target)) throw new Erreur("Destination de redirection invalide.", 400);
+          if (target === ROUTES[page]) throw new Erreur("Une page ne peut pas se rediriger vers elle-même.", 400);
+          next.redirections[page] = target;
+        });
+      }
+      if (input.seo && typeof input.seo === "object") {
+        next.seo = { titre: txt(input.seo.titre, 100), description: txt(input.seo.description, 250) };
+      }
+      const disabled = next.pagesActives || {};
+      const redirects = next.redirections || {};
+      for (const page of PAGES) {
+        if (disabled[page] !== false) continue;
+        const vus = new Set([page]);
+        let actuelle = page;
+        while (redirects[actuelle]) {
+          const autre = Object.keys(ROUTES).find((key) => ROUTES[key] === redirects[actuelle]);
+          if (!autre || disabled[autre] !== false) break;
+          if (vus.has(autre)) throw new Erreur("Les redirections créent une boucle.", 400);
+          vus.add(autre);
+          actuelle = autre;
+        }
+      }
+      out.siteOptions = next;
     }
     if (b.chatbot && typeof b.chatbot.actif === "boolean") out.chatbot = { actif: b.chatbot.actif };
     if (b.partenaires && typeof b.partenaires.afficher === "boolean") out.partenaires = { afficher: b.partenaires.afficher };

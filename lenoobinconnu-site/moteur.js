@@ -12,6 +12,19 @@
       var i;
       if (r.maintenance) { SITE.maintenance = SITE.maintenance || {}; for (i in r.maintenance) SITE.maintenance[i] = !!r.maintenance[i]; }
       if (r.annonce) { SITE.annonce = SITE.annonce || {}; SITE.annonce.actif = !!r.annonce.actif; SITE.annonce.texte = r.annonce.texte || ""; SITE.annonce.lien = r.annonce.lien || ""; }
+      if (r.siteOptions) {
+        SITE.siteOptions = r.siteOptions;
+        if (r.siteOptions.banniere) SITE.annonce = {
+          actif: !!r.siteOptions.banniere.actif, texte: r.siteOptions.banniere.texte || "",
+          lien: r.siteOptions.banniere.lien || "", fermable: true
+        };
+        SITE.maintenanceDetaille = r.siteOptions.maintenance || {};
+        SITE.popupAnnonce = r.siteOptions.popup || {};
+        SITE.bienvenueDynamique = r.siteOptions.bienvenue || {};
+        SITE.pagesActives = r.siteOptions.pagesActives || {};
+        SITE.redirections = r.siteOptions.redirections || {};
+        SITE.seo = r.siteOptions.seo || {};
+      }
       if (r.chatbot) { SITE.chatbot = SITE.chatbot || {}; SITE.chatbot.actif = !!r.chatbot.actif; }
       if (r.partenaires) { SITE.partenaires = SITE.partenaires || {}; SITE.partenaires.afficher = !!r.partenaires.afficher; }
       if (r.logo !== undefined) SITE.logo = r.logo || "assets/logo.png";
@@ -314,13 +327,65 @@
      Maintenance
      ------------------------------------------------------------------ */
   function renderMaintenance(page) {
+    var config = SITE.maintenanceDetaille || {};
     var retour = page === "accueil" ? "" :
       '<a class="btn-solid" href="index.html">' + ICON.home + 'Retour à l\'accueil</a>';
+    var image = config.image ? '<img class="maintenance-image" src="' + esc(config.image) + '" alt="Illustration de maintenance" loading="lazy">' : "";
+    var compte = config.ouverture > Date.now() ? '<p class="maintenance-countdown" id="maintenance-countdown" data-ouverture="' + Number(config.ouverture) + '"></p>' : "";
     return '<section class="hero"><div class="wrap">' +
       '<p class="eyebrow">En travaux</p>' +
       '<h1 class="hero-title page-title">Page en <span>maintenance</span></h1>' +
-      '<p class="page-sub">' + esc(SITE.messageMaintenance) + '</p>' + retour +
+      '<p class="page-sub">' + esc(config.message || SITE.messageMaintenance) + '</p>' + image + compte + retour +
       '</div></section>';
+  }
+
+  function appliquerSeo() {
+    if (document.body.getAttribute("data-page") === "admin") return;
+    var seo = SITE.seo || {};
+    if (seo.titre) document.title = seo.titre;
+    if (seo.description) {
+      var meta = document.querySelector('meta[name="description"]');
+      if (!meta) { meta = document.createElement("meta"); meta.name = "description"; document.head.appendChild(meta); }
+      meta.content = seo.description;
+    }
+  }
+
+  function afficherPopup() {
+    var popup = SITE.popupAnnonce || {};
+    if (!popup.actif || !popup.texte) return;
+    try { if (sessionStorage.getItem("lni_popup_ferme") === popup.titre + popup.texte) return; } catch (e) {}
+    var fond = document.createElement("div");
+    fond.className = "site-popup-overlay";
+    fond.setAttribute("role", "presentation");
+    fond.innerHTML = '<section class="site-popup" role="dialog" aria-modal="true" aria-labelledby="site-popup-title">' +
+      '<button class="site-popup-close" type="button" aria-label="Fermer">×</button><h2 id="site-popup-title"></h2><p></p></section>';
+    fond.querySelector("h2").textContent = popup.titre || "Annonce";
+    fond.querySelector("p").textContent = popup.texte;
+    function fermer() {
+      try { sessionStorage.setItem("lni_popup_ferme", popup.titre + popup.texte); } catch (e) {}
+      fond.remove();
+    }
+    fond.querySelector("button").addEventListener("click", fermer);
+    fond.addEventListener("click", function (e) { if (e.target === fond) fermer(); });
+    document.body.appendChild(fond);
+    fond.querySelector("button").focus();
+  }
+
+  function lancerCompteARebours() {
+    var el = document.getElementById("maintenance-countdown");
+    if (!el) return;
+    var ouverture = Number(el.getAttribute("data-ouverture"));
+    function maj() {
+      var reste = ouverture - Date.now();
+      if (reste <= 0) { el.textContent = "La réouverture est imminente."; return; }
+      var jours = Math.floor(reste / 86400000);
+      var heures = Math.floor(reste % 86400000 / 3600000);
+      var minutes = Math.floor(reste % 3600000 / 60000);
+      var secondes = Math.floor(reste % 60000 / 1000);
+      el.textContent = "Réouverture dans " + jours + " j " + heures + " h " + minutes + " min " + secondes + " s";
+    }
+    maj();
+    window.setInterval(maj, 1000);
   }
 
   /* ------------------------------------------------------------------
@@ -433,11 +498,28 @@
 
   document.addEventListener("DOMContentLoaded", function () {
     var page = document.body.getAttribute("data-page");
+    appliquerSeo();
+    var destinations = {
+      "index.html": "accueil", "programme.html": "programme", "series.html": "series",
+      "communaute.html": "communaute", "fil.html": "fil", "Affiliation.html": "affiliation",
+      "contact.html": "contact", "mentions.html": "mentions", "parametres.html": "parametres"
+    };
+    var desactive = SITE.pagesActives && SITE.pagesActives[page] === false;
+    if (desactive) {
+      var cible = (SITE.redirections || {})[page] || "";
+      if (destinations[cible] && destinations[cible] !== page) {
+        location.replace(cible);
+        return;
+      }
+      var contenu = document.querySelector("main");
+      if (contenu) contenu.innerHTML = '<section class="hero"><div class="wrap"><p class="eyebrow">Information</p><h1 class="hero-title page-title">Page <span>indisponible</span></h1><p class="page-sub">Cette page est temporairement désactivée.</p><a class="btn-solid" href="index.html">' + ICON.home + 'Retour à l’accueil</a></div></section>';
+    }
 
-    if (SITE.maintenance && SITE.maintenance[page]) {
+    if (!desactive && SITE.maintenance && SITE.maintenance[page]) {
       var main = document.querySelector("main");
       if (main) main.innerHTML = renderMaintenance(page);
     }
+    lancerCompteARebours();
 
     var h = document.getElementById("site-header");
     var f = document.getElementById("site-footer");
@@ -445,6 +527,17 @@
     if (h) h.outerHTML = renderHeader(page);
     if (f) f.outerHTML = renderFooter();
     if (v) v.innerHTML = renderVideo();
+    if (!desactive && !(SITE.maintenance && SITE.maintenance[page]) && page === "accueil" &&
+        SITE.bienvenueDynamique && SITE.bienvenueDynamique.actif && SITE.bienvenueDynamique.message) {
+      var titre = document.querySelector(".hero-title");
+      if (titre) {
+        var message = document.createElement("p");
+        message.className = "bienvenue-dynamique";
+        message.textContent = SITE.bienvenueDynamique.message;
+        titre.insertAdjacentElement("afterend", message);
+      }
+    }
+    if (!desactive && !(SITE.maintenance && SITE.maintenance[page]) && page !== "admin") afficherPopup();
 
     // Projet à la une
     var vedette = document.getElementById("projet-vedette");
@@ -522,7 +615,7 @@
 
     // Chatbot (chargé seulement s'il est activé et que la page n'est pas en maintenance)
     var cb = SITE.chatbot || {};
-    if (cb.actif && !(SITE.maintenance && SITE.maintenance[page])) {
+    if (cb.actif && !desactive && !(SITE.maintenance && SITE.maintenance[page])) {
       var s = document.createElement("script");
       s.src = "chatbot.js";
       document.body.appendChild(s);
