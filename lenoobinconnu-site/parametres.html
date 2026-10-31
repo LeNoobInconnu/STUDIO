@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paramètres - LeNoobInconnu</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=Syne:wght@800&display=swap">
+<link rel="stylesheet" href="style.css">
+<script src="site.js"></script>
+<script src="icones.js"></script>
+<script src="commun.js"></script>
+<script src="moteur.js"></script>
+</head>
+<body data-page="parametres">
+<div id="site-header"></div>
+<main>
+  <section class="hero pr-hero">
+    <div class="wrap">
+      <p class="eyebrow">Compte</p>
+      <h1 class="hero-title page-title">Paramètres</h1>
+      <p class="page-sub">Ton profil, tes connexions, l'affichage et, pour les admins, les réglages du site.</p>
+      <a class="pr-retour" href="fil.html">← Retour au fil</a>
+    </div>
+  </section>
+  <section class="section" style="padding-top:0">
+    <div class="wrap pr-layout">
+      <nav class="pr-nav" aria-label="Sections des paramètres">
+        <button type="button" data-section="compte">Compte</button>
+        <button type="button" data-section="connexions">Connexions</button>
+        <button type="button" data-section="affichage">Affichage</button>
+        <button type="button" data-section="admin" hidden>Administration</button>
+      </nav>
+      <div class="pr-contenu">
+        <p class="pr-msg" hidden></p>
+
+        <section class="pr-card" data-bloc="compte">
+          <h2>Mon profil</h2>
+          <p class="pr-note" id="pr-note-compte"></p>
+          <div class="profil-photo">
+            <span class="profil-apercu" id="pr-apercu"></span>
+            <div>
+              <label class="mini profil-choisir">Changer la photo<input type="file" accept="image/*" hidden id="pr-fichier"></label>
+              <button class="mini" type="button" id="pr-retirer-photo">Retirer</button>
+            </div>
+          </div>
+          <form id="pr-form" novalidate>
+            <label>Pseudo<input name="pseudo" maxlength="24" autocomplete="nickname"></label>
+            <label>Bio (160 caractères max)<textarea name="bio" rows="3" maxlength="160"></textarea></label>
+            <button class="btn-login" type="submit">Enregistrer</button>
+          </form>
+          <a class="ac-lien" id="pr-lien-profil" href="profil.html">Voir mon profil public</a>
+        </section>
+
+        <section class="pr-card" data-bloc="connexions" hidden>
+          <h2>Connexions</h2>
+          <p class="pr-note">Discord et Google peuvent être liés au même profil : tu te connectes avec l'un ou l'autre et tu retrouves les mêmes publications.</p>
+          <div class="pr-lignes">
+            <div class="pr-ligne" data-f="discord">
+              <span class="pr-logo" aria-hidden="true">DISCORD</span>
+              <div class="pr-texte"><strong>Discord</strong><small data-etat>…</small></div>
+              <div class="pr-actions"></div>
+            </div>
+            <div class="pr-ligne" data-f="google">
+              <span class="pr-logo pr-logo-g" aria-hidden="true">G</span>
+              <div class="pr-texte"><strong>Google</strong><small data-etat>…</small></div>
+              <div class="pr-actions"></div>
+            </div>
+          </div>
+          <div id="pr-google-zone" hidden></div>
+        </section>
+
+        <section class="pr-card" data-bloc="affichage" hidden>
+          <h2>Affichage</h2>
+          <div class="rg-bloc">
+            <span class="reg-label">Thème</span>
+            <div class="seg" role="group" aria-label="Thème">
+              <button type="button" data-theme-btn="normal">Normal</button>
+              <button type="button" data-theme-btn="sombre">Sombre</button>
+            </div>
+          </div>
+          <div class="rg-bloc">
+            <span class="reg-label">Musique</span>
+            <label class="switch"><input type="checkbox" id="pr-musique"><span class="piste"></span><span class="switch-text" id="pr-musique-etat">Désactivée</span></label>
+            <input type="range" id="pr-volume" min="0" max="100" step="1" aria-label="Volume de la musique">
+            <p class="reg-note" id="pr-musique-note" hidden></p>
+          </div>
+        </section>
+
+        <section class="pr-card" data-bloc="admin" hidden>
+          <h2>Administration</h2>
+          <p class="pr-note">Ces réglages s'appliquent à tout le site. Le site se met à jour pour les visiteurs à leur prochaine visite.</p>
+          <form id="adm-form" novalidate>
+            <fieldset class="rg-bloc"><legend>Pages en maintenance</legend><div id="adm-maint"></div></fieldset>
+            <fieldset class="rg-bloc">
+              <legend>Bandeau d'annonce</legend>
+              <label class="coche"><input type="checkbox" name="a-actif"> Afficher le bandeau</label>
+              <label>Texte<input name="a-texte" maxlength="200"></label>
+              <label>Lien (facultatif)<input name="a-lien" type="url" placeholder="https://..."></label>
+            </fieldset>
+            <fieldset class="rg-bloc">
+              <legend>Fonctions</legend>
+              <label class="coche"><input type="checkbox" name="chatbot"> Assistant de chat (bulle en bas à droite)</label>
+              <label class="coche"><input type="checkbox" name="partenaires"> Carrousel des partenaires</label>
+            </fieldset>
+            <fieldset class="rg-bloc">
+              <legend>Logo du site</legend>
+              <div class="logo-zone">
+                <span class="logo-apercu" id="adm-logo-apercu"></span>
+                <div>
+                  <label class="mini profil-choisir">Changer le logo<input type="file" accept="image/*" hidden id="adm-logo-fichier"></label>
+                  <button class="mini" type="button" id="adm-logo-reset">Logo par défaut</button>
+                </div>
+              </div>
+            </fieldset>
+            <button class="btn-login" type="submit">Enregistrer les réglages du site</button>
+          </form>
+        </section>
+      </div>
+    </div>
+  </section>
+</main>
+<div id="site-footer"></div>
+<script src="parametres.js"></script>
+</body>
+</html>

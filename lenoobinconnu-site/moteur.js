@@ -14,6 +14,7 @@
       if (r.annonce) { SITE.annonce = SITE.annonce || {}; SITE.annonce.actif = !!r.annonce.actif; SITE.annonce.texte = r.annonce.texte || ""; SITE.annonce.lien = r.annonce.lien || ""; }
       if (r.chatbot) { SITE.chatbot = SITE.chatbot || {}; SITE.chatbot.actif = !!r.chatbot.actif; }
       if (r.partenaires) { SITE.partenaires = SITE.partenaires || {}; SITE.partenaires.afficher = !!r.partenaires.afficher; }
+      if (r.logo !== undefined) SITE.logo = r.logo || "assets/logo.png";
     }
     try { appliquer(JSON.parse(localStorage.getItem(K))); } catch (e) {}
     // Si les réglages ont changé depuis la dernière visite, on recharge une seule fois
@@ -130,6 +131,7 @@
       { id: "programme", href: "programme.html", label: "Programme", icon: "calendar" },
       { id: "series", href: "series.html", label: "Séries", icon: "series" },
       { id: "communaute", href: "communaute.html", label: "Communauté", icon: "people" },
+      { id: "fil", href: "fil.html", label: "Fil", icon: "news" },
       { id: "affiliation", href: "Affiliation.html", label: "Affiliation", icon: "affil" }
     ];
     if (lien("boutique")) p.push({ id: "boutique", href: lien("boutique"), label: "Boutique", icon: "shop", externe: true });
@@ -315,7 +317,17 @@
   /* ------------------------------------------------------------------
      Interface des réglages
      ------------------------------------------------------------------ */
+  // Préférences utilisées par la page Paramètres
+  window.LNI_PREFS = {
+    get: function () { return { theme: R.theme, musique: !!R.musique, volume: R.volume }; },
+    theme: function (t) { R.theme = t === "sombre" ? "sombre" : "normal"; appliquerTheme(); sauver(); majReglages(); },
+    musique: function (on) { basculerMusique(!!on); },
+    volume: function (v) { R.volume = Math.max(0, Math.min(1, v)); if (audio) audio.volume = R.volume; sauver(); majReglages(); },
+    etat: function () { return etatAudio; }
+  };
+
   function majReglages() {
+    document.dispatchEvent(new Event("lni:prefs"));
     var bt = document.querySelectorAll("[data-theme-btn]");
     for (var i = 0; i < bt.length; i++) {
       bt[i].setAttribute("aria-pressed", bt[i].getAttribute("data-theme-btn") === R.theme ? "true" : "false");
@@ -490,13 +502,6 @@
       } else if (avecServeur) {
         window.LNI.ready.then(lancerAuth);
       } else { lancerAuth(); }
-    }
-
-    // Panneau de réglages pour les admins
-    if (SITE.actualites && SITE.actualites.urlApi) {
-      var sr = document.createElement("script");
-      sr.src = "reglages-admin.js";
-      document.body.appendChild(sr);
     }
 
     // Annonces et questionnaires (accueil)
