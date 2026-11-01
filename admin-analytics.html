@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Statistiques - Administration - LeNoobInconnu</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=Syne:wght@800&display=swap">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="admin-pages.css">
+</head>
+<body data-page="admin">
+<div id="site-header"></div>
+<div class="adm-page">
+  <aside class="adm-page-side" aria-label="Menu administrateur">
+    <a class="adm-page-brand" href="admin.html"><strong>Dashboard</strong><span>LeNoobInconnu · Administration</span></a>
+    <nav class="adm-page-nav" aria-label="Sections">
+      <a href="admin.html"><svg class="i line" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h8v8H3zM13 3h8v5h-8zM13 10h8v11h-8zM3 13h8v8H3z"/></svg>Dashboard</a>
+      <a href="admin-utilisateurs.html"><svg class="i line" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>Utilisateurs</a>
+      <a href="admin-analytics.html" aria-current="page"><svg class="i line" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V9m5 10V5m5 14v-7m5 7V3M2 21h20"/></svg>Statistiques</a>
+      <a href="admin-site.html"><svg class="i line" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-1.7 2.9-.2-.1a1.7 1.7 0 0 0-1.8.2l-.2.1h-3.4l-.1-.2a1.7 1.7 0 0 0-1.6-1l-.2.1-2.9-1.7.1-.2a1.7 1.7 0 0 0-.2-1.8l-.1-.2v-3.4l.2-.1a1.7 1.7 0 0 0 1-1.6l-.1-.2 1.7-2.9.2.1a1.7 1.7 0 0 0 1.8-.2l.2-.1h3.4l.1.2a1.7 1.7 0 0 0 1.6 1l.2-.1 2.9 1.7-.1.2a1.7 1.7 0 0 0 .2 1.8l.1.2v3.4z"/></svg>Réglages du site</a>
+      <a href="admin-maintenance.html"><svg class="i line" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.5-.5-.5-2.5z"/></svg>Pages et maintenance</a>
+      <a href="admin-theme.html"><svg class="i line" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg>Thème par défaut</a>
+      <a href="admin-musique.html"><svg class="i line" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>Musique par défaut</a>
+    </nav>
+    <div class="adm-page-footer"><div class="adm-page-user" id="adm-page-user"></div><button class="adm-page-logout" type="button" id="adm-page-logout">Déconnexion</button></div>
+  </aside>
+  <div class="adm-page-main">
+    <header class="adm-page-top"><a href="index.html">Voir le site</a></header>
+    <main class="adm-page-content" id="adm-analytics-content">
+      <section class="adm-page-heading"><h1>Statistiques</h1><p>Audience agrégée et anonyme du site.</p></section>
+      <section class="adm-page-card">
+        <div class="adm-analytics-toolbar">
+          <label class="adm-page-field" for="adm-analytics-period">Période</label>
+          <select class="adm-page-search" id="adm-analytics-period" aria-label="Période des statistiques">
+            <option value="7">7 derniers jours</option>
+            <option value="30">30 derniers jours</option>
+            <option value="90">90 derniers jours</option>
+          </select>
+          <button class="mini" id="adm-analytics-refresh" type="button">Actualiser</button>
+        </div>
+        <p class="adm-page-msg" id="adm-analytics-message" role="status">Chargement des statistiques…</p>
+        <div class="adm-analytics-metrics" id="adm-analytics-metrics"></div>
+      </section>
+      <section class="adm-page-card"><h2>Vues par jour</h2><div class="adm-analytics-chart-wrap"><div class="adm-analytics-chart" id="adm-analytics-days"></div></div></section>
+      <section class="adm-analytics-grid">
+        <article class="adm-page-card"><h2>Pages les plus vues</h2><div id="adm-analytics-pages"></div></article>
+        <article class="adm-page-card"><h2>Sources de trafic</h2><div id="adm-analytics-sources"></div></article>
+        <article class="adm-page-card"><h2>Appareils</h2><div id="adm-analytics-devices"></div></article>
+        <article class="adm-page-card"><h2>Pays (estimation)</h2><div id="adm-analytics-countries"></div></article>
+        <article class="adm-page-card"><h2>Systèmes d’exploitation</h2><div id="adm-analytics-systems"></div></article>
+        <article class="adm-page-card"><h2>Navigateurs</h2><div id="adm-analytics-browsers"></div></article>
+      </section>
+      <section class="adm-page-card adm-analytics-note">
+        <h2>À propos de ces mesures</h2>
+        <p>Les vues comptent les chargements de pages de la période choisie, pas les personnes uniques. Les sessions actives sont une estimation des navigateurs ayant affiché une page au cours des 2 dernières minutes ; ce chiffre est actualisé automatiquement. La durée moyenne est calculée seulement pour les pages dont le navigateur a pu envoyer la durée visible.</p>
+        <p>Aucune adresse IP, identité de compte, URL de provenance complète ou chaîne de navigateur brute n’est enregistrée par cet outil. Le pays est une estimation à partir des métadonnées Cloudflare, sans ville ni coordonnées. Les événements sont supprimés automatiquement après 90 jours. Les statistiques peuvent être partielles lorsque le tableau indique une limite de lecture.</p>
+      </section>
+    </main>
+  </div>
+</div>
+<div id="site-footer"></div>
+<script src="site.js"></script>
+<script src="icones.js"></script>
+<script src="commun.js"></script>
+<script src="moteur.js"></script>
+<script src="admin-analytics.js"></script>
+</body>
+</html>

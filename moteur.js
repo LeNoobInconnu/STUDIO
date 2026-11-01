@@ -2,6 +2,53 @@
 (function () {
   "use strict";
 
+  /* Réglages publiés par les admins (stockés sur le serveur, lus avant de construire la page) */
+  (function () {
+    var api = SITE.actualites && SITE.actualites.urlApi;
+    if (!api) return;
+    var K = "lni_reglages_site", url = api.replace(/\/+$/, "") + "/api/reglages";
+    function appliquer(r) {
+      if (!r) return;
+      var i;
+      if (r.maintenance) { SITE.maintenance = SITE.maintenance || {}; for (i in r.maintenance) SITE.maintenance[i] = !!r.maintenance[i]; }
+      if (r.annonce) { SITE.annonce = SITE.annonce || {}; SITE.annonce.actif = !!r.annonce.actif; SITE.annonce.texte = r.annonce.texte || ""; SITE.annonce.lien = r.annonce.lien || ""; }
+      if (r.siteOptions) {
+        SITE.siteOptions = r.siteOptions;
+        if (r.siteOptions.banniere) SITE.annonce = {
+          actif: !!r.siteOptions.banniere.actif, texte: r.siteOptions.banniere.texte || "",
+          lien: r.siteOptions.banniere.lien || "", fermable: true
+        };
+        SITE.maintenanceDetaille = r.siteOptions.maintenance || {};
+        SITE.popupAnnonce = r.siteOptions.popup || {};
+        SITE.bienvenueDynamique = r.siteOptions.bienvenue || {};
+        SITE.pagesActives = r.siteOptions.pagesActives || {};
+        SITE.redirections = r.siteOptions.redirections || {};
+        SITE.seo = r.siteOptions.seo || {};
+      }
+      if (r.chatbot) { SITE.chatbot = SITE.chatbot || {}; SITE.chatbot.actif = !!r.chatbot.actif; }
+      if (r.partenaires) { SITE.partenaires = SITE.partenaires || {}; SITE.partenaires.afficher = !!r.partenaires.afficher; }
+      if (r.logo !== undefined) SITE.logo = r.logo || "assets/logo.png";
+      if (r.reglagesParDefaut && typeof r.reglagesParDefaut === "object") {
+        SITE.reglagesParDefaut = SITE.reglagesParDefaut || {};
+        if (["normal", "sombre"].indexOf(r.reglagesParDefaut.theme) >= 0) SITE.reglagesParDefaut.theme = r.reglagesParDefaut.theme;
+        if (typeof r.reglagesParDefaut.musique === "boolean") SITE.reglagesParDefaut.musique = r.reglagesParDefaut.musique;
+      }
+      if (r.musique && typeof r.musique.fichier === "string" && /^(?:assets\/[A-Za-z0-9_-]+\/)*[A-Za-z0-9_-]+\.mp3$/.test(r.musique.fichier)) {
+        SITE.musique = SITE.musique || {};
+        SITE.musique.fichier = r.musique.fichier;
+      }
+    }
+    try { appliquer(JSON.parse(localStorage.getItem(K))); } catch (e) {}
+    // Si les réglages ont changé depuis la dernière visite, on recharge une seule fois
+    fetch(url).then(function (r) { return r.ok ? r.json() : null; }).then(function (r) {
+      if (!r) return;
+      var neuf = JSON.stringify(r), vieux = localStorage.getItem(K) || "{}";
+      if (neuf === vieux) { sessionStorage.removeItem("lni_rl"); return; }
+      localStorage.setItem(K, neuf);
+      if (!sessionStorage.getItem("lni_rl")) { sessionStorage.setItem("lni_rl", "1"); location.reload(); }
+    }).catch(function () {});
+  })();
+
   var CLE = "lni_reglages";
   var CLE_ANNONCE = "lni_annonce_fermee";
 
@@ -106,6 +153,7 @@
       { id: "programme", href: "programme.html", label: "Programme", icon: "calendar" },
       { id: "series", href: "series.html", label: "Séries", icon: "series" },
       { id: "communaute", href: "communaute.html", label: "Communauté", icon: "people" },
+      { id: "fil", href: "fil.html", label: "Fil", icon: "news" },
       { id: "affiliation", href: "Affiliation.html", label: "Affiliation", icon: "affil" }
     ];
     if (lien("boutique")) p.push({ id: "boutique", href: lien("boutique"), label: "Boutique", icon: "shop", externe: true });
@@ -175,7 +223,7 @@
     return annonceHtml() +
       '<header class="nav"><div class="wrap">' + logoHtml() +
       '<ul class="links">' + liens + '</ul>' +
-      '<div class="nav-right"><a class="btn-outline" href="' + esc(lien("discord")) + '" target="_blank" rel="noopener">' + ICON.discord + 'Discord</a>' + compteHtml() + reglagesHtml() + burger + '</div>' +
+      '<div class="nav-right"><a class="btn-outline" href="' + esc(lien("discord")) + '" target="_blank" rel="noopener">' + ICON.discord + 'Discord</a>' + compteHtml() + burger + '</div>' +
       '</div>' + menuMobile + '</header>';
   }
 
@@ -279,19 +327,81 @@
      Maintenance
      ------------------------------------------------------------------ */
   function renderMaintenance(page) {
+    var config = SITE.maintenanceDetaille || {};
     var retour = page === "accueil" ? "" :
       '<a class="btn-solid" href="index.html">' + ICON.home + 'Retour à l\'accueil</a>';
+    var image = config.image ? '<img class="maintenance-image" src="' + esc(config.image) + '" alt="Illustration de maintenance" loading="lazy">' : "";
+    var compte = config.ouverture > Date.now() ? '<p class="maintenance-countdown" id="maintenance-countdown" data-ouverture="' + Number(config.ouverture) + '"></p>' : "";
     return '<section class="hero"><div class="wrap">' +
       '<p class="eyebrow">En travaux</p>' +
       '<h1 class="hero-title page-title">Page en <span>maintenance</span></h1>' +
-      '<p class="page-sub">' + esc(SITE.messageMaintenance) + '</p>' + retour +
+      '<p class="page-sub">' + esc(config.message || SITE.messageMaintenance) + '</p>' + image + compte + retour +
       '</div></section>';
+  }
+
+  function appliquerSeo() {
+    if (document.body.getAttribute("data-page") === "admin") return;
+    var seo = SITE.seo || {};
+    if (seo.titre) document.title = seo.titre;
+    if (seo.description) {
+      var meta = document.querySelector('meta[name="description"]');
+      if (!meta) { meta = document.createElement("meta"); meta.name = "description"; document.head.appendChild(meta); }
+      meta.content = seo.description;
+    }
+  }
+
+  function afficherPopup() {
+    var popup = SITE.popupAnnonce || {};
+    if (!popup.actif || !popup.texte) return;
+    try { if (sessionStorage.getItem("lni_popup_ferme") === popup.titre + popup.texte) return; } catch (e) {}
+    var fond = document.createElement("div");
+    fond.className = "site-popup-overlay";
+    fond.setAttribute("role", "presentation");
+    fond.innerHTML = '<section class="site-popup" role="dialog" aria-modal="true" aria-labelledby="site-popup-title">' +
+      '<button class="site-popup-close" type="button" aria-label="Fermer">×</button><h2 id="site-popup-title"></h2><p></p></section>';
+    fond.querySelector("h2").textContent = popup.titre || "Annonce";
+    fond.querySelector("p").textContent = popup.texte;
+    function fermer() {
+      try { sessionStorage.setItem("lni_popup_ferme", popup.titre + popup.texte); } catch (e) {}
+      fond.remove();
+    }
+    fond.querySelector("button").addEventListener("click", fermer);
+    fond.addEventListener("click", function (e) { if (e.target === fond) fermer(); });
+    document.body.appendChild(fond);
+    fond.querySelector("button").focus();
+  }
+
+  function lancerCompteARebours() {
+    var el = document.getElementById("maintenance-countdown");
+    if (!el) return;
+    var ouverture = Number(el.getAttribute("data-ouverture"));
+    function maj() {
+      var reste = ouverture - Date.now();
+      if (reste <= 0) { el.textContent = "La réouverture est imminente."; return; }
+      var jours = Math.floor(reste / 86400000);
+      var heures = Math.floor(reste % 86400000 / 3600000);
+      var minutes = Math.floor(reste % 3600000 / 60000);
+      var secondes = Math.floor(reste % 60000 / 1000);
+      el.textContent = "Réouverture dans " + jours + " j " + heures + " h " + minutes + " min " + secondes + " s";
+    }
+    maj();
+    window.setInterval(maj, 1000);
   }
 
   /* ------------------------------------------------------------------
      Interface des réglages
      ------------------------------------------------------------------ */
+  // Préférences utilisées par la page Paramètres
+  window.LNI_PREFS = {
+    get: function () { return { theme: R.theme, musique: !!R.musique, volume: R.volume }; },
+    theme: function (t) { R.theme = t === "sombre" ? "sombre" : "normal"; appliquerTheme(); sauver(); majReglages(); },
+    musique: function (on) { basculerMusique(!!on); },
+    volume: function (v) { R.volume = Math.max(0, Math.min(1, v)); if (audio) audio.volume = R.volume; sauver(); majReglages(); },
+    etat: function () { return etatAudio; }
+  };
+
   function majReglages() {
+    document.dispatchEvent(new Event("lni:prefs"));
     var bt = document.querySelectorAll("[data-theme-btn]");
     for (var i = 0; i < bt.length; i++) {
       bt[i].setAttribute("aria-pressed", bt[i].getAttribute("data-theme-btn") === R.theme ? "true" : "false");
@@ -388,11 +498,115 @@
 
   document.addEventListener("DOMContentLoaded", function () {
     var page = document.body.getAttribute("data-page");
+    function initialiserAnalytics() {
+      var api = SITE.actualites && SITE.actualites.urlApi;
+      if (!api || page === "admin") return;
+      var sessionId;
+      try {
+        sessionId = sessionStorage.getItem("lni_analytics_session");
+        if (!sessionId) {
+          var valeurs = new Uint8Array(16);
+          if (!window.crypto || !window.crypto.getRandomValues) throw new Error("Générateur aléatoire indisponible.");
+          window.crypto.getRandomValues(valeurs);
+          valeurs[6] = (valeurs[6] & 15) | 64;
+          valeurs[8] = (valeurs[8] & 63) | 128;
+          var hex = Array.prototype.map.call(valeurs, function (x) { return x.toString(16).padStart(2, "0"); }).join("");
+          sessionId = hex.slice(0, 8) + "-" + hex.slice(8, 12) + "-" + hex.slice(12, 16) + "-" + hex.slice(16, 20) + "-" + hex.slice(20);
+          sessionStorage.setItem("lni_analytics_session", sessionId);
+        }
+      } catch (e) {
+        console.warn("Statistiques désactivées : impossible de créer une session anonyme.", e);
+        return;
+      }
 
-    if (SITE.maintenance && SITE.maintenance[page]) {
+      var url = api.replace(/\/+$/, "") + "/api/analytics";
+      var viewId = "";
+      var actifDepuis = document.visibilityState === "hidden" ? 0 : Date.now();
+      var dureeVisible = 0;
+      var averti = false;
+      function envoyer(donnees, keepalive) {
+        return fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(Object.assign({ sessionId: sessionId }, donnees)),
+          keepalive: !!keepalive
+        }).then(function (reponse) {
+          if (!reponse.ok) throw new Error("HTTP " + reponse.status);
+          return reponse.json();
+        }).catch(function (erreur) {
+          if (!averti) {
+            averti = true;
+            console.warn("Les statistiques anonymes n’ont pas pu être envoyées.", erreur);
+          }
+          return null;
+        });
+      }
+      function enregistrerDuree(keepalive) {
+        if (actifDepuis) {
+          dureeVisible += Date.now() - actifDepuis;
+          actifDepuis = 0;
+        }
+        if (viewId && dureeVisible > 0) {
+          envoyer({ action: "duration", viewId: viewId, secondes: Math.floor(dureeVisible / 1000) }, keepalive);
+        }
+      }
+
+      function classerSource() {
+        if (!document.referrer) return "Accès direct";
+        try {
+          var referent = new URL(document.referrer);
+          if (referent.origin === location.origin) return "Navigation interne";
+          var hote = referent.hostname.toLowerCase();
+          if (/google\.|bing\.|yahoo\.|duckduckgo\.|qwant\./.test(hote)) return "Moteur de recherche";
+          if (/facebook\.|instagram\.|tiktok\.|youtube\.|discord\.|twitter\.|x\.com/.test(hote)) return "Réseau social";
+          return "Site référent";
+        } catch (e) { return "Site référent"; }
+      }
+
+      envoyer({ action: "view", path: location.pathname, source: classerSource() }).then(function (reponse) {
+        if (reponse) viewId = reponse.viewId;
+      });
+      var heartbeat = window.setInterval(function () {
+        if (document.visibilityState !== "hidden") envoyer({ action: "heartbeat" });
+      }, 45000);
+      document.addEventListener("visibilitychange", function () {
+        if (document.visibilityState === "hidden") {
+          enregistrerDuree(true);
+          envoyer({ action: "leave" }, true);
+        } else {
+          actifDepuis = Date.now();
+          envoyer({ action: "heartbeat" });
+        }
+      });
+      window.addEventListener("pagehide", function () {
+        window.clearInterval(heartbeat);
+        enregistrerDuree(true);
+        envoyer({ action: "leave" }, true);
+      });
+    }
+    initialiserAnalytics();
+    appliquerSeo();
+    var destinations = {
+      "index.html": "accueil", "programme.html": "programme", "series.html": "series",
+      "communaute.html": "communaute", "fil.html": "fil", "Affiliation.html": "affiliation",
+      "contact.html": "contact", "mentions.html": "mentions", "parametres.html": "parametres"
+    };
+    var desactive = SITE.pagesActives && SITE.pagesActives[page] === false;
+    if (desactive) {
+      var cible = (SITE.redirections || {})[page] || "";
+      if (destinations[cible] && destinations[cible] !== page) {
+        location.replace(cible);
+        return;
+      }
+      var contenu = document.querySelector("main");
+      if (contenu) contenu.innerHTML = '<section class="hero"><div class="wrap"><p class="eyebrow">Information</p><h1 class="hero-title page-title">Page <span>indisponible</span></h1><p class="page-sub">Cette page est temporairement désactivée.</p><a class="btn-solid" href="index.html">' + ICON.home + 'Retour à l’accueil</a></div></section>';
+    }
+
+    if (!desactive && SITE.maintenance && SITE.maintenance[page]) {
       var main = document.querySelector("main");
       if (main) main.innerHTML = renderMaintenance(page);
     }
+    lancerCompteARebours();
 
     var h = document.getElementById("site-header");
     var f = document.getElementById("site-footer");
@@ -400,6 +614,17 @@
     if (h) h.outerHTML = renderHeader(page);
     if (f) f.outerHTML = renderFooter();
     if (v) v.innerHTML = renderVideo();
+    if (!desactive && !(SITE.maintenance && SITE.maintenance[page]) && page === "accueil" &&
+        SITE.bienvenueDynamique && SITE.bienvenueDynamique.actif && SITE.bienvenueDynamique.message) {
+      var titre = document.querySelector(".hero-title");
+      if (titre) {
+        var message = document.createElement("p");
+        message.className = "bienvenue-dynamique";
+        message.textContent = SITE.bienvenueDynamique.message;
+        titre.insertAdjacentElement("afterend", message);
+      }
+    }
+    if (!desactive && !(SITE.maintenance && SITE.maintenance[page]) && page !== "admin") afficherPopup();
 
     // Projet à la une
     var vedette = document.getElementById("projet-vedette");
@@ -477,7 +702,7 @@
 
     // Chatbot (chargé seulement s'il est activé et que la page n'est pas en maintenance)
     var cb = SITE.chatbot || {};
-    if (cb.actif && !(SITE.maintenance && SITE.maintenance[page])) {
+    if (cb.actif && !desactive && !(SITE.maintenance && SITE.maintenance[page])) {
       var s = document.createElement("script");
       s.src = "chatbot.js";
       document.body.appendChild(s);

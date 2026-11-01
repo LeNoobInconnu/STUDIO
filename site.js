@@ -80,7 +80,7 @@ var SITE = {
   projetMisEnAvant: "affiliation",
 
   /* Projets affichés dans la grille de l'accueil (les id, dans l'ordre voulu) */
-  projetsAccueil: ["defis", "constr uction", "sur vie"],
+  projetsAccueil: ["defis", "construction", "survie"],
 
   /* ---------- PARTENAIRES (carrousel de l'accueil) ----------
      afficher : false pour cacher tout le carrousel.
@@ -141,7 +141,7 @@ var SITE = {
      Les publications se font ensuite depuis le site, connecté avec un compte administrateur. */
   actualites: {
     actif: true,
-    urlApi: ""
+    urlApi: "https://lni-donnees.contact-lenoobinconnu.workers.dev/"
   },
 
   /* ---------- MUSIQUE ----------
@@ -151,6 +151,10 @@ var SITE = {
     fichier: "assets/musique.mp3",
     volume: 0.3
   },
+  /* Musiques proposées dans le panneau d'administration. Ajoute ici chaque fichier .mp3 disponible. */
+  musiquesDisponibles: [
+    { nom: "Musique principale", fichier: "assets/musique.mp3" }
+  ],
 
   /* ---------- CHATBOT ----------
      actif    : true pour afficher la bulle de chat sur toutes les pages.
