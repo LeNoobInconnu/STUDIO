@@ -175,6 +175,200 @@
 
   }
 
+  function initialiserPersonnalisation(moi) {
+    var ancienneZone = corps.querySelector(".adm-widget-grid");
+    if (ancienneZone) return;
+
+    var barreStats = corps.querySelector(".adm-stats");
+    var stats = barreStats ? Array.prototype.slice.call(barreStats.querySelectorAll(".adm-stat")) : [];
+    var sections = Array.prototype.slice.call(corps.querySelectorAll(".adm-section"));
+    var widgets = stats.concat(sections.reduce(function (tous, section) {
+      return tous.concat(Array.prototype.slice.call(section.querySelectorAll(".adm-grid > .adm-card")));
+    }, []));
+    if (!widgets.length) return;
+
+    var idsVus = {};
+    widgets.forEach(function (widget) {
+      var titre = widget.querySelector("h2, h3, small");
+      var libelle = (titre ? titre.textContent : "Widget").trim();
+      var id = libelle.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "widget";
+      idsVus[id] = (idsVus[id] || 0) + 1;
+      if (idsVus[id] > 1) id += "-" + idsVus[id];
+      widget.classList.add("adm-widget");
+      widget.setAttribute("data-widget-id", id);
+      widget.setAttribute("data-widget-title", libelle);
+      if (widget.classList.contains("large")) widget.setAttribute("data-widget-size", "wide");
+      if (widget.querySelector("#adm-annonce")) widget.setAttribute("data-widget-size", "wide");
+    });
+
+    var sectionWidgets = document.createElement("section");
+    sectionWidgets.className = "adm-section";
+    sectionWidgets.innerHTML =
+      '<div class="adm-section-heading"><h2>Tableau de bord</h2><p>Organise tes outils sur une grille régulière. Tes préférences sont enregistrées pour ton compte sur ce navigateur.</p></div>' +
+      '<div class="adm-widget-tools"><button type="button" id="adm-widget-toggle" aria-expanded="false" aria-controls="adm-widget-panel">Personnaliser le tableau de bord</button></div>' +
+      '<div class="adm-widget-panel" id="adm-widget-panel" hidden>' +
+        '<p>Active les widgets souhaités, puis glisse leur poignée pour les réorganiser. La grille se réadapte sans chevauchement.</p>' +
+        '<div class="adm-widget-options" id="adm-widget-options"></div>' +
+        '<div class="adm-widget-actions"><button type="button" id="adm-widget-reset">Réinitialiser la disposition</button><span class="adm-date">Enregistrement automatique</span></div>' +
+      '</div>' +
+      '<p class="adm-msg" id="adm-widget-message" role="status" aria-live="polite" hidden></p>' +
+      '<div class="adm-widget-grid" id="adm-widget-grid"></div>';
+
+    sections.forEach(function (section) { section.remove(); });
+    if (barreStats) barreStats.remove();
+    var bannier = corps.querySelector(".adm-banner");
+    corps.insertBefore(sectionWidgets, bannier ? bannier.nextSibling : corps.firstChild);
+
+    var grille = sectionWidgets.querySelector("#adm-widget-grid");
+    var panneau = sectionWidgets.querySelector("#adm-widget-panel");
+    var boutonPersonnaliser = sectionWidgets.querySelector("#adm-widget-toggle");
+    var options = sectionWidgets.querySelector("#adm-widget-options");
+    var messageEtat = sectionWidgets.querySelector("#adm-widget-message");
+    var cle = "lni-admin-dashboard-" + encodeURIComponent(String(moi.id || moi.nom || "admin"));
+    var defaut = widgets.map(function (widget) { return widget.getAttribute("data-widget-id"); });
+    var preferences = null;
+    var modification = false;
+    var widgetDeplace = null;
+
+    function informer(texte, erreur) {
+      messageEtat.hidden = !texte;
+      messageEtat.textContent = texte || "";
+      messageEtat.className = "adm-msg " + (erreur ? "err" : "ok");
+    }
+
+    function enregistrer() {
+      var visibles = Array.prototype.filter.call(grille.children, function (widget) {
+        return !widget.hidden;
+      }).map(function (widget) { return widget.getAttribute("data-widget-id"); });
+      var ordre = Array.prototype.map.call(grille.children, function (widget) {
+        return widget.getAttribute("data-widget-id");
+      });
+      try {
+        localStorage.setItem(cle, JSON.stringify({ ordre: ordre, visibles: visibles }));
+        informer("Disposition enregistrée.", false);
+      } catch (e) {
+        informer("Impossible d’enregistrer la disposition dans ce navigateur.", true);
+      }
+    }
+
+    widgets.forEach(function (widget) {
+      var id = widget.getAttribute("data-widget-id");
+      var titre = widget.querySelector("h2, h3");
+      var entete = widget.classList.contains("adm-stat") ? widget :
+        (titre && titre.parentElement.classList.contains("adm-tool-head") ? titre.parentElement : (titre || widget));
+      entete.classList.add("adm-widget-title");
+      var poignee = document.createElement("button");
+      poignee.type = "button";
+      poignee.className = "adm-widget-handle";
+      poignee.textContent = "Déplacer";
+      poignee.setAttribute("aria-label", "Déplacer : " + widget.getAttribute("data-widget-title"));
+      poignee.draggable = true;
+      entete.appendChild(poignee);
+
+      var option = document.createElement("label");
+      var caseOption = document.createElement("input");
+      caseOption.type = "checkbox";
+      caseOption.checked = true;
+      caseOption.setAttribute("data-widget-toggle", id);
+      option.appendChild(caseOption);
+      option.appendChild(document.createTextNode(widget.getAttribute("data-widget-title")));
+      options.appendChild(option);
+    });
+
+    try {
+      var sauvegarde = localStorage.getItem(cle);
+      if (sauvegarde) preferences = JSON.parse(sauvegarde);
+    } catch (e) {
+      informer("Les préférences enregistrées sont illisibles. La disposition par défaut est affichée.", true);
+    }
+    if (preferences && Array.isArray(preferences.ordre)) {
+      var ordreSauve = preferences.ordre.filter(function (id) { return defaut.indexOf(id) >= 0; });
+      defaut.forEach(function (id) { if (ordreSauve.indexOf(id) < 0) ordreSauve.push(id); });
+      ordreSauve.forEach(function (id) {
+        var element = widgets.filter(function (widget) { return widget.getAttribute("data-widget-id") === id; })[0];
+        if (element) grille.appendChild(element);
+      });
+    } else {
+      widgets.forEach(function (widget) { grille.appendChild(widget); });
+    }
+    if (preferences && Array.isArray(preferences.visibles)) {
+      widgets.forEach(function (widget) {
+        var visible = preferences.visibles.indexOf(widget.getAttribute("data-widget-id")) >= 0;
+        widget.hidden = !visible;
+        var caseOption = options.querySelector('[data-widget-toggle="' + widget.getAttribute("data-widget-id") + '"]');
+        caseOption.checked = visible;
+      });
+    }
+
+    boutonPersonnaliser.addEventListener("click", function () {
+      panneau.hidden = !panneau.hidden;
+      modification = !panneau.hidden;
+      grille.classList.toggle("is-editing", modification);
+      boutonPersonnaliser.setAttribute("aria-expanded", modification ? "true" : "false");
+      boutonPersonnaliser.textContent = modification ? "Terminer la personnalisation" : "Personnaliser le tableau de bord";
+    });
+
+    options.addEventListener("change", function (e) {
+      var caseOption = e.target.closest("[data-widget-toggle]");
+      if (!caseOption) return;
+      var widget = grille.querySelector('[data-widget-id="' + caseOption.getAttribute("data-widget-toggle") + '"]');
+      if (widget) widget.hidden = !caseOption.checked;
+      enregistrer();
+    });
+
+    grille.addEventListener("dragstart", function (e) {
+      var poignee = e.target.closest(".adm-widget-handle");
+      if (!modification || !poignee) { e.preventDefault(); return; }
+      widgetDeplace = poignee.closest(".adm-widget");
+      widgetDeplace.classList.add("is-dragging");
+      e.dataTransfer.effectAllowed = "move";
+      e.dataTransfer.setData("text/plain", widgetDeplace.getAttribute("data-widget-id"));
+    });
+    grille.addEventListener("dragover", function (e) {
+      if (widgetDeplace) e.preventDefault();
+    });
+    grille.addEventListener("drop", function (e) {
+      if (!widgetDeplace) return;
+      e.preventDefault();
+      var cible = e.target.closest(".adm-widget");
+      if (cible && cible !== widgetDeplace) {
+        var avant = e.clientY < cible.getBoundingClientRect().top + cible.offsetHeight / 2;
+        grille.insertBefore(widgetDeplace, avant ? cible : cible.nextSibling);
+      } else if (!cible) grille.appendChild(widgetDeplace);
+      widgetDeplace.classList.remove("is-dragging");
+      widgetDeplace = null;
+      enregistrer();
+    });
+    grille.addEventListener("dragend", function () {
+      if (widgetDeplace) widgetDeplace.classList.remove("is-dragging");
+      widgetDeplace = null;
+    });
+    grille.addEventListener("keydown", function (e) {
+      var poignee = e.target.closest(".adm-widget-handle");
+      if (!poignee || !e.altKey || (e.key !== "ArrowUp" && e.key !== "ArrowDown")) return;
+      e.preventDefault();
+      var widget = poignee.closest(".adm-widget");
+      var voisin = e.key === "ArrowUp" ? widget.previousElementSibling : widget.nextElementSibling;
+      if (!voisin) return;
+      grille.insertBefore(widget, e.key === "ArrowUp" ? voisin : voisin.nextSibling);
+      poignee.focus();
+      enregistrer();
+    });
+
+    sectionWidgets.querySelector("#adm-widget-reset").addEventListener("click", function () {
+      try { localStorage.removeItem(cle); }
+      catch (e) { informer("Impossible de réinitialiser la disposition dans ce navigateur.", true); return; }
+      defaut.forEach(function (id) {
+        var widget = widgets.filter(function (element) { return element.getAttribute("data-widget-id") === id; })[0];
+        if (widget) { widget.hidden = false; grille.appendChild(widget); }
+        var caseOption = options.querySelector('[data-widget-toggle="' + id + '"]');
+        caseOption.checked = true;
+      });
+      informer("Disposition réinitialisée.", false);
+    });
+  }
+
   function message(el, texte, ok) {
     el.hidden = !texte;
     el.textContent = texte || "";
@@ -313,6 +507,7 @@
     .then(function (r) {
       if (!r[0].admin) { refuser("Cet espace est réservé aux administrateurs.", '<a class="btn-solid" href="fil.html">Retour au fil</a>'); document.getElementById("adm-deco").hidden = false; return; }
       rendre(r[0], r[1], r[2]);
+      initialiserPersonnalisation(r[0]);
       brancher();
     }, function (e) {
       refuser("Impossible de charger le tableau de bord : " + e.message + ". Reconnecte-toi puis réessaie.", '<button class="btn-solid" type="button" onclick="location.reload()">Réessayer</button>');
