@@ -195,17 +195,32 @@
     chargement = true;
     var bouton = document.getElementById("adm-users-more");
     var note = document.getElementById("adm-users-message");
+    var liste = document.getElementById("adm-users-list");
+    var delai;
     bouton.disabled = true;
-    K.appel("GET", "/api/admin/utilisateurs" + (curseur ? "?cursor=" + encodeURIComponent(curseur) : "")).then(function (d) {
+    Promise.race([
+      K.appel("GET", "/api/admin/utilisateurs" + (curseur ? "?cursor=" + encodeURIComponent(curseur) : "")),
+      new Promise(function (_, reject) {
+        delai = window.setTimeout(function () {
+          reject(new Error("Le serveur ne répond pas après 20 secondes."));
+        }, 20000);
+      })
+    ]).then(function (d) {
       utilisateursCharges = ajouter ? utilisateursCharges.concat(d.utilisateurs || []) : (d.utilisateurs || []);
       rendreUtilisateurs(d.utilisateurs || [], ajouter);
       suivant = d.curseur || null;
       bouton.hidden = !suivant;
+      bouton.textContent = "Charger la suite";
+      bouton.dataset.retry = "false";
       afficherMessage(note, "", true);
-    }, function (e) {
+    }).catch(function (e) {
+      if (!ajouter) liste.innerHTML = '<li>Impossible de charger les utilisateurs. Réessaie.</li>';
       afficherMessage(note, "Impossible de charger les utilisateurs : " + e.message, false);
-      bouton.hidden = true;
+      bouton.textContent = "Réessayer";
+      bouton.dataset.retry = "true";
+      bouton.hidden = false;
     }).then(function () {
+      window.clearTimeout(delai);
       chargement = false;
       bouton.disabled = false;
     });
@@ -255,6 +270,10 @@
       document.getElementById(id).addEventListener("change", filtrer);
     });
     document.getElementById("adm-users-more").addEventListener("click", function () {
+      if (this.dataset.retry === "true") {
+        chargerUtilisateurs(suivant, !!suivant);
+        return;
+      }
       if (suivant) chargerUtilisateurs(suivant, true);
     });
     document.getElementById("adm-users-export").addEventListener("click", function () {
