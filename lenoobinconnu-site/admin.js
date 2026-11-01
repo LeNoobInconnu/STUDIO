@@ -78,63 +78,63 @@
 
       '<section class="adm-section">' +
         '<div class="adm-section-heading"><h2>Administration du site</h2><p>Chaque réglage se trouve dans sa page dédiée.</p></div>' +
-        ‘<div class="adm-grid adm-tool-grid">’ +
+        '<div class="adm-grid adm-tool-grid">' +
 
-          ‘<article class="adm-card adm-tool-card">’ +
-            ‘<div class="adm-tool-head"><span class="adm-tool-ico">’ + ICO.user + ‘</span><h3>Utilisateurs</h3></div>’ +
-            ‘<p class="adm-tool-desc">Consulter les comptes et gérer les rôles, permissions et suspensions.</p>’ +
-            ‘<div class="adm-tool-footer">’ +
-              ‘<a class="adm-action" href="admin-utilisateurs.html">Gérer les utilisateurs</a>’ +
-              ‘<a class="adm-quick" href="admin-utilisateurs.html#adm-users-search">Rechercher</a>’ +
-              ‘<button class="adm-quick" type="button" id="dash-export-csv" title="Exporter tous les utilisateurs en CSV">Export CSV</button>’ +
-            ‘</div></article>’ +
+          '<article class="adm-card adm-tool-card">' +
+            '<div class="adm-tool-head"><span class="adm-tool-ico">' + ICO.user + '</span><h3>Utilisateurs</h3></div>' +
+            '<p class="adm-tool-desc">Consulter les comptes et gérer les rôles, permissions et suspensions.</p>' +
+            '<div class="adm-tool-footer">' +
+              '<a class="adm-action" href="admin-utilisateurs.html">Gérer les utilisateurs</a>' +
+              '<a class="adm-quick" href="admin-utilisateurs.html#adm-users-search">Rechercher</a>' +
+              '<button class="adm-quick" type="button" id="dash-export-csv" title="Exporter tous les utilisateurs en CSV">Export CSV</button>' +
+            '</div></article>' +
 
-          ‘<article class="adm-card adm-tool-card">’ +
-            ‘<div class="adm-tool-head"><span class="adm-tool-ico">’ + ICO.fil + ‘</span><h3>Statistiques</h3></div>’ +
-            ‘<p class="adm-tool-desc">Consulter les visites, les pages populaires et les catégories d’audience anonymes.</p>’ +
-            ‘<div class="adm-tool-footer">’ +
-              ‘<a class="adm-action" href="admin-analytics.html">Voir les statistiques</a>’ +
-            ‘</div></article>’ +
+          '<article class="adm-card adm-tool-card">' +
+            '<div class="adm-tool-head"><span class="adm-tool-ico">' + ICO.fil + '</span><h3>Statistiques</h3></div>' +
+            '<p class="adm-tool-desc">Consulter les visites, les pages populaires et les catégories d’audience anonymes.</p>' +
+            '<div class="adm-tool-footer">' +
+              '<a class="adm-action" href="admin-analytics.html">Voir les statistiques</a>' +
+            '</div></article>' +
 
-          ‘<article class="adm-card adm-tool-card">’ +
-            ‘<div class="adm-tool-head"><span class="adm-tool-ico">’ + ICO.set + ‘</span><h3>Réglages du site</h3></div>’ +
-            ‘<p class="adm-tool-desc">Configurer la bannière, la popup, le message d’accueil et le SEO.</p>’ +
-            ‘<div class="adm-tool-footer">’ +
-              ‘<a class="adm-action" href="admin-site.html">Ouvrir les réglages</a>’ +
-              ‘<button class="adm-quick" type="button" id="dash-toggle-banniere">Bannière&nbsp;–</button>’ +
-            ‘</div></article>’ +
+          '<article class="adm-card adm-tool-card">' +
+            '<div class="adm-tool-head"><span class="adm-tool-ico">' + ICO.set + '</span><h3>Réglages du site</h3></div>' +
+            '<p class="adm-tool-desc">Configurer la bannière, la popup, le message d’accueil et le SEO.</p>' +
+            '<div class="adm-tool-footer">' +
+              '<a class="adm-action" href="admin-site.html">Ouvrir les réglages</a>' +
+              '<button class="adm-quick" type="button" id="dash-toggle-banniere">Bannière&nbsp;–</button>' +
+            '</div></article>' +
 
-          ‘<article class="adm-card adm-tool-card">’ +
-            ‘<div class="adm-tool-head"><span class="adm-tool-ico">’ + ICO.maint + ‘</span><h3>Pages &amp; maintenance</h3></div>’ +
-            ‘<p class="adm-tool-desc">Gérer la disponibilité, la maintenance et les redirections des pages.</p>’ +
-            ‘<div class="adm-tool-footer">’ +
-              ‘<a class="adm-action" href="admin-maintenance.html">Gérer les pages</a>’ +
-              ‘<button class="adm-quick" type="button" id="dash-toggle-maintenance">Maintenance accueil&nbsp;–</button>’ +
-            ‘</div></article>’ +
+          '<article class="adm-card adm-tool-card">' +
+            '<div class="adm-tool-head"><span class="adm-tool-ico">' + ICO.maint + '</span><h3>Pages &amp; maintenance</h3></div>' +
+            '<p class="adm-tool-desc">Gérer la disponibilité, la maintenance et les redirections des pages.</p>' +
+            '<div class="adm-tool-footer">' +
+              '<a class="adm-action" href="admin-maintenance.html">Gérer les pages</a>' +
+              '<button class="adm-quick" type="button" id="dash-toggle-maintenance">Maintenance accueil&nbsp;–</button>' +
+            '</div></article>' +
 
-          ‘<article class="adm-card adm-tool-card">’ +
-            ‘<div class="adm-tool-head"><span class="adm-tool-ico">’ + ICO.theme + ‘</span><h3>Thème par défaut</h3></div>’ +
-            ‘<p class="adm-tool-desc">Choisir le thème proposé par défaut aux visiteurs.</p>’ +
-            ‘<div class="adm-tool-footer">’ +
-              ‘<a class="adm-action" href="admin-theme.html">Régler le thème</a>’ +
-              ‘<button class="adm-quick" type="button" id="dash-toggle-theme">Basculer thème</button>’ +
-            ‘</div></article>’ +
+          '<article class="adm-card adm-tool-card">' +
+            '<div class="adm-tool-head"><span class="adm-tool-ico">' + ICO.theme + '</span><h3>Thème par défaut</h3></div>' +
+            '<p class="adm-tool-desc">Choisir le thème proposé par défaut aux visiteurs.</p>' +
+            '<div class="adm-tool-footer">' +
+              '<a class="adm-action" href="admin-theme.html">Régler le thème</a>' +
+              '<button class="adm-quick" type="button" id="dash-toggle-theme">Basculer thème</button>' +
+            '</div></article>' +
 
-          ‘<article class="adm-card adm-tool-card">’ +
-            ‘<div class="adm-tool-head"><span class="adm-tool-ico">’ + ICO.theme + ‘</span><h3>Musique par défaut</h3></div>’ +
-            ‘<p class="adm-tool-desc">Choisir la musique proposée par défaut aux visiteurs.</p>’ +
-            ‘<div class="adm-tool-footer">’ +
-              ‘<a class="adm-action" href="admin-musique.html">Régler la musique</a>’ +
-            ‘</div></article>’ +
+          '<article class="adm-card adm-tool-card">' +
+            '<div class="adm-tool-head"><span class="adm-tool-ico">' + ICO.theme + '</span><h3>Musique par défaut</h3></div>' +
+            '<p class="adm-tool-desc">Choisir la musique proposée par défaut aux visiteurs.</p>' +
+            '<div class="adm-tool-footer">' +
+              '<a class="adm-action" href="admin-musique.html">Régler la musique</a>' +
+            '</div></article>' +
 
-          ‘<article class="adm-card adm-tool-card">’ +
-            ‘<div class="adm-tool-head"><span class="adm-tool-ico">’ + ICO.user + ‘</span><h3>Mon profil</h3></div>’ +
-            ‘<p class="adm-tool-desc">Consulter le profil public associé à ton compte administrateur.</p>’ +
-            ‘<div class="adm-tool-footer">’ +
-              ‘<a class="adm-action" href="profil.html?id=’ + encodeURIComponent(moi.id) + ‘">Voir mon profil</a>’ +
-            ‘</div></article>’ +
+          '<article class="adm-card adm-tool-card">' +
+            '<div class="adm-tool-head"><span class="adm-tool-ico">' + ICO.user + '</span><h3>Mon profil</h3></div>' +
+            '<p class="adm-tool-desc">Consulter le profil public associé à ton compte administrateur.</p>' +
+            '<div class="adm-tool-footer">' +
+              '<a class="adm-action" href="profil.html?id=' + encodeURIComponent(moi.id) + '">Voir mon profil</a>' +
+            '</div></article>' +
 
-        ‘</div>’ +
+        '</div>' +
       '</section>' +
 
       '<section class="adm-section">' +
@@ -148,15 +148,15 @@
               '<label class="adm-champ">Lien (facultatif)<input name="lien" type="url" placeholder="https://..."></label>' +
               '<p class="adm-msg" id="adm-annonce-msg" hidden></p>' +
               '<button class="btn-solid" type="submit" style="margin-top:0">Publier l’annonce</button></form></article>' +
-          ‘<article class="adm-card adm-tool-card">’ +
-            ‘<div class="adm-tool-head"><span class="adm-tool-ico">’ + ICO.quest + ‘</span><h3>Questionnaires</h3></div>’ +
-            ‘<p class="adm-tool-desc">Créer et gérer les questionnaires proposés sur la page d’accueil.</p>’ +
-            ‘<div class="adm-tool-footer"><a class="adm-action" href="index.html#section-annonces">Gérer les questionnaires</a></div></article>’ +
+          '<article class="adm-card adm-tool-card">' +
+            '<div class="adm-tool-head"><span class="adm-tool-ico">' + ICO.quest + '</span><h3>Questionnaires</h3></div>' +
+            '<p class="adm-tool-desc">Créer et gérer les questionnaires proposés sur la page d’accueil.</p>' +
+            '<div class="adm-tool-footer"><a class="adm-action" href="index.html#section-annonces">Gérer les questionnaires</a></div></article>' +
 
-          ‘<article class="adm-card adm-tool-card">’ +
-            ‘<div class="adm-tool-head"><span class="adm-tool-ico">’ + ICO.fil + ‘</span><h3>Fil de publications</h3></div>’ +
-            ‘<p class="adm-tool-desc">Consulter les publications et les échanges de la communauté.</p>’ +
-            ‘<div class="adm-tool-footer"><a class="adm-action" href="fil.html">Ouvrir le fil</a></div></article>’ +
+          '<article class="adm-card adm-tool-card">' +
+            '<div class="adm-tool-head"><span class="adm-tool-ico">' + ICO.fil + '</span><h3>Fil de publications</h3></div>' +
+            '<p class="adm-tool-desc">Consulter les publications et les échanges de la communauté.</p>' +
+            '<div class="adm-tool-footer"><a class="adm-action" href="fil.html">Ouvrir le fil</a></div></article>' +
         '</div>' +
       '</section>' +
 
