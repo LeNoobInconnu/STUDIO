@@ -1,0 +1,129 @@
+ANNONCES ET QUESTIONNAIRES - mise en place (une seule fois, gratuit)
+
+1. Cloudflare > Workers & Pages > Create > Create Worker (nom au choix, ex : lni-annonces).
+   Clique "Edit code", remplace tout par le contenu de worker-annonces.js, puis Deploy.
+
+2. Stockage : Cloudflare > Storage & Databases > KV > Create namespace (nom : lni-donnees).
+   Retourne dans ton Worker > Settings > Bindings > Add > KV namespace :
+   variable name = DATA, namespace = lni-donnees.
+
+3. Worker > Settings > Variables and Secrets > Add (type Text) :
+   GOOGLE_CLIENT_ID  = ton ID client Google (celui de site.js)
+   DISCORD_CLIENT_ID = ton Client ID Discord (celui de site.js)
+   ORIGINES          = https://lenoobinconnu.github.io      (sans / a la fin)
+   ADMINS            = (voir etape 5)
+
+4. Copie l'adresse du Worker (https://lni-annonces.xxx.workers.dev) dans site.js :
+   actualites: { actif: true, urlApi: "https://lni-annonces.xxx.workers.dev" }
+   Mets en ligne les fichiers du site.
+
+5. Devenir admin : connecte-toi sur le site avec Discord ou Google, clique sur ton pseudo :
+   le menu affiche "ID admin : discord:123..." ou "google:123...".
+   Mets cet ID dans la variable ADMINS du Worker (plusieurs admins : separes par des virgules).
+   Rafraichis le site : les boutons "+ Nouvelle annonce" et "+ Nouveau questionnaire" apparaissent.
+
+Notes
+- Il faut etre connecte avec Discord ou Google pour repondre (1 reponse par personne).
+  Les comptes e-mail du site ne sont pas verifiables : ils ne peuvent pas repondre.
+- Le jeton Google dure environ 1 heure : apres, le site demande de se reconnecter.
+
+MISE A JOUR (profil + reglages admin)
+- Colle le NOUVEAU contenu de worker-annonces.js dans ton Worker (Edit code) puis Deploy.
+  Sans ca, "Modifier mon profil" et "Reglages du site" ne s'enregistrent pas sur le serveur.
+- Mets sur GitHub : reglages-admin.js (nouveau), auth.js, moteur.js, site.js, style.css.
+
+MISE A JOUR 2 (fil, profils, abonnements, likes, commentaires, paramètres)
+1. Cloudflare : ouvre ton Worker > Edit code > remplace tout par le NOUVEAU worker-annonces.js > Deploy.
+   Pas de nouvelle variable ni de nouvelle liaison : DATA, GOOGLE_CLIENT_ID, DISCORD_CLIENT_ID, ORIGINES, ADMINS restent identiques.
+2. GitHub : envoie / remplace ces fichiers :
+   NOUVEAUX : commun.js, fil.html, fil.js, profil.html, profil.js, parametres.html, parametres.js
+   MODIFIES : annonces.js, auth.js, moteur.js, index.html, style.css, admin.html, admin.js, site.js
+   SUPPRIME : reglages-admin.js (ancien panneau, remplacé par la page Paramètres)
+3. Ctrl+F5, puis déconnecte-toi et reconnecte-toi une fois.
+Les anciennes publications et réponses sont conservées.
+
+MISE A JOUR 3 (utilisateurs et réglages par défaut de l'administration)
+- Redéploie worker-annonces.js sur Cloudflare pour activer la liste des comptes Discord/Google
+  et l'enregistrement du thème et de la musique par défaut.
+- Publie aussi admin.html, admin.js, admin-pages.js, admin-pages.css, admin-utilisateurs.html,
+  admin-maintenance.html, admin-site.html, admin-theme.html, admin-musique.html, parametres.html,
+  parametres.js, moteur.js, site.js et style.css.
+- Chaque entrée du menu latéral ouvre sa propre page : tableau de bord, utilisateurs, réglages du
+  site, pages et maintenance, thème par défaut et musique par défaut. La maintenance peut être
+  réglée séparément pour toutes les pages visiteurs, y compris le fil, les profils publics et les
+  paramètres de compte.
+- Les comptes e-mail restent enregistrés dans le navigateur où ils ont été créés : ils ne sont
+  pas visibles dans la liste globale des utilisateurs. Aucun mot de passe ni jeton n'est affiché.
+- La page Utilisateurs affiche les e-mails communiqués par Google ou Discord, le fournisseur,
+  l'état de vérification, la dernière activité et les connexions récentes. Ces données apparaissent
+  quand la personne se reconnecte ou lie son compte après cette mise à jour.
+- La recherche avancée permet de filtrer les utilisateurs chargés par fournisseur, rôle et
+  vérification. L'export CSV parcourt toutes les pages et inclut les e-mails disponibles : garde
+  ce fichier privé.
+- Les admins peuvent attribuer le rôle modérateur ou des permissions de suppression, bannir et
+  suspendre temporairement un compte. Ces restrictions sont appliquées par le Worker. Les comptes
+  déclarés dans ADMINS sont protégés contre ces actions.
+- La page « Pages et maintenance » regroupe au même endroit l'activation des pages, le mode
+  maintenance page par page, le message, l'image, le compte à rebours et les redirections.
+- La page « Réglages du site » configure la bannière, la popup, le message d'accueil et le SEO.
+- Pour proposer d'autres musiques, ajoute les fichiers .mp3 dans assets, puis ajoute leur nom et
+  chemin dans musiquesDisponibles dans site.js. Le choix de l'admin concerne le réglage par défaut;
+  les visiteurs qui ont déjà choisi leurs préférences les conservent.
+
+MISE A JOUR 5 (modération)
+- Redéploie worker-annonces.js et publie admin-pages.js, admin-pages.css, admin-utilisateurs.html
+  et mentions.html.
+- Dans « Utilisateurs > Modération et sanctions », l'admin peut enregistrer un avertissement,
+  suspendre temporairement ou bannir définitivement un compte, muter ses commentaires ou bloquer
+  ses nouvelles publications. Les durées proposées sont 24 h, 7 jours, 30 jours et 365 jours.
+- Un motif est obligatoire. Les sanctions sont appliquées par le Worker et les 50 actions les plus
+  récentes sont visibles dans le casier de l'utilisateur. Les admins configurés dans ADMINS restent
+  protégés.
+- Les messages privés ne sont pas implémentés par le site : leur modération n'est donc pas proposée.
+- Aucun bannissement IP/appareil n'est utilisé. Cela évite de collecter des identifiants réseau ou
+  des empreintes d'appareil.
+
+MISE A JOUR 6 (profil utilisateur dans l'administration)
+- Redéploie worker-annonces.js et publie admin-pages.js, admin-pages.css, admin-utilisateurs.html,
+  profil.js et style.css.
+- Dans « Utilisateurs > Profil, rôles et notes privées », un admin peut modifier le pseudo, l'avatar
+  (URL HTTPS ou téléversement), la présentation, la couleur, le badge de vérification et jusqu'à
+  cinq badges publics.
+- Plusieurs rôles d'affichage peuvent être associés au même profil. Les permissions de modération
+  restent réglées séparément et les rôles ne donnent pas accès aux fonctions administrateur.
+- Les notes privées sont limitées à 2 000 caractères, visibles uniquement depuis l'API
+  administrateur, et ne figurent pas dans le profil public.
+- Le bouton « Voir le profil public » ouvre le profil tel que les visiteurs le voient; les badges
+  et le statut vérifié s'affichent sur ce profil.
+
+MISE A JOUR 7 (paramètres de compte et notifications)
+- Redéploie worker-annonces.js et publie auth.js, parametres.html, parametres.js,
+  admin-pages.js, admin-pages.css, admin-utilisateurs.html, style.css et mentions.html.
+- Les comptes Google/Discord peuvent masquer leur profil public, demander une vérification,
+  exporter les données disponibles sur le Worker et désactiver temporairement leur compte.
+  Une reconnexion réactive un compte désactivé. Les demandes de vérification apparaissent dans
+  la liste admin des utilisateurs et peuvent y être acceptées ou refusées.
+- Les préférences de notifications des comptes Google/Discord sont stockées sur le Worker.
+  Pour les comptes e-mail locaux, elles et le profil restent dans le navigateur concerné; ils
+  ne sont pas publiés et ne sont pas partagés entre appareils. Les changements d'e-mail et de
+  mot de passe locaux demandent le mot de passe actuel.
+- Les paramètres de notifications sont des préférences enregistrées uniquement : aucun envoi
+  d'e-mail, notification navigateur/mobile ou message Discord n'est activé par ces options.
+- La suppression de compte reste hors service. Les comptes e-mail locaux peuvent être désactivés
+  sur cet appareil et sont réactivés à leur prochaine connexion.
+- Vérifie que le Worker et tous les fichiers listés ci-dessus sont publiés ensemble. La politique
+  de confidentialité correspondante se trouve dans mentions.html.
+
+MISE A JOUR 4 (statistiques anonymes)
+- Redéploie worker-annonces.js sur Cloudflare et publie admin-analytics.html, admin-analytics.js,
+  admin-pages.css, admin.js, admin.html, les pages admin avec leur menu mis à jour, moteur.js et
+  mentions.html.
+- Aucun nouvel identifiant, secret ou binding n'est nécessaire. Vérifie que ORIGINES contient
+  l'origine exacte du site (par exemple https://lenoobinconnu.github.io, sans slash final).
+- « Statistiques » dans le menu admin affiche les vues, sessions actives estimées (actualisées
+  automatiquement toutes les 30 secondes), durée visible moyenne, pages, sources générales,
+  pays estimé (sans ville ni coordonnées), catégories d'appareils, systèmes et navigateurs.
+- Les données sont anonymisées et supprimées après 90 jours. Pour limiter les lectures du KV,
+  au maximum 500 vues sont analysées par période ; la page le signale si cette limite est atteinte.
+  Les totaux ne sont donc pas complets dans ce cas.
+- La politique de confidentialité a été complétée dans mentions.html.

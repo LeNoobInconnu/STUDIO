@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maintenance - Administration - LeNoobInconnu</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=Syne:wght@800&display=swap">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="admin-pages.css">
+</head>
+<body data-page="admin" data-admin-section="maintenance">
+<div id="site-header"></div>
+<div class="adm-page">
+  <aside class="adm-page-side" aria-label="Menu administrateur">
+    <a class="adm-page-brand" href="admin.html"><strong>Dashboard</strong><span>LeNoobInconnu · Administration</span></a>
+    <nav class="adm-page-nav" aria-label="Sections">
+      <a href="admin.html"><svg class="i line" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h8v8H3zM13 3h8v5h-8zM13 10h8v11h-8zM3 13h8v8H3z"/></svg>Dashboard</a>
+      <a href="admin-utilisateurs.html"><svg class="i line" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>Utilisateurs</a>
+      <a href="admin-analytics.html"><svg class="i line" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V9m5 10V5m5 14v-7m5 7V3M2 21h20"/></svg>Statistiques</a>
+      <a href="admin-site.html"><svg class="i line" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-1.7 2.9-.2-.1a1.7 1.7 0 0 0-1.8.2l-.2.1h-3.4l-.1-.2a1.7 1.7 0 0 0-1.6-1l-.2.1-2.9-1.7.1-.2a1.7 1.7 0 0 0-.2-1.8l-.1-.2v-3.4l.2-.1a1.7 1.7 0 0 0 1-1.6l-.1-.2 1.7-2.9.2.1a1.7 1.7 0 0 0 1.8-.2l.2-.1h3.4l.1.2a1.7 1.7 0 0 0 1.6 1l.2-.1 2.9 1.7-.1.2a1.7 1.7 0 0 0 .2 1.8l.1.2v3.4z"/></svg>Réglages du site</a>
+      <a href="admin-maintenance.html" aria-current="page"><svg class="i line" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.5-.5-.5-2.5z"/></svg>Maintenance</a>
+      <a href="admin-theme.html"><svg class="i line" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg>Thème par défaut</a>
+      <a href="admin-musique.html"><svg class="i line" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>Musique par défaut</a>
+    </nav>
+    <div class="adm-page-footer"><div class="adm-page-user" id="adm-page-user"></div><button class="adm-page-logout" type="button" id="adm-page-logout">Déconnexion</button></div>
+  </aside>
+  <div class="adm-page-main">
+    <header class="adm-page-top"><a href="index.html">Voir le site</a></header>
+    <main class="adm-page-content" id="adm-page-content">
+      <section class="adm-page-heading"><h1>Pages du site</h1><p>Gère au même endroit leur disponibilité, la maintenance et les redirections.</p></section>
+      <form class="adm-page-card" id="adm-maintenance-form">
+        <h2>Disponibilité des pages</h2>
+        <p>Une page ne peut pas être à la fois désactivée et en maintenance : désactiver une page retire la maintenance, et activer la maintenance garde la page accessible pour afficher le message. Une redirection est appliquée si elle est renseignée pour une page désactivée.</p>
+        <div class="adm-page-maintenance" id="adm-maintenance-pages"></div>
+        <h2>Contenu de la page maintenance</h2>
+        <label class="adm-page-field">Message personnalisé<textarea name="maintenanceMessage" rows="3" maxlength="500"></textarea></label>
+        <label class="adm-page-field">Image de maintenance (URL HTTPS)<input name="maintenanceImage" type="url" placeholder="https://..."></label>
+        <label class="adm-page-field">Date et heure de réouverture<input name="maintenanceOuverture" type="datetime-local"></label>
+        <p class="adm-page-msg" id="adm-maintenance-message" role="status" hidden></p>
+        <div class="adm-page-actions"><button class="btn-login" type="submit">Enregistrer la maintenance</button></div>
+      </form>
+    </main>
+  </div>
+</div>
+<div id="site-footer"></div>
+<script src="site.js"></script>
+<script src="icones.js"></script>
+<script src="commun.js"></script>
+<script src="moteur.js"></script>
+<script src="admin-pages.js"></script>
+</body>
+</html>

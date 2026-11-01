@@ -1,300 +1,34 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
-    <link rel="icon" type="image/png" href="favicon.png">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LeNoobInconnu STUDIO - Nous Contacter</title>
-    
-    <!-- Intégration de Font Awesome pour les icônes -->
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
-    <style>
-        /* CSS INTERNE (Style Moderne) */
-        
-        /* Variables CSS pour les couleurs modernes */
-        :root {
-            --primary-color: #5b5ff5; /* Un bleu-violet moderne */
-            --background-dark: #1e1e2f; /* Fond très sombre */
-            --background-light: #2c2c40; /* Couleur des cartes/éléments */
-            --text-light: #f0f0f5; /* Texte clair */
-            --text-secondary: #a0a0b0; /* Texte secondaire */
-            --shadow-elevation: 0 10px 25px rgba(0, 0, 0, 0.25);
-            --font-stack: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        /* Réinitialisation de base */
-        body {
-            margin: 0;
-            font-family: var(--font-stack);
-            background-color: var(--background-dark);
-            color: var(--text-light);
-            min-height: 100vh;
-        }
-
-        /* --- NAVIGATION BAR STYLES --- */
-
-        .navbar {
-            background-color: var(--background-light);
-            padding: 15px 30px;
-            box-shadow: var(--shadow-elevation); 
-            display: flex;
-            justify-content: space-between; 
-            align-items: center;
-        }
-        
-        .studio-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            letter-spacing: 1px;
-            text-decoration: none;
-        }
-        
-        .nav-links {
-            display: flex;
-            gap: 25px; 
-        }
-
-        .nav-item {
-            color: var(--text-light);
-            text-decoration: none;
-            padding: 8px 12px;
-            border-radius: 6px;
-            transition: background-color 0.3s, color 0.3s, transform 0.1s;
-            font-size: 1rem;
-            font-weight: 500;
-            white-space: nowrap; 
-            display: flex; 
-            align-items: center;
-        }
-
-        .nav-item i {
-            margin-right: 8px;
-            color: var(--primary-color); 
-        }
-        
-        .nav-item:hover {
-            background-color: var(--primary-color);
-            color: var(--background-dark);
-            transform: translateY(-2px); 
-            box-shadow: 0 5px 15px rgba(91, 95, 245, 0.4);
-        }
-        
-        .nav-item:hover i {
-            color: var(--background-dark); 
-        }
-
-        /* Style pour indiquer la page active */
-        .nav-item.active {
-            background-color: var(--primary-color);
-            color: var(--background-dark);
-            font-weight: 700;
-        }
-        .nav-item.active i {
-            color: var(--background-dark);
-        }
-
-
-        /* --- CONTACT PAGE SPECIFIC STYLES --- */
-
-        .content {
-            padding: 60px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
-
-        .contact-card {
-            background-color: var(--background-light);
-            padding: 40px 30px;
-            border-radius: 12px;
-            box-shadow: var(--shadow-elevation);
-            max-width: 450px;
-            width: 100%;
-            margin-top: 30px;
-        }
-        
-        .content h1 {
-            color: var(--text-light);
-            font-size: 2.5rem;
-            margin-bottom: 5px;
-            letter-spacing: 0.5px;
-        }
-        
-        .content p.subtitle {
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-            margin-bottom: 30px;
-        }
-
-        /* Styles pour les liens de contact directs */
-        .contact-link {
-            display: block;
-            background-color: #3c3c54; /* Fond pour le lien */
-            color: var(--text-light);
-            text-decoration: none;
-            padding: 15px 20px;
-            margin: 10px 0; /* Réduit à 10px de marge verticale (était 15px) */
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            transition: background-color 0.3s, transform 0.1s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer; /* Indique que l'élément est cliquable */
-        }
-
-        .contact-link i {
-            margin-right: 12px;
-            color: var(--primary-color);
-            font-size: 1.3rem;
-        }
-
-        .contact-link:hover {
-            background-color: #484860;
-            transform: translateY(-2px);
-        }
-        
-        /* Style pour afficher l'adresse email */
-        .email-display {
-            background-color: #333;
-            padding: 10px;
-            border-radius: 6px;
-            margin-top: 15px;
-            color: #fff;
-            font-size: 1rem;
-            font-weight: bold;
-            word-break: break-all; /* Important pour les petits écrans */
-        }
-
-        /* Message de confirmation de copie */
-        #copy-message {
-            margin-top: 10px;
-            color: #38c172; /* Vert de succès */
-            font-weight: bold;
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out;
-        }
-
-        /* Mobile adjustments */
-        @media (max-width: 600px) {
-            .navbar {
-                flex-direction: column;
-                padding: 15px 10px;
-            }
-            .nav-links {
-                margin-top: 15px;
-                gap: 10px;
-                flex-wrap: wrap; 
-                justify-content: center;
-            }
-            .studio-title {
-                font-size: 1.3rem;
-            }
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contact - LeNoobInconnu</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=Syne:wght@800&display=swap">
+<link rel="stylesheet" href="style.css">
+<script src="site.js"></script>
+<script src="icones.js"></script>
+<script src="moteur.js"></script>
 </head>
-<body>
+<body data-page="contact">
+<div id="site-header"></div>
 
-    <!-- Bande de navigation (Mise à jour avec le lien Serveur MC et 'Nous Contacter' actif) -->
-    <header class="navbar">
-        <a href="index.html" class="studio-title">LeNoobInconnu STUDIO</a>
-        
-        <nav class="nav-links">
-            <a href="index.html" class="nav-item"><i class="fa-solid fa-house"></i> Accueil</a>
-            <!-- NOUVEAU LIEN AJOUTÉ : Serveur MC -->
-            <a href="serveur.html" class="nav-item"><i class="fa-solid fa-gamepad"></i> Serveur MC</a> 
-            <a href="https://discord.gg/g8TsHz6ntb" class="nav-item" target="_blank"><i class="fa-brands fa-discord"></i> Discord</a>
-            <a href="videos.html" class="nav-item"><i class="fa-solid fa-video"></i> Vidéos</a>
-            <a href="a-propos.html" class="nav-item"><i class="fa-solid fa-circle-info"></i> À Propos</a>
-            <!-- LIEN ACTIF : Nous Contacter -->
-            <a href="contact.html" class="nav-item active"><i class="fa-solid fa-envelope"></i> Nous Contacter</a>
-        </nav>
-    </header>
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <h1 class="hero-title page-title">Un message ? <span>Écris-moi</span></h1>
+      <p class="page-sub">Le plus rapide pour me joindre est le Discord ou les messages privés sur les réseaux.</p>
 
-    <!-- Contenu de la page Contact simplifié -->
-    <main class="content">
-        <h1>Entrez en Contact</h1>
-        <p class="subtitle">La meilleure façon de nous joindre est via l'e-mail ou notre serveur Discord !</p>
+      <ul class="socials">
+        <li><a class="social" data-link="discord" href="#" target="_blank" rel="noopener"><span data-icon="discord" style="display:contents"></span><span>Discord<small>Réponse la plus rapide</small></span></a></li>
+        <li><a class="social" data-link="instagram" href="#" target="_blank" rel="noopener"><span data-icon="instagram" style="display:contents"></span><span>Instagram<small>Messages privés</small></span></a></li>
+        <li><a class="social" data-link="x" href="#" target="_blank" rel="noopener"><span data-icon="x" style="display:contents"></span><span>X (Twitter)<small>Messages privés</small></span></a></li>
+        <li id="email-slot"><div class="social"><span data-icon="mail" style="display:contents"></span><span>E-mail<small>Pour les demandes pro</small><strong>-</strong></span></div></li>
+      </ul>
+    </div>
+  </section>
+</main>
 
-        <div class="contact-card">
-            
-            <p>Cliquez ci-dessous pour copier l'adresse ou rejoindre notre communauté :</p>
-            
-            <!-- Bouton E-mail (déclenche la fonction de copie) -->
-            <div id="email-button" class="contact-link">
-                <i class="fa-solid fa-at"></i> Copier l'Adresse Email
-            </div> 
-            
-            <!-- Message de confirmation -->
-            <p id="copy-message">Copié ! Vous pouvez coller l'adresse.</p>
-
-            <!-- Affichage de l'email masqué, utilisé par le JS pour la copie -->
-            <input type="hidden" id="email-to-copy" value="contact.lenoobinconnu@gmail.com">
-
-            <!-- Lien Discord (Ouvre un nouvel onglet) -->
-            <!-- J'ai supprimé le style inline "margin-top: 30px;" pour que le bouton Discord suive le flux normal. -->
-            <a href="https://discord.gg/PbntRm5sNy" target="_blank" class="contact-link">
-                <i class="fa-brands fa-discord"></i> Rejoindre Discord
-            </a>
-            
-            <p style="color: var(--text-secondary); margin-top: 20px; font-size: 0.9rem;">
-                Pour les demandes de montage, veuillez utiliser la page "Commander votre Montage".
-            </p>
-        </div>
-    </main>
-
-    <!-- JavaScript pour la fonction de copie -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const emailButton = document.getElementById('email-button');
-            const emailInput = document.getElementById('email-to-copy');
-            const copyMessage = document.getElementById('copy-message');
-
-            emailButton.addEventListener('click', () => {
-                // Utilise le navigateur API pour copier
-                const emailAddress = emailInput.value;
-                
-                // On utilise document.execCommand('copy') pour la compatibilité dans cet environnement
-                // 1. Crée un élément temporaire (textarea)
-                const tempTextArea = document.createElement('textarea');
-                tempTextArea.value = emailAddress;
-                document.body.appendChild(tempTextArea);
-                
-                // 2. Sélectionne le contenu
-                tempTextArea.select();
-                
-                // 3. Exécute la commande de copie
-                try {
-                    document.execCommand('copy');
-
-                    // 4. Affiche le message de succès
-                    copyMessage.style.opacity = '1';
-                    
-                    // 5. Masque le message après 2 secondes
-                    setTimeout(() => {
-                        copyMessage.style.opacity = '0';
-                    }, 2000);
-
-                } catch (err) {
-                    console.error('Erreur lors de la tentative de copie :', err);
-                    // Fallback si la copie échoue (par exemple, afficher l'adresse)
-                    copyMessage.textContent = 'La copie a échoué. Adresse: ' + emailAddress;
-                    copyMessage.style.opacity = '1';
-                    setTimeout(() => {
-                        copyMessage.style.opacity = '0';
-                        copyMessage.textContent = 'Copié ! Vous pouvez coller l\'adresse.'; // Reset message
-                    }, 3000);
-                }
-                
-                // 6. Supprime l'élément temporaire
-                document.body.removeChild(tempTextArea);
-            });
-        });
-    </script>
+<div id="site-footer"></div>
 </body>
 </html>

@@ -1,17 +1,18 @@
-/* Système de connexion (comptes enregistrés dans le navigateur, mots de passe hachés PBKDF2).
-   Pour de vrais comptes partagés entre appareils, remplace les fonctions de la section
-   "Stockage" par des appels à ton serveur (Supabase, Firebase...). */
+/* Système de connexion : comptes e-mail (dans le navigateur), Discord et Google (vérifiés par le serveur).
+   Un même compte peut avoir Discord ET Google : le serveur relie les deux à un seul profil. */
 (function () {
   "use strict";
   var CLE_COMPTES = "lni_comptes", CLE_SESSION = "lni_session";
-  var MIN = (SITE.connexion && SITE.connexion.motDePasseMin) || 8;
+  var CFG = SITE.connexion || {};
+  var MIN = CFG.motDePasseMin || 8;
   var enc = new TextEncoder();
 
-  /* ----- Stockage ----- */
-  var SRV = window.LNI && window.LNI.sb ? window.LNI : null;
+  function apiBase() { return SITE.actualites && SITE.actualites.urlApi ? SITE.actualites.urlApi.replace(/\/+$/, "") : ""; }
   function lire(k, def) { try { return JSON.parse(localStorage.getItem(k)) || def; } catch (e) { return def; } }
   function ecrire(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } }
-  function utilisateur() { return SRV ? SRV.user : lire(CLE_SESSION, null); }
+  function utilisateur() { return lire(CLE_SESSION, null); }
+  function enteteJeton(u) { return u && u.jeton ? { Authorization: (u.fournisseur === "google" ? "Google " : "Discord ") + u.jeton } : null; }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
 
   function hex(buf) { return Array.prototype.map.call(new Uint8Array(buf), function (b) { return ("0" + b.toString(16)).slice(-2); }).join(""); }
   function hash(mdp, sel) {
@@ -20,13 +21,8 @@
     }).then(hex);
   }
 
+  /* ----- Comptes e-mail (dans le navigateur) ----- */
   function inscrire(pseudo, email, mdp) {
-    if (SRV) {
-      return SRV.sb.auth.signUp({ email: email, password: mdp, options: { data: { pseudo: pseudo }, emailRedirectTo: location.href.split("#")[0] } }).then(function (r) {
-        if (r.error) throw r.error.message === "User already registered" ? "Un compte existe déjà avec cet e-mail." : r.error.message;
-        if (!r.data.session) throw "Compte créé ! Vérifie ta boîte mail pour confirmer ton adresse, puis connecte-toi.";
-      });
-    }
     var c = lire(CLE_COMPTES, {}), id = email.toLowerCase();
     if (c[id]) return Promise.reject("Un compte existe déjà avec cet e-mail.");
     var sel = hex(crypto.getRandomValues(new Uint8Array(16)));
@@ -37,32 +33,106 @@
     });
   }
   function connecter(email, mdp) {
-    if (SRV) {
-      return SRV.sb.auth.signInWithPassword({ email: email, password: mdp }).then(function (r) {
-        if (r.error) throw /confirm/i.test(r.error.message) ? "Confirme d'abord ton adresse e-mail (regarde ta boîte mail)." : "E-mail ou mot de passe incorrect.";
-      });
-    }
-    var a = lire(CLE_COMPTES, {})[email.toLowerCase()];
+    var comptes = lire(CLE_COMPTES, {}), a = comptes[email.toLowerCase()];
     if (!a) return Promise.reject("E-mail ou mot de passe incorrect.");
     return hash(mdp, a.sel).then(function (h) {
       if (h !== a.hash) throw "E-mail ou mot de passe incorrect.";
-      ecrire(CLE_SESSION, { pseudo: a.pseudo, email: a.email });
+      if (a.desactive) {
+        delete a.desactive;
+        comptes[email.toLowerCase()] = a;
+        if (!ecrire(CLE_COMPTES, comptes)) throw "Impossible de réactiver le compte (stockage bloqué).";
+      }
+      ecrire(CLE_SESSION, { pseudo: a.pseudo, email: a.email, avatar: a.avatar || "" });
     });
   }
-  var CFG = SITE.connexion || {};
-  function urlRetour() { return CFG.urlRetour || new URL("index.html", location.href).href; }
-  function ouvrirSession(u) { return ecrire(CLE_SESSION, u); }
 
-  /* Discord (flux "implicit" : tout se passe dans le navigateur) */
-  function lancerOAuth(fournisseur) {
-    SRV.sb.auth.signInWithOAuth({ provider: fournisseur, options: { redirectTo: location.href.split("#")[0], scopes: fournisseur === "discord" ? "identify email" : undefined } });
-    return "";
+  function compteLocalActuel() {
+    var session = utilisateur();
+    return !!(session && !session.jeton && session.email && lire(CLE_COMPTES, {})[String(session.email).toLowerCase()]);
   }
-  function lancerDiscord() {
-    if (SRV) return lancerOAuth("discord");
+  function profilLocal() {
+    var session = utilisateur(), compte = session && session.email && lire(CLE_COMPTES, {})[String(session.email).toLowerCase()];
+    if (!compte) return null;
+    return { pseudo: compte.pseudo || session.pseudo || "", email: compte.email || session.email, avatar: compte.avatar || "", bio: compte.bio || "" };
+  }
+  function sauverProfilLocal(profil) {
+    var session = utilisateur(), comptes = lire(CLE_COMPTES, {}), cle = session && session.email && String(session.email).toLowerCase();
+    var compte = cle && comptes[cle];
+    if (!compte) return Promise.reject("Compte e-mail local introuvable dans ce navigateur.");
+    var pseudo = String(profil.pseudo || "").trim(), bio = String(profil.bio || "").trim(), avatar = String(profil.avatar || "");
+    if (pseudo.length < 3 || pseudo.length > 24 || bio.length > 160 || (avatar && (!/^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(avatar) || avatar.length > 60000))) {
+      return Promise.reject("Les informations du profil sont invalides.");
+    }
+    compte.pseudo = pseudo; compte.bio = bio; compte.avatar = avatar;
+    comptes[cle] = compte;
+    if (!ecrire(CLE_COMPTES, comptes)) return Promise.reject("Impossible d’enregistrer le profil local.");
+    session.pseudo = pseudo; session.avatar = avatar;
+    ecrire(CLE_SESSION, session);
+    return Promise.resolve();
+  }
+  function changerEmailLocal(nouvelEmail, motDePasse) {
+    var session = utilisateur(), comptes = lire(CLE_COMPTES, {});
+    if (!session || session.jeton || !session.email) return Promise.reject("Cette opération concerne uniquement un compte e-mail local.");
+    var ancienId = String(session.email).toLowerCase(), compte = comptes[ancienId], email = String(nouvelEmail || "").trim().toLowerCase();
+    if (!compte || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return Promise.reject("Adresse e-mail ou compte invalide.");
+    if (email === ancienId) return Promise.reject("Cette adresse e-mail est déjà utilisée par ton compte.");
+    if (comptes[email]) return Promise.reject("Un compte existe déjà avec cette adresse e-mail.");
+    return hash(motDePasse, compte.sel).then(function (h) {
+      if (h !== compte.hash) throw "Le mot de passe actuel est incorrect.";
+      compte.email = email;
+      comptes[email] = compte;
+      delete comptes[ancienId];
+      if (!ecrire(CLE_COMPTES, comptes)) throw "Impossible de changer l’adresse e-mail (stockage bloqué).";
+      session.email = email;
+      ecrire(CLE_SESSION, session);
+      majBouton();
+    });
+  }
+  function changerMotDePasseLocal(motDePasseActuel, nouveauMotDePasse) {
+    var session = utilisateur(), comptes = lire(CLE_COMPTES, {});
+    var cle = session && !session.jeton && session.email && String(session.email).toLowerCase(), compte = cle && comptes[cle];
+    if (!compte) return Promise.reject("Cette opération concerne uniquement un compte e-mail local.");
+    if (String(nouveauMotDePasse || "").length < MIN) return Promise.reject("Le nouveau mot de passe doit faire au moins " + MIN + " caractères.");
+    return hash(motDePasseActuel, compte.sel).then(function (h) {
+      if (h !== compte.hash) throw "Le mot de passe actuel est incorrect.";
+      var sel = hex(crypto.getRandomValues(new Uint8Array(16)));
+      return hash(nouveauMotDePasse, sel).then(function (nouveauHash) {
+        compte.sel = sel; compte.hash = nouveauHash; comptes[cle] = compte;
+        if (!ecrire(CLE_COMPTES, comptes)) throw "Impossible d’enregistrer le nouveau mot de passe.";
+      });
+    });
+  }
+  function exporterCompteLocal() {
+    var profil = profilLocal();
+    if (!profil) return Promise.reject("Aucun compte e-mail local n’est disponible dans ce navigateur.");
+    return Promise.resolve({
+      exporteLe: new Date().toISOString(),
+      compte: { pseudo: profil.pseudo, email: profil.email, fournisseur: "local", profil: { avatar: profil.avatar, bio: profil.bio } },
+      preferencesNotifications: lire("lni_preferences_notifications", {}),
+      securite: "Le mot de passe, son dérivé cryptographique et le sel ne sont pas inclus.",
+      stockage: "Ce compte e-mail est stocké uniquement dans ce navigateur."
+    });
+  }
+  function desactiverCompteLocal() {
+    var session = utilisateur(), comptes = lire(CLE_COMPTES, {});
+    var cle = session && !session.jeton && session.email && String(session.email).toLowerCase(), compte = cle && comptes[cle];
+    if (!compte) return Promise.reject("Compte e-mail local introuvable.");
+    compte.desactive = true; comptes[cle] = compte;
+    if (!ecrire(CLE_COMPTES, comptes)) return Promise.reject("Impossible de désactiver ce compte.");
+    deconnecter(); majBouton();
+    return Promise.resolve();
+  }
+
+  /* ----- Discord (flux "implicit", dans le navigateur) ----- */
+  function urlRetour() { return CFG.urlRetour || new URL("index.html", location.href).href; }
+  function lancerDiscord(lier) {
     if (!CFG.discordClientId) return "Connexion Discord pas encore configurée (discordClientId dans site.js).";
     var st = hex(crypto.getRandomValues(new Uint8Array(16)));
-    try { sessionStorage.setItem("lni_oauth_state", st); sessionStorage.setItem("lni_oauth_page", location.href.split("#")[0]); } catch (e) {}
+    try {
+      sessionStorage.setItem("lni_oauth_state", st);
+      sessionStorage.setItem("lni_oauth_page", location.href.split("#")[0]);
+      if (lier) sessionStorage.setItem("lni_lier", "1"); else sessionStorage.removeItem("lni_lier");
+    } catch (e) {}
     location.href = "https://discord.com/oauth2/authorize?response_type=token&client_id=" + encodeURIComponent(CFG.discordClientId) +
       "&scope=" + encodeURIComponent("identify email") + "&redirect_uri=" + encodeURIComponent(urlRetour()) + "&state=" + st;
     return "";
@@ -70,20 +140,47 @@
   function retourDiscord() {
     var h = new URLSearchParams(location.hash.slice(1));
     if (!h.get("access_token") || !h.get("state")) return null;
-    var attendu = null, page = null;
-    try { attendu = sessionStorage.getItem("lni_oauth_state"); page = sessionStorage.getItem("lni_oauth_page"); sessionStorage.removeItem("lni_oauth_state"); } catch (e) {}
+    var attendu = null, page = null, lier = false;
+    try {
+      attendu = sessionStorage.getItem("lni_oauth_state"); page = sessionStorage.getItem("lni_oauth_page");
+      lier = sessionStorage.getItem("lni_lier") === "1";
+      sessionStorage.removeItem("lni_oauth_state"); sessionStorage.removeItem("lni_lier");
+    } catch (e) {}
     history.replaceState(null, "", location.pathname + location.search);
     if (!attendu || attendu !== h.get("state")) return Promise.reject("Connexion Discord refusée (état invalide).");
-    return fetch("https://discord.com/api/users/@me", { headers: { Authorization: "Bearer " + h.get("access_token") } })
+    var jeton = h.get("access_token");
+    if (lier) return lierAvec("discord", jeton).then(function () { msg("Compte Discord lié."); }, function (m) { msg(m); });
+    return fetch("https://discord.com/api/users/@me", { headers: { Authorization: "Bearer " + jeton } })
       .then(function (r) { if (!r.ok) throw 0; return r.json(); })
       .then(function (d) {
-        ouvrirSession({ pseudo: d.global_name || d.username, email: d.email || "", fournisseur: "discord", id: "discord:" + d.id, jeton: h.get("access_token"),
-          avatar: d.avatar ? "https://cdn.discordapp.com/avatars/" + d.id + "/" + d.avatar + ".png?size=64" : "" });
-        if (page && page !== location.href.split("#")[0]) location.href = page;
+        var serveur = apiBase() ? fetch(apiBase() + "/api/session", { method: "POST", headers: { Authorization: "Discord " + jeton } })
+          .then(function (r) { return r.json().catch(function () { return {}; }).then(function (x) { if (!r.ok) throw x.erreur || "Connexion Discord impossible."; }); }) :
+          Promise.resolve();
+        return serveur.then(function () {
+          ecrire(CLE_SESSION, { pseudo: d.global_name || d.username, email: d.email || "", fournisseur: "discord", id: "discord:" + d.id, jeton: jeton,
+            avatar: d.avatar ? "https://cdn.discordapp.com/avatars/" + d.id + "/" + d.avatar + ".png?size=64" : "" });
+          if (page && page !== location.href.split("#")[0]) location.href = page;
+        });
       }, function () { throw "Impossible de récupérer ton profil Discord."; });
   }
 
-  /* Google (Google Identity Services) */
+  /* ----- Liaison de comptes (même profil Discord + Google) ----- */
+  // Appelé depuis la page Paramètres (ou juste après une redirection Discord)
+  function lierAvec(fournisseur, jeton) {
+    var u = utilisateur(), api = apiBase(), h = enteteJeton(u);
+    if (!api) return Promise.reject("Le serveur n'est pas configuré.");
+    if (!h) return Promise.reject("Connecte-toi avec Discord ou Google pour lier un autre compte.");
+    return fetch(api + "/api/lier", { method: "POST", headers: Object.assign({ "Content-Type": "application/json" }, h),
+      body: JSON.stringify({ autre: { fournisseur: fournisseur, jeton: jeton } }) })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) {
+        if (!r.ok) throw r.status === 401 ? "Ta connexion a expiré : reconnecte-toi puis réessaie." : (d.erreur || "Liaison impossible."); }); });
+  }
+  function msg(texte) {
+    try { sessionStorage.setItem("lni_msg", texte); } catch (e) {}
+    if (!/parametres\.html$/.test(location.pathname)) location.href = "parametres.html#connexions";
+  }
+
+  /* ----- Google (Google Identity Services) ----- */
   function jwt(t) {
     var b = t.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
     return JSON.parse(decodeURIComponent(atob(b).split("").map(function (c) { return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2); }).join("")));
@@ -101,58 +198,64 @@
     });
     return gsiPret;
   }
-  function boutonGoogle(cible, surSucces, surErreur) {
+  // Bouton Google officiel. "surJeton" reçoit le jeton brut (le serveur le vérifie).
+  function boutonGoogle(cible, surJeton, surErreur) {
     chargerGoogle().then(function () {
       google.accounts.id.initialize({ client_id: CFG.googleClientId, callback: function (r) {
-        try {
-          var d = jwt(r.credential);
-          ouvrirSession({ pseudo: d.given_name || d.name || d.email, email: d.email || "", fournisseur: "google", id: "google:" + d.sub, jeton: r.credential, avatar: d.picture || "" });
-          surSucces();
-        } catch (e) { surErreur("Connexion Google impossible."); }
+        try { surJeton(r.credential, jwt(r.credential)); } catch (e) { surErreur("Connexion Google impossible."); }
       } });
       google.accounts.id.renderButton(cible, { theme: "outline", size: "large", text: "continue_with", shape: "rectangular", width: cible.clientWidth || 364, locale: "fr" });
     }, function () { surErreur("Impossible de charger Google (bloqueur de pub ?)."); });
   }
 
-  function deconnecter() {
-    if (SRV) return SRV.sb.auth.signOut();
-    try { localStorage.removeItem(CLE_SESSION); } catch (e) {}
+  /* ----- Synchronisation avec le serveur (identifiant du compte, pseudo, photo, admin) ----- */
+  function synchroniser() {
+    var u = utilisateur(), api = apiBase(), h = enteteJeton(u);
+    if (!api || !h) return Promise.resolve();
+    return fetch(api + "/api/moi", { headers: h }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+      if (!d) return;
+      var s = utilisateur();
+      if (!s || s.jeton !== u.jeton) return;
+      s.uid = d.id; s.pseudo = d.nom || s.pseudo; s.avatar = d.avatar || ""; s.admin = !!d.admin; s.principal = d.principal;
+      ecrire(CLE_SESSION, s); majBouton();
+    }).catch(function () {});
   }
 
-  /* ----- Interface ----- */
-  var btns = Array.prototype.slice.call(document.querySelectorAll(".js-compte"));
-  if (!btns.length) return;
+  function deconnecter() { try { localStorage.removeItem(CLE_SESSION); } catch (e) {} }
 
-  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  /* ----- Interface : bouton du haut et menu de compte ----- */
+  var btns = Array.prototype.slice.call(document.querySelectorAll(".js-compte"));
   var menu = null;
   function fermerMenu() { if (menu) { menu.remove(); menu = null; } }
 
   function majBouton() {
     var u = utilisateur();
-    btns.forEach(function (b) { b.innerHTML = contenuBouton(u); });
+    btns.forEach(function (b) { b.innerHTML = contenuBouton(u); b.classList.toggle("connecte", !!u); });
     document.dispatchEvent(new Event("lni:session"));
   }
   function contenuBouton(u) {
-    return u ? (u.avatar ? '<img class="avatar" src="' + esc(u.avatar) + '" alt="" referrerpolicy="no-referrer">' : ICON.user) + esc(u.pseudo) : "Se connecter";
+    if (!u) return "Se connecter";
+    var photo = u.avatar ? '<img class="avatar" src="' + esc(u.avatar) + '" alt="" referrerpolicy="no-referrer">'
+      : '<span class="avatar ini" aria-hidden="true">' + esc((u.pseudo || "?").charAt(0).toUpperCase()) + '</span>';
+    return photo + '<span class="btn-nom">' + esc(u.pseudo) + '</span>' + ICON.chevron;
   }
 
   btns.forEach(function (b) { b.addEventListener("click", function () { cliquer(b); }); });
   function cliquer(btn) {
-    var wrap = btn.parentNode;
     var u = utilisateur();
     if (!u) { ouvrirModal("connexion"); return; }
     if (menu) { fermerMenu(); return; }
     menu = document.createElement("div");
     menu.className = "compte-menu";
-    menu.innerHTML = "<p>Connecté" + (u.fournisseur ? " via " + (u.fournisseur === "google" ? "Google" : "Discord") : "") + (u.email ? " : " + esc(u.email) : "") + '</p>' + (u.id && SITE.actualites && SITE.actualites.urlApi ? '<p class="compte-id">ID admin : <code>' + esc(u.id) + '</code></p>' : "") + '<button type="button">' + ICON.logout + "Se déconnecter</button>";
-    if (SRV && SRV.admin) {
-      var a = document.createElement("a");
-      a.href = "admin.html"; a.className = "compte-lien"; a.innerHTML = ICON.news + "Administration";
-      menu.insertBefore(a, menu.querySelector("button"));
-    }
-    menu.querySelector("button").addEventListener("click", function () { Promise.resolve(deconnecter()).then(function () { fermerMenu(); majBouton(); }); });
-    wrap.appendChild(menu);
+    var profil = u.uid ? "profil.html?id=" + encodeURIComponent(u.uid) : "parametres.html#compte";
+    menu.innerHTML = '<a class="cm-tete" href="' + profil + '"><strong>' + esc(u.pseudo) + '</strong><span class="cm-role">' + (u.admin ? "Admin" : "Joueur") + '</span></a>' +
+      (u.admin ? '<a class="compte-lien" href="admin.html">' + ICON.news + 'Espace admin</a>' : "") +
+      '<a class="compte-lien" href="parametres.html">' + ICON.settings + 'Paramètres</a>' +
+      '<button type="button" class="compte-lien js-logout">' + ICON.logout + "Se déconnecter</button>";
+    menu.querySelector(".js-logout").addEventListener("click", function () { deconnecter(); fermerMenu(); majBouton(); });
+    btn_parent(btn).appendChild(menu);
   }
+  function btn_parent(btn) { return btn.parentNode; }
   document.addEventListener("click", function (e) { if (menu && !e.target.closest(".compte-wrap")) fermerMenu(); });
 
   function ouvrirModal(mode, message) {
@@ -210,13 +313,18 @@
 
     regler(mode);
     if (message) err.textContent = message;
-    var sso = fond.querySelector(".sso"), gcible = fond.querySelector(".sso-google");
-    fond.querySelector(".btn-discord").addEventListener("click", function () { var m = lancerDiscord(); if (m) err.textContent = m; });
-    if (SRV) {
-      gcible.innerHTML = GOOGLE_BTN;
-      gcible.firstChild.addEventListener("click", function () { lancerOAuth("google"); });
-    } else if (CFG.googleClientId) {
-      boutonGoogle(gcible, function () { fermer(); majBouton(); }, function (m) { err.textContent = m; });
+    var gcible = fond.querySelector(".sso-google");
+    fond.querySelector(".btn-discord").addEventListener("click", function () { var m = lancerDiscord(false); if (m) err.textContent = m; });
+    if (CFG.googleClientId && apiBase()) {
+      boutonGoogle(gcible, function (jeton) {
+        // Connexion Google : le serveur vérifie le jeton et renvoie le profil
+        fetch(apiBase() + "/api/session", { method: "POST", headers: { Authorization: "Google " + jeton } }).then(function (r) { if (!r.ok) throw 0; return r.json(); })
+          .then(function () {
+            var d = jwt(jeton);
+            ecrire(CLE_SESSION, { pseudo: d.given_name || d.name || d.email, email: d.email || "", fournisseur: "google", id: "google:" + d.sub, jeton: jeton, avatar: d.picture || "" });
+            fermer(); majBouton(); synchroniser();
+          }, function () { err.textContent = "Connexion Google impossible. Réessaie."; });
+      }, function (m) { err.textContent = m; });
     } else {
       gcible.innerHTML = GOOGLE_BTN;
       gcible.firstChild.addEventListener("click", function () { err.textContent = "Connexion Google pas encore configurée (googleClientId dans site.js)."; });
@@ -224,10 +332,28 @@
     form.elements[mode === "connexion" ? "email" : "pseudo"].focus();
   }
   document.addEventListener("lni:ouvrir-connexion", function () { if (!utilisateur()) ouvrirModal("connexion"); });
-  if (SRV) { document.addEventListener("lni:auth", majBouton); majBouton(); return; }
-  window.LNI_AUTH = { deconnecter: function () { deconnecter(); majBouton(); } };
+
+  window.LNI_AUTH = {
+    lierDiscord: function () { return lancerDiscord(true); },
+    lierAvec: lierAvec,
+    jwt: jwt,
+    boutonGoogle: boutonGoogle,
+    chargerGoogle: chargerGoogle,
+    deconnecter: function () { deconnecter(); majBouton(); },
+    synchroniser: synchroniser,
+    compteLocalActuel: compteLocalActuel,
+    profilLocal: profilLocal,
+    sauverProfilLocal: sauverProfilLocal,
+    changerEmailLocal: changerEmailLocal,
+    changerMotDePasseLocal: changerMotDePasseLocal,
+    exporterCompteLocal: exporterCompteLocal,
+    desactiverCompteLocal: desactiverCompteLocal
+  };
+
+  document.dispatchEvent(new Event("lni:auth-ready"));
+  majBouton();
   var retour = null;
   try { retour = retourDiscord(); } catch (e) {}
-  majBouton();
-  if (retour) retour.then(majBouton, function (m) { majBouton(); ouvrirModal("connexion", typeof m === "string" ? m : "Connexion Discord impossible."); });
+  if (retour) retour.then(function () { majBouton(); synchroniser(); }, function (m) { majBouton(); ouvrirModal("connexion", typeof m === "string" ? m : "Connexion Discord impossible."); });
+  else synchroniser();
 })();

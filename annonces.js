@@ -1,71 +1,41 @@
-/* Annonces et questionnaires de l'accueil (les données vivent dans le Worker, voir worker-annonces.js) */
+/* Annonces et questionnaires de l'accueil. Résultats et vote toujours visibles, commentaires sur les annonces. */
 (function () {
   "use strict";
   var C = SITE.actualites || {};
   var zone = document.getElementById("section-annonces");
   if (!zone || !C.actif || !C.urlApi) return;
-  var API = C.urlApi.replace(/\/+$/, "");
+  var K = window.LNI_COMMUN;
   var contenu = document.getElementById("annonces-contenu");
   var barre = document.getElementById("adm-bar");
-  var etat = { data: null, moi: null, expire: false, resultats: {}, ouverts: {}, erreur: "" };
-  var dernierJeton = null;
+  var data = null, moi = null, erreur = "", dernier = null;
 
-  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
-  function paras(s) { return esc(s).replace(/\n/g, "<br>"); }
+  function admin() { return !!(moi && moi.admin); }
   function date(t) { try { return new Date(t).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }); } catch (e) { return ""; } }
-  function session() { try { return JSON.parse(localStorage.getItem("lni_session")); } catch (e) { return null; } }
-  function jeton() { var s = session(); return s && s.jeton ? (s.fournisseur === "google" ? "Google " : "Discord ") + s.jeton : ""; }
-  function admin() { return !!(etat.moi && etat.moi.admin); }
+  function paras(s) { return K.esc(s).replace(/\n/g, "<br>"); }
 
-  function appel(methode, chemin, corps) {
-    var h = {}, j = jeton();
-    if (j) h.Authorization = j;
-    if (corps) h["Content-Type"] = "application/json";
-    return fetch(API + chemin, { method: methode, headers: h, body: corps ? JSON.stringify(corps) : undefined }).then(function (r) {
-      return r.json().catch(function () { return {}; }).then(function (d) {
-        if (!r.ok) { var e = new Error(d.erreur || "Erreur du serveur"); e.status = r.status; throw e; }
-        return d;
-      });
-    });
-  }
-
-  /* ----- Chargement ----- */
   function charger() {
-    dernierJeton = jeton();
-    etat.expire = false;
-    var pub = appel("GET", "/api/contenu").then(function (d) { etat.data = d; etat.erreur = ""; }, function () { etat.erreur = "Impossible de charger les annonces pour le moment."; });
-    var moi = dernierJeton ? appel("GET", "/api/moi").then(function (d) { etat.moi = d; }, function (e) { etat.moi = null; if (e.status === 401) etat.expire = true; }) : (etat.moi = null, Promise.resolve());
-    return Promise.all([pub, moi]).then(dessiner);
+    dernier = K.session() && K.session().jeton || null;
+    var pub = K.appel("GET", "/api/contenu").then(function (d) { data = d; erreur = ""; }, function () { erreur = "Impossible de charger les annonces pour le moment."; });
+    var m = K.connecte() ? K.appel("GET", "/api/moi").then(function (d) { moi = d; }, function () { moi = null; }) : (moi = null, Promise.resolve());
+    return Promise.all([pub, m]).then(dessiner);
   }
-  document.addEventListener("lni:session", function () { if (jeton() !== dernierJeton) charger(); });
+  document.addEventListener("lni:session", function () {
+    var j = K.session() && K.session().jeton || null;
+    if (j !== dernier) charger();
+  });
 
-  /* ----- Affichage ----- */
-  function annonceHtml(a) {
-    return '<article class="annonce-carte"><p class="ac-date">' + esc(date(a.date)) + '</p><h3>' + esc(a.titre) + '</h3>' +
-      (a.texte ? '<p>' + paras(a.texte) + '</p>' : '') +
-      (a.lien ? '<a class="ac-lien" href="' + esc(a.lien) + '" target="_blank" rel="noopener">En savoir plus' + ICON.arrow + '</a>' : '') +
-      (admin() ? '<button class="mini danger" type="button" data-act="suppr-annonce" data-id="' + esc(a.id) + '">Supprimer</button>' : '') + '</article>';
-  }
-
-  function champHtml(q, qid) {
-    var nom = "q-" + qid + "-" + q.id, h = '<fieldset class="qf"><legend>' + esc(q.texte) + '</legend>';
-    if (q.type === "texte") return h + '<textarea name="' + nom + '" rows="2" maxlength="500"></textarea></fieldset>';
-    var t = q.type === "unique" ? "radio" : "checkbox";
-    q.options.forEach(function (o) { h += '<label class="opt"><input type="' + t + '" name="' + nom + '" value="' + esc(o) + '"><span>' + esc(o) + '</span></label>'; });
-    return h + '</fieldset>';
-  }
-
+  /* ----- Résultats : toujours affichés ----- */
   function resultatsHtml(r) {
-    var h = '<div class="res"><p class="res-total">' + r.total + ' réponse' + (r.total > 1 ? 's' : '') + '</p>';
+    if (!r || !r.total) return '<p class="res-vide">Aucune réponse pour l\'instant.</p>';
+    var h = '<div class="res"><p class="res-total">' + r.total + ' réponse' + (r.total > 1 ? "s" : "") + '</p>';
     r.questions.forEach(function (q) {
-      h += '<div class="res-q"><h4>' + esc(q.texte) + '</h4>';
+      h += '<div class="res-q"><h4>' + K.esc(q.texte) + '</h4>';
       if (q.type === "texte") {
-        h += q.textes.length ? '<ul class="res-textes">' + q.textes.map(function (t) { return '<li><strong>' + esc(t.nom) + ' :</strong> ' + esc(t.texte) + '</li>'; }).join("") + '</ul>' : '<p class="res-vide">Réponses libres visibles uniquement par les admins.</p>';
+        h += q.textes.length ? '<ul class="res-textes">' + q.textes.map(function (t) { return '<li><strong>' + K.esc(t.nom) + ' :</strong> ' + K.esc(t.texte) + '</li>'; }).join("") + '</ul>' : '<p class="res-vide">Aucune réponse.</p>';
       } else {
-        var tot = 0; Object.keys(q.compte).forEach(function (o) { tot = Math.max(tot, q.compte[o]); });
         Object.keys(q.compte).forEach(function (o) {
           var n = q.compte[o], pct = r.total ? Math.round(n * 100 / r.total) : 0;
-          h += '<div class="barre"><span class="b-nom">' + esc(o) + '</span><span class="b-piste"><span style="width:' + pct + '%"></span></span><span class="b-val">' + n + ' (' + pct + '%)</span></div>';
+          h += '<div class="barre"><span class="b-nom">' + K.esc(o) + '</span><span class="b-piste"><span style="width:' + pct + '%"></span></span><span class="b-val">' + n + ' (' + pct + '%)</span></div>';
         });
       }
       h += '</div>';
@@ -73,60 +43,69 @@
     return h + '</div>';
   }
 
+  /* ----- Vote : formulaire toujours visible tant qu'on n'a pas voté ----- */
+  function formHtml(q) {
+    return '<form class="qform" data-quest="' + K.esc(q.id) + '" novalidate>' + q.questions.map(function (x) {
+      var nom = "q-" + q.id + "-" + x.id;
+      if (x.type === "texte") return '<fieldset class="qf"><legend>' + K.esc(x.texte) + '</legend><textarea name="' + nom + '" rows="2" maxlength="500" aria-label="' + K.esc(x.texte) + '"></textarea></fieldset>';
+      var t = x.type === "unique" ? "radio" : "checkbox";
+      return '<fieldset class="qf"><legend>' + K.esc(x.texte) + '</legend>' + x.options.map(function (o) {
+        return '<label class="opt"><input type="' + t + '" name="' + nom + '" value="' + K.esc(o) + '"><span>' + K.esc(o) + '</span></label>';
+      }).join("") + '</fieldset>';
+    }).join("") + '<p class="form-err" role="alert"></p><button class="mini plein" type="submit">Envoyer mes réponses</button></form>';
+  }
+
   function questHtml(q) {
-    var s = session(), connecte = !!(s && s.jeton), repondu = !!(etat.moi && etat.moi.repondus.indexOf(q.id) >= 0);
-    var h = '<article class="annonce-carte quest"><p class="ac-date">Questionnaire · ' + esc(date(q.date)) + ' · <span class="etat ' + (q.ouvert ? 'ouvert' : 'clos') + '">' + (q.ouvert ? 'Ouvert' : 'Clos') + '</span></p><h3>' + esc(q.titre) + '</h3>' +
-      (q.description ? '<p>' + paras(q.description) + '</p>' : '');
-    if (repondu) h += '<p class="merci">Merci, tu as déjà répondu.</p>';
-    else if (!q.ouvert) h += '<p class="merci">Ce questionnaire est clos.</p>';
-    else if (!connecte || etat.expire) h += '<p class="merci">' + (etat.expire ? 'Ta connexion a expiré. ' : '') + 'Connecte-toi avec Discord ou Google pour répondre.</p><button class="mini" type="button" data-act="connexion">Se connecter</button>';
-    else if (etat.ouverts[q.id]) {
-      h += '<form class="qform" data-quest="' + esc(q.id) + '" novalidate>' + q.questions.map(function (x) { return champHtml(x, q.id); }).join("") +
-        '<p class="form-err" role="alert"></p><button class="mini plein" type="submit">Envoyer mes réponses</button></form>';
-    } else h += '<button class="mini plein" type="button" data-act="repondre" data-id="' + esc(q.id) + '">Répondre</button>';
-    var peutVoir = q.resultatsPublics || admin();
-    var actions = '';
-    if (peutVoir) actions += '<button class="mini" type="button" data-act="resultats" data-id="' + esc(q.id) + '">' + (etat.resultats[q.id] ? 'Masquer' : 'Voir') + ' les résultats</button>';
-    if (admin()) actions += '<button class="mini" type="button" data-act="toggle-quest" data-id="' + esc(q.id) + '" data-ouvert="' + (q.ouvert ? '0' : '1') + '">' + (q.ouvert ? 'Clore' : 'Rouvrir') + '</button><button class="mini danger" type="button" data-act="suppr-quest" data-id="' + esc(q.id) + '">Supprimer</button>';
-    if (actions) h += '<div class="ac-actions">' + actions + '</div>';
-    if (etat.resultats[q.id]) h += etat.resultats[q.id].erreur ? '<p class="form-err">' + esc(etat.resultats[q.id].erreur) + '</p>' : resultatsHtml(etat.resultats[q.id]);
+    var repondu = !!(moi && moi.repondus && moi.repondus.indexOf(q.id) >= 0);
+    var h = '<article class="annonce-carte quest"><p class="ac-date">Questionnaire · ' + date(q.date) + ' · <span class="etat ' + (q.ouvert ? "ouvert" : "clos") + '">' + (q.ouvert ? "Ouvert" : "Clos") + '</span></p>' +
+      '<h3>' + K.esc(q.titre) + '</h3>' + (q.description ? '<p>' + paras(q.description) + '</p>' : "") + resultatsHtml(q.resultats);
+    if (q.ouvert) {
+      if (!K.connecte()) h += '<button class="mini plein" type="button" data-act="connexion">Connecte-toi pour voter</button>';
+      else if (repondu) h += '<p class="merci">Merci, tu as déjà voté.</p>';
+      else h += formHtml(q);
+    }
+    if (admin()) {
+      h += '<div class="ac-actions"><button class="mini" type="button" data-act="toggle-quest" data-id="' + K.esc(q.id) + '" data-ouvert="' + (q.ouvert ? "0" : "1") + '">' + (q.ouvert ? "Clore" : "Rouvrir") + '</button>' +
+        '<button class="mini danger" type="button" data-act="suppr-quest" data-id="' + K.esc(q.id) + '">Supprimer</button></div>';
+    }
     return h + '</article>';
   }
 
+  /* ----- Annonces : avec commentaires ----- */
+  function annonceHtml(a) {
+    return '<article class="annonce-carte"><p class="ac-date">' + date(a.date) + '</p><h3>' + K.esc(a.titre) + '</h3>' +
+      (a.texte ? '<p>' + paras(a.texte) + '</p>' : "") +
+      (a.lien ? '<a class="ac-lien" href="' + K.esc(a.lien) + '" target="_blank" rel="noopener">En savoir plus</a>' : "") +
+      (admin() ? '<div class="ac-actions"><button class="mini danger" type="button" data-act="suppr-annonce" data-id="' + K.esc(a.id) + '">Supprimer</button></div>' : "") +
+      '<div class="ac-com" data-annonce="' + K.esc(a.id) + '"></div></article>';
+  }
+
   function dessiner() {
-    var d = etat.data || { annonces: [], questionnaires: [] };
+    var d = data || { annonces: [], questionnaires: [] };
     var vide = !d.annonces.length && !d.questionnaires.length;
-    zone.hidden = vide && !admin() && !etat.erreur;
+    zone.hidden = vide && !admin() && !erreur;
     barre.hidden = !admin();
     if (admin()) barre.innerHTML = '<button class="mini plein" type="button" data-act="nouvelle-annonce">+ Nouvelle annonce</button><button class="mini plein" type="button" data-act="nouveau-quest">+ Nouveau questionnaire</button><span class="adm-badge">Mode administrateur</span>';
-    var h = etat.erreur ? '<p class="form-err">' + esc(etat.erreur) + '</p>' : '';
-    if (etat.expire) h += '<p class="form-err">Ta connexion a expiré, reconnecte-toi pour répondre ou administrer.</p>';
+    var h = erreur ? '<p class="form-err">' + K.esc(erreur) + '</p>' : "";
     if (vide && admin()) h += '<p class="res-vide">Rien de publié pour l\'instant. Utilise les boutons ci-dessus.</p>';
     h += '<div class="annonces-grille">' + d.annonces.map(annonceHtml).join("") + d.questionnaires.map(questHtml).join("") + '</div>';
     contenu.innerHTML = h;
+    d.annonces.forEach(function (a) {
+      var box = contenu.querySelector('[data-annonce="' + a.id + '"]');
+      if (box) K.commentaires("annonce:" + a.id, box);
+    });
   }
 
   /* ----- Actions ----- */
-  function recharger() { return charger(); }
-  function echec(e) {
-    if (e.status === 401) { etat.expire = true; dessiner(); return; }
-    alert(e.message || "Une erreur est survenue.");
-  }
-  function seConnecter() { var b = document.querySelector(".js-compte"); if (b) b.click(); }
-
+  function echec(e) { alert(e.message || "Une erreur est survenue."); }
   zone.addEventListener("click", function (e) {
     var b = e.target.closest("[data-act]");
     if (!b) return;
     var act = b.getAttribute("data-act"), id = b.getAttribute("data-id");
-    if (act === "connexion") seConnecter();
-    else if (act === "repondre") { etat.ouverts[id] = true; dessiner(); }
-    else if (act === "resultats") {
-      if (etat.resultats[id]) { delete etat.resultats[id]; dessiner(); return; }
-      appel("GET", "/api/resultats/" + encodeURIComponent(id)).then(function (r) { etat.resultats[id] = r; dessiner(); }, function (er) { etat.resultats[id] = { erreur: er.message }; dessiner(); });
-    }
-    else if (act === "suppr-annonce") { if (confirm("Supprimer cette annonce ?")) appel("DELETE", "/api/annonces/" + encodeURIComponent(id)).then(recharger, echec); }
-    else if (act === "suppr-quest") { if (confirm("Supprimer ce questionnaire et toutes ses réponses ?")) appel("DELETE", "/api/questionnaires/" + encodeURIComponent(id)).then(recharger, echec); }
-    else if (act === "toggle-quest") appel("PATCH", "/api/questionnaires/" + encodeURIComponent(id), { ouvert: b.getAttribute("data-ouvert") === "1" }).then(recharger, echec);
+    if (act === "connexion") K.ouvrirConnexion();
+    else if (act === "suppr-annonce") { if (confirm("Supprimer cette annonce ?")) K.appel("DELETE", "/api/annonces/" + encodeURIComponent(id)).then(charger, echec); }
+    else if (act === "suppr-quest") { if (confirm("Supprimer ce questionnaire et toutes ses réponses ?")) K.appel("DELETE", "/api/questionnaires/" + encodeURIComponent(id)).then(charger, echec); }
+    else if (act === "toggle-quest") K.appel("PATCH", "/api/questionnaires/" + encodeURIComponent(id), { ouvert: b.getAttribute("data-ouvert") === "1" }).then(charger, echec);
     else if (act === "nouvelle-annonce") formAnnonce();
     else if (act === "nouveau-quest") formQuestionnaire();
   });
@@ -135,28 +114,28 @@
     var f = e.target.closest("form.qform");
     if (!f) return;
     e.preventDefault();
-    var id = f.getAttribute("data-quest"), q = etat.data.questionnaires.filter(function (x) { return x.id === id; })[0], rep = {}, err = f.querySelector(".form-err");
+    var id = f.getAttribute("data-quest"), q = data.questionnaires.filter(function (x) { return x.id === id; })[0];
+    var rep = {}, err = f.querySelector(".form-err");
     for (var i = 0; i < q.questions.length; i++) {
       var qu = q.questions[i], els = f.querySelectorAll('[name="q-' + id + '-' + qu.id + '"]');
-      if (qu.type === "texte") rep[qu.id] = els[0].value;
-      else {
-        var cochees = Array.prototype.filter.call(els, function (x) { return x.checked; }).map(function (x) { return x.value; });
-        if (qu.type === "unique") { if (!cochees.length) { err.textContent = "Réponds à : « " + qu.texte + " »"; return; } rep[qu.id] = cochees[0]; }
-        else rep[qu.id] = cochees;
-      }
+      if (qu.type === "texte") { rep[qu.id] = els[0].value; continue; }
+      var cochees = Array.prototype.filter.call(els, function (x) { return x.checked; }).map(function (x) { return x.value; });
+      if (qu.type === "unique") { if (!cochees.length) { err.textContent = "Réponds à : « " + qu.texte + " »"; return; } rep[qu.id] = cochees[0]; }
+      else rep[qu.id] = cochees;
     }
-    f.querySelector("[type=submit]").disabled = true;
-    appel("POST", "/api/reponses/" + encodeURIComponent(id), { reponses: rep }).then(function () { delete etat.ouverts[id]; return recharger(); }, function (er) {
-      f.querySelector("[type=submit]").disabled = false;
-      if (er.status === 401) echec(er); else err.textContent = er.message;
+    var btn = f.querySelector("[type=submit]");
+    btn.disabled = true;
+    K.appel("POST", "/api/reponses/" + encodeURIComponent(id), { reponses: rep }).then(charger, function (er) {
+      btn.disabled = false; err.textContent = er.message;
     });
   });
 
   /* ----- Formulaires admin ----- */
   function fenetre(titre, corps, surEnvoi) {
+    document.dispatchEvent(new Event("lni:modal"));
     var fond = document.createElement("div");
     fond.className = "modal-fond";
-    fond.innerHTML = '<div class="modal modal-large" role="dialog" aria-modal="true"><button class="modal-x" type="button" aria-label="Fermer">' + ICON.close + '</button><h2>' + esc(titre) + '</h2><form novalidate>' + corps + '<p class="form-err" role="alert"></p><button class="btn-login" type="submit">Publier</button></form></div>';
+    fond.innerHTML = '<div class="modal modal-large" role="dialog" aria-modal="true"><button class="modal-x" type="button" aria-label="Fermer">' + ICON.close + '</button><h2>' + K.esc(titre) + '</h2><form novalidate>' + corps + '<p class="form-err" role="alert"></p><button class="btn-login" type="submit">Publier</button></form></div>';
     document.body.appendChild(fond);
     var form = fond.querySelector("form"), err = fond.querySelector(".form-err");
     function fermer() { document.removeEventListener("keydown", touche); fond.remove(); }
@@ -167,15 +146,13 @@
     form.addEventListener("submit", function (ev) {
       ev.preventDefault();
       var btn = form.querySelector(".btn-login"); btn.disabled = true;
-      Promise.resolve(surEnvoi(form)).then(function () { fermer(); return recharger(); }, function (er) {
-        btn.disabled = false; err.textContent = typeof er === "string" ? er : (er.message || "Erreur");
-        if (er && er.status === 401) { fermer(); echec(er); }
+      Promise.resolve(surEnvoi(form)).then(function () { fermer(); charger(); }, function (er) {
+        btn.disabled = false; err.textContent = er && er.message ? er.message : (typeof er === "string" ? er : "Erreur");
       });
     });
     var premier = form.querySelector("input, textarea"); if (premier) premier.focus();
     return form;
   }
-
   function formAnnonce() {
     fenetre("Nouvelle annonce",
       '<label>Titre<input name="titre" maxlength="120" required></label>' +
@@ -183,25 +160,22 @@
       '<label>Lien (facultatif)<input name="lien" type="url" placeholder="https://..."></label>',
       function (f) {
         if (!f.titre.value.trim()) return Promise.reject("Le titre est obligatoire.");
-        return appel("POST", "/api/annonces", { titre: f.titre.value, texte: f.texte.value, lien: f.lien.value });
+        return K.appel("POST", "/api/annonces", { titre: f.titre.value, texte: f.texte.value, lien: f.lien.value });
       });
   }
-
   function formQuestionnaire() {
     var n = 0;
     var form = fenetre("Nouveau questionnaire",
       '<label>Titre<input name="titre" maxlength="120" required></label>' +
       '<label>Description (facultatif)<textarea name="description" rows="2" maxlength="500"></textarea></label>' +
-      '<label class="coche"><input type="checkbox" name="publics"> Résultats visibles par tout le monde</label>' +
       '<div class="qs"></div><button class="mini" type="button" data-ajout>+ Ajouter une question</button>',
       function (f) {
-        var qs = [];
-        var blocs = f.querySelectorAll(".qb");
+        var qs = [], blocs = f.querySelectorAll(".qb");
         for (var i = 0; i < blocs.length; i++) {
           var b = blocs[i], type = b.querySelector("select").value;
           qs.push({ texte: b.querySelector(".qt").value, type: type, options: type === "texte" ? [] : b.querySelector(".qo").value.split("\n") });
         }
-        return appel("POST", "/api/questionnaires", { titre: f.titre.value, description: f.description.value, resultatsPublics: f.publics.checked, questions: qs });
+        return K.appel("POST", "/api/questionnaires", { titre: f.titre.value, description: f.description.value, questions: qs });
       });
     function ajouter() {
       if (form.querySelectorAll(".qb").length >= 10) return;
