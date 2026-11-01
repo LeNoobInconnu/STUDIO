@@ -90,103 +90,103 @@
 
       /* ---- alertes de vérification en attente ---- */
       var alerteVerif = (demandeVerification && !demandeVerification.traiteeLe)
-        ? ‘<span class="adm-badge warn" style="margin-left:6px">Vérif. en attente</span>’ : "";
+        ? '<span class="adm-badge warn" style="margin-left:6px">Vérif. en attente</span>' : "";
 
       /* ---- onglets internes ---- */
       var panelProfil =
-        ‘<div class="adm-user-panel" data-panel="profil" hidden>’ +
-          ‘<div class="adm-panel-grid">’ +
-            ‘<label class="adm-page-field">Pseudo<input data-profile-pseudo maxlength="24" minlength="3" value="’ + K.esc(u.pseudo || "") + ‘"></label>’ +
-            ‘<label class="adm-page-field">URL avatar<input data-profile-avatar-url type="url" maxlength="2048" placeholder="https://..." value="’ + K.esc(/^https:\/\//i.test(u.avatar || "") ? u.avatar : "") + ‘"></label>’ +
-            ‘<label class="adm-page-field">Téléverser un avatar<input data-profile-avatar-file type="file" accept="image/*"></label>’ +
-            ‘<img class="adm-user-avatar-preview" data-profile-avatar-preview src="’ + K.esc(u.avatar || "") + ‘" alt=""’ + (u.avatar ? "" : " hidden") + ‘>’ +
-            ‘<button class="mini" type="button" data-profile-avatar-clear style="justify-self:start">Retirer l’avatar</button>’ +
-            ‘<label class="adm-page-field">Bio<textarea data-profile-bio rows="2" maxlength="160">’ + K.esc(u.bio || "") + ‘</textarea></label>’ +
-            ‘<label class="adm-page-field">Couleur<input data-profile-color type="color" value="’ + K.esc(u.couleur || "#e84b3c") + ‘"></label>’ +
-            ‘<label class="adm-page-field">Badges (séparés par des virgules)<input data-profile-badges maxlength="129" value="’ + K.esc((u.badges || []).join(", ")) + ‘" placeholder="Ex. Créateur, Bêta-testeur"></label>’ +
-            ‘<label class="adm-page-field">Rôles (sélection multiple)<select data-roles-select multiple size="4">’ +
-              rolesOptions.map(function (o) { return ‘<option value="’ + o[0] + ‘"’ + (roles.indexOf(o[0]) >= 0 ? " selected" : "") + ‘>’ + o[1] + ‘</option>’; }).join("") +
-            ‘</select><small>Les rôles sont des étiquettes de profil.</small></label>’ +
-            ‘<label class="adm-user-check"><input data-profile-verified type="checkbox"’ + (u.verifie ? " checked" : "") + ‘> Compte vérifié par l’administration</label>’ +
-            ‘<label class="adm-page-field">Notes privées (admins seulement)<textarea data-private-notes rows="2" maxlength="2000">’ + K.esc(u.notesPrivees || "") + ‘</textarea></label>’ +
-          ‘</div>’ +
-          ‘<div class="adm-panel-actions">’ +
-            ‘<button class="mini" type="button" data-user-action="profile-save">Enregistrer le profil</button>’ +
-            ‘<button class="mini" type="button" data-user-action="notes-save">Enregistrer les notes</button>’ +
-            ‘<a class="mini" target="_blank" rel="noopener" href="profil.html?id=’ + encodeURIComponent(u.id) + ‘">Voir le profil public</a>’ +
-          ‘</div>’ +
+        '<div class="adm-user-panel" data-panel="profil" hidden>' +
+          '<div class="adm-panel-grid">' +
+            '<label class="adm-page-field">Pseudo<input data-profile-pseudo maxlength="24" minlength="3" value="' + K.esc(u.pseudo || "") + '"></label>' +
+            '<label class="adm-page-field">URL avatar<input data-profile-avatar-url type="url" maxlength="2048" placeholder="https://..." value="' + K.esc(/^https:\/\//i.test(u.avatar || "") ? u.avatar : "") + '"></label>' +
+            '<label class="adm-page-field">Téléverser un avatar<input data-profile-avatar-file type="file" accept="image/*"></label>' +
+            '<img class="adm-user-avatar-preview" data-profile-avatar-preview src="' + K.esc(u.avatar || "") + '" alt=""' + (u.avatar ? "" : " hidden") + '>' +
+            '<button class="mini" type="button" data-profile-avatar-clear style="justify-self:start">Retirer l’avatar</button>' +
+            '<label class="adm-page-field">Bio<textarea data-profile-bio rows="2" maxlength="160">' + K.esc(u.bio || "") + '</textarea></label>' +
+            '<label class="adm-page-field">Couleur<input data-profile-color type="color" value="' + K.esc(u.couleur || "#e84b3c") + '"></label>' +
+            '<label class="adm-page-field">Badges (séparés par des virgules)<input data-profile-badges maxlength="129" value="' + K.esc((u.badges || []).join(", ")) + '" placeholder="Ex. Créateur, Bêta-testeur"></label>' +
+            '<label class="adm-page-field">Rôles (sélection multiple)<select data-roles-select multiple size="4">' +
+              rolesOptions.map(function (o) { return '<option value="' + o[0] + '"' + (roles.indexOf(o[0]) >= 0 ? " selected" : "") + '>' + o[1] + '</option>'; }).join("") +
+            '</select><small>Les rôles sont des étiquettes de profil.</small></label>' +
+            '<label class="adm-user-check"><input data-profile-verified type="checkbox"' + (u.verifie ? " checked" : "") + '> Compte vérifié par l’administration</label>' +
+            '<label class="adm-page-field">Notes privées (admins seulement)<textarea data-private-notes rows="2" maxlength="2000">' + K.esc(u.notesPrivees || "") + '</textarea></label>' +
+          '</div>' +
+          '<div class="adm-panel-actions">' +
+            '<button class="mini" type="button" data-user-action="profile-save">Enregistrer le profil</button>' +
+            '<button class="mini" type="button" data-user-action="notes-save">Enregistrer les notes</button>' +
+            '<a class="mini" target="_blank" rel="noopener" href="profil.html?id=' + encodeURIComponent(u.id) + '">Voir le profil public</a>' +
+          '</div>' +
           (u.historique && u.historique.length
-            ? ‘<details class="adm-panel-history"><summary>Historique des connexions (‘ + u.historique.length + ‘)</summary><small>’ +
+            ? '<details class="adm-panel-history"><summary>Historique des connexions (' + u.historique.length + ')</summary><small>' +
               u.historique.map(function (x) { return K.esc(new Date(x.date).toLocaleString("fr-FR") + " · " + x.fournisseur); }).join("<br>") +
-              ‘</small></details>’ : ‘’) +
-        ‘</div>’;
+              '</small></details>' : '') +
+        '</div>';
 
       var panelDroits =
-        ‘<div class="adm-user-panel" data-panel="droits" hidden>’ +
-          ‘<p class="adm-panel-note">Permissions de modération accordées manuellement, en plus des rôles.</p>’ +
-          ‘<div class="adm-panel-checks">’ +
-            ‘<label><input type="checkbox" data-perm="gererPublications"’ + (permissions.gererPublications ? " checked" : "") + ‘> Gérer les publications</label>’ +
-            ‘<label><input type="checkbox" data-perm="gererCommentaires"’ + (permissions.gererCommentaires ? " checked" : "") + ‘> Gérer les commentaires</label>’ +
-          ‘</div>’ +
-          ‘<div class="adm-panel-actions"><button class="mini" type="button" data-user-action="save">Enregistrer les droits</button></div>’ +
+        '<div class="adm-user-panel" data-panel="droits" hidden>' +
+          '<p class="adm-panel-note">Permissions de modération accordées manuellement, en plus des rôles.</p>' +
+          '<div class="adm-panel-checks">' +
+            '<label><input type="checkbox" data-perm="gererPublications"' + (permissions.gererPublications ? " checked" : "") + '> Gérer les publications</label>' +
+            '<label><input type="checkbox" data-perm="gererCommentaires"' + (permissions.gererCommentaires ? " checked" : "") + '> Gérer les commentaires</label>' +
+          '</div>' +
+          '<div class="adm-panel-actions"><button class="mini" type="button" data-user-action="save">Enregistrer les droits</button></div>' +
           (demandeVerification && !demandeVerification.traiteeLe
-            ? ‘<div class="adm-user-verification"><strong>Demande de vérification en attente</strong>’ +
-              ‘<small>’ + K.esc(dateFR(demandeVerification.date)) + (demandeVerification.note ? ‘ · ‘ + K.esc(demandeVerification.note) : ‘’) + ‘</small>’ +
-              ‘<div class="adm-panel-actions"><button class="mini" type="button" data-user-action="verification-accept">Accepter</button><button class="mini" type="button" data-user-action="verification-reject">Refuser</button></div></div>’
-            : ‘’) +
-        ‘</div>’;
+            ? '<div class="adm-user-verification"><strong>Demande de vérification en attente</strong>' +
+              '<small>' + K.esc(dateFR(demandeVerification.date)) + (demandeVerification.note ? ' · ' + K.esc(demandeVerification.note) : '') + '</small>' +
+              '<div class="adm-panel-actions"><button class="mini" type="button" data-user-action="verification-accept">Accepter</button><button class="mini" type="button" data-user-action="verification-reject">Refuser</button></div></div>'
+            : '') +
+        '</div>';
 
       var panelSanctions =
-        ‘<div class="adm-user-panel" data-panel="sanctions" hidden>’ +
-          (historiqueSanctions ? ‘<div class="adm-panel-casier">’ + historiqueSanctions + ‘</div>’ : ‘’) +
-          ‘<div class="adm-panel-grid adm-panel-sanction-form">’ +
-            ‘<label class="adm-page-field">Durée<select data-sanction-duration>’ +
-              ‘<option value="86400">24 heures</option><option value="604800" selected>7 jours</option>’ +
-              ‘<option value="2592000">30 jours</option><option value="31536000">365 jours</option>’ +
-            ‘</select></label>’ +
-            ‘<label class="adm-page-field">Motif obligatoire<textarea data-sanction-reason rows="2" maxlength="300" placeholder="Raison de l’action…"></textarea></label>’ +
-          ‘</div>’ +
-          ‘<div class="adm-panel-actions">’ +
-            ‘<button class="mini" type="button" data-sanction="avertissement">Avertir</button>’ +
-            ‘<button class="mini" type="button" data-sanction="suspension">’ + (u.suspenduJusqua > Date.now() ? "Prolonger suspension" : "Suspendre") + ‘</button>’ +
-            (u.suspenduJusqua > Date.now() ? ‘<button class="mini" type="button" data-sanction="lever_suspension">Lever suspension</button>’ : "") +
-            ‘<button class="mini" type="button" data-sanction="mute_commentaires">’ + (u.commentairesMutesJusqua > Date.now() ? "Prolonger mute" : "Muter commentaires") + ‘</button>’ +
-            (u.commentairesMutesJusqua > Date.now() ? ‘<button class="mini" type="button" data-sanction="lever_mute_commentaires">Lever mute</button>’ : "") +
-            ‘<button class="mini" type="button" data-sanction="blocage_contenu">’ + (u.contenuBloqueJusqua > Date.now() ? "Prolonger blocage" : "Bloquer publications") + ‘</button>’ +
-            (u.contenuBloqueJusqua > Date.now() ? ‘<button class="mini" type="button" data-sanction="lever_blocage_contenu">Lever blocage</button>’ : "") +
+        '<div class="adm-user-panel" data-panel="sanctions" hidden>' +
+          (historiqueSanctions ? '<div class="adm-panel-casier">' + historiqueSanctions + '</div>' : '') +
+          '<div class="adm-panel-grid adm-panel-sanction-form">' +
+            '<label class="adm-page-field">Durée<select data-sanction-duration>' +
+              '<option value="86400">24 heures</option><option value="604800" selected>7 jours</option>' +
+              '<option value="2592000">30 jours</option><option value="31536000">365 jours</option>' +
+            '</select></label>' +
+            '<label class="adm-page-field">Motif obligatoire<textarea data-sanction-reason rows="2" maxlength="300" placeholder="Raison de l’action…"></textarea></label>' +
+          '</div>' +
+          '<div class="adm-panel-actions">' +
+            '<button class="mini" type="button" data-sanction="avertissement">Avertir</button>' +
+            '<button class="mini" type="button" data-sanction="suspension">' + (u.suspenduJusqua > Date.now() ? "Prolonger suspension" : "Suspendre") + '</button>' +
+            (u.suspenduJusqua > Date.now() ? '<button class="mini" type="button" data-sanction="lever_suspension">Lever suspension</button>' : "") +
+            '<button class="mini" type="button" data-sanction="mute_commentaires">' + (u.commentairesMutesJusqua > Date.now() ? "Prolonger mute" : "Muter commentaires") + '</button>' +
+            (u.commentairesMutesJusqua > Date.now() ? '<button class="mini" type="button" data-sanction="lever_mute_commentaires">Lever mute</button>' : "") +
+            '<button class="mini" type="button" data-sanction="blocage_contenu">' + (u.contenuBloqueJusqua > Date.now() ? "Prolonger blocage" : "Bloquer publications") + '</button>' +
+            (u.contenuBloqueJusqua > Date.now() ? '<button class="mini" type="button" data-sanction="lever_blocage_contenu">Lever blocage</button>' : "") +
             (u.banni
-              ? ‘<button class="mini" type="button" data-sanction="lever_bannissement">Lever le bannissement</button>’
-              : ‘<button class="mini danger" type="button" data-sanction="bannissement">Bannir définitivement</button>’) +
-          ‘</div>’ +
-          ‘<p class="adm-user-moderation-note">Les actions sont appliquées par le serveur et consignées dans le casier.</p>’ +
-        ‘</div>’;
+              ? '<button class="mini" type="button" data-sanction="lever_bannissement">Lever le bannissement</button>'
+              : '<button class="mini danger" type="button" data-sanction="bannissement">Bannir définitivement</button>') +
+          '</div>' +
+          '<p class="adm-user-moderation-note">Les actions sont appliquées par le serveur et consignées dans le casier.</p>' +
+        '</div>';
 
-      return ‘<li data-q="’ + K.esc(resume) + ‘" data-provider="’ + K.esc((u.fournisseurs || []).join(",")) + ‘" data-role="’ + K.esc(role) + ‘" data-verified="’ + (u.verifie || comptes.some(function (c) { return c.verifie; }) ? "true" : "false") + ‘">’ +
+      return '<li data-q="' + K.esc(resume) + '" data-provider="' + K.esc((u.fournisseurs || []).join(",")) + '" data-role="' + K.esc(role) + '" data-verified="' + (u.verifie || comptes.some(function (c) { return c.verifie; }) ? "true" : "false") + '">' +
         /* --- ligne principale --- */
-        ‘<div class="adm-user-row">’ +
+        '<div class="adm-user-row">' +
           K.avatar(u.avatar, "av") +
-          ‘<div class="adm-user-info">’ +
-            ‘<strong>’ + K.esc(u.pseudo || "Joueur") + ‘</strong>’ +
-            ‘<span class="adm-user-meta">’ + K.esc(fournisseurs) + ‘ · ‘ + K.esc(date) + ‘ · ‘ + (u.publications || 0) + ‘ pub.</span>’ +
-            ‘<span class="adm-user-id">’ + K.esc(u.id) + ‘</span>’ +
-          ‘</div>’ +
-          ‘<div class="adm-user-status">’ +
-            ‘<span class="’ + badgeClass + ‘">’ + badgeLabel + ‘</span>’ + alerteVerif +
-            (u.verifie ? ‘<span class="adm-badge verifie" title="Vérifié">✓</span>’ : ‘’) +
-          ‘</div>’ +
-          (u.admin ? ‘<span class="adm-badge admin">Administrateur protégé</span>’ :
-            ‘<div class="adm-user-tabs-btns" data-user="’ + K.esc(u.id) + ‘">’ +
-              ‘<button class="adm-tab-btn" type="button" data-tab="profil">Profil</button>’ +
-              ‘<button class="adm-tab-btn" type="button" data-tab="droits">Droits</button>’ +
-              ‘<button class="adm-tab-btn" type="button" data-tab="sanctions">Sanctions</button>’ +
-            ‘</div>’) +
-        ‘</div>’ +
+          '<div class="adm-user-info">' +
+            '<strong>' + K.esc(u.pseudo || "Joueur") + '</strong>' +
+            '<span class="adm-user-meta">' + K.esc(fournisseurs) + ' · ' + K.esc(date) + ' · ' + (u.publications || 0) + ' pub.</span>' +
+            '<span class="adm-user-id">' + K.esc(u.id) + '</span>' +
+          '</div>' +
+          '<div class="adm-user-status">' +
+            '<span class="' + badgeClass + '">' + badgeLabel + '</span>' + alerteVerif +
+            (u.verifie ? '<span class="adm-badge verifie" title="Vérifié">✓</span>' : '') +
+          '</div>' +
+          (u.admin ? '<span class="adm-badge admin">Administrateur protégé</span>' :
+            '<div class="adm-user-tabs-btns" data-user="' + K.esc(u.id) + '">' +
+              '<button class="adm-tab-btn" type="button" data-tab="profil">Profil</button>' +
+              '<button class="adm-tab-btn" type="button" data-tab="droits">Droits</button>' +
+              '<button class="adm-tab-btn" type="button" data-tab="sanctions">Sanctions</button>' +
+            '</div>') +
+        '</div>' +
         /* --- panneaux --- */
-        (u.admin ? ‘’ :
-          ‘<div class="adm-user-panels" data-user="’ + K.esc(u.id) + ‘">’ +
+        (u.admin ? '' :
+          '<div class="adm-user-panels" data-user="' + K.esc(u.id) + '">' +
             panelProfil + panelDroits + panelSanctions +
-          ‘</div>’) +
-      ‘</li>’;
+          '</div>') +
+      '</li>';
     }).join(""));
   }
 
