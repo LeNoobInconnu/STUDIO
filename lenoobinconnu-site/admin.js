@@ -78,15 +78,63 @@
 
       '<section class="adm-section">' +
         '<div class="adm-section-heading"><h2>Administration du site</h2><p>Chaque réglage se trouve dans sa page dédiée.</p></div>' +
-        '<div class="adm-grid adm-tool-grid">' +
-          '<article class="adm-card adm-tool-card"><h3>' + ICO.user + 'Utilisateurs</h3><p>Consulter les comptes et gérer les rôles, permissions et suspensions.</p><a class="adm-action" href="admin-utilisateurs.html">Gérer les utilisateurs</a></article>' +
-          '<article class="adm-card adm-tool-card"><h3>' + ICO.fil + 'Statistiques</h3><p>Consulter les visites, les pages populaires et les catégories d’audience anonymes.</p><a class="adm-action" href="admin-analytics.html">Voir les statistiques</a></article>' +
-          '<article class="adm-card adm-tool-card"><h3>' + ICO.set + 'Réglages du site</h3><p>Configurer la bannière, la popup, le message d’accueil et le SEO.</p><a class="adm-action" href="admin-site.html">Ouvrir les réglages</a></article>' +
-          '<article class="adm-card adm-tool-card"><h3>' + ICO.maint + 'Pages et maintenance</h3><p>Gérer la disponibilité, la maintenance et les redirections des pages.</p><a class="adm-action" href="admin-maintenance.html">Gérer les pages</a></article>' +
-          '<article class="adm-card adm-tool-card"><h3>' + ICO.theme + 'Thème par défaut</h3><p>Choisir le thème proposé par défaut aux visiteurs.</p><a class="adm-action" href="admin-theme.html">Régler le thème</a></article>' +
-          '<article class="adm-card adm-tool-card"><h3>' + ICO.theme + 'Musique par défaut</h3><p>Choisir la musique proposée par défaut aux visiteurs.</p><a class="adm-action" href="admin-musique.html">Régler la musique</a></article>' +
-          '<article class="adm-card adm-tool-card"><h3>' + ICO.user + 'Mon profil</h3><p>Consulter le profil public associé à ton compte administrateur.</p><a class="adm-action" href="profil.html?id=' + encodeURIComponent(moi.id) + '">Voir mon profil</a></article>' +
-        '</div>' +
+        ‘<div class="adm-grid adm-tool-grid">’ +
+
+          ‘<article class="adm-card adm-tool-card">’ +
+            ‘<div class="adm-tool-head"><span class="adm-tool-ico">’ + ICO.user + ‘</span><h3>Utilisateurs</h3></div>’ +
+            ‘<p class="adm-tool-desc">Consulter les comptes et gérer les rôles, permissions et suspensions.</p>’ +
+            ‘<div class="adm-tool-footer">’ +
+              ‘<a class="adm-action" href="admin-utilisateurs.html">Gérer les utilisateurs</a>’ +
+              ‘<a class="adm-quick" href="admin-utilisateurs.html#adm-users-search">Rechercher</a>’ +
+              ‘<button class="adm-quick" type="button" id="dash-export-csv" title="Exporter tous les utilisateurs en CSV">Export CSV</button>’ +
+            ‘</div></article>’ +
+
+          ‘<article class="adm-card adm-tool-card">’ +
+            ‘<div class="adm-tool-head"><span class="adm-tool-ico">’ + ICO.fil + ‘</span><h3>Statistiques</h3></div>’ +
+            ‘<p class="adm-tool-desc">Consulter les visites, les pages populaires et les catégories d’audience anonymes.</p>’ +
+            ‘<div class="adm-tool-footer">’ +
+              ‘<a class="adm-action" href="admin-analytics.html">Voir les statistiques</a>’ +
+            ‘</div></article>’ +
+
+          ‘<article class="adm-card adm-tool-card">’ +
+            ‘<div class="adm-tool-head"><span class="adm-tool-ico">’ + ICO.set + ‘</span><h3>Réglages du site</h3></div>’ +
+            ‘<p class="adm-tool-desc">Configurer la bannière, la popup, le message d’accueil et le SEO.</p>’ +
+            ‘<div class="adm-tool-footer">’ +
+              ‘<a class="adm-action" href="admin-site.html">Ouvrir les réglages</a>’ +
+              ‘<button class="adm-quick" type="button" id="dash-toggle-banniere">Bannière&nbsp;–</button>’ +
+            ‘</div></article>’ +
+
+          ‘<article class="adm-card adm-tool-card">’ +
+            ‘<div class="adm-tool-head"><span class="adm-tool-ico">’ + ICO.maint + ‘</span><h3>Pages &amp; maintenance</h3></div>’ +
+            ‘<p class="adm-tool-desc">Gérer la disponibilité, la maintenance et les redirections des pages.</p>’ +
+            ‘<div class="adm-tool-footer">’ +
+              ‘<a class="adm-action" href="admin-maintenance.html">Gérer les pages</a>’ +
+              ‘<button class="adm-quick" type="button" id="dash-toggle-maintenance">Maintenance accueil&nbsp;–</button>’ +
+            ‘</div></article>’ +
+
+          ‘<article class="adm-card adm-tool-card">’ +
+            ‘<div class="adm-tool-head"><span class="adm-tool-ico">’ + ICO.theme + ‘</span><h3>Thème par défaut</h3></div>’ +
+            ‘<p class="adm-tool-desc">Choisir le thème proposé par défaut aux visiteurs.</p>’ +
+            ‘<div class="adm-tool-footer">’ +
+              ‘<a class="adm-action" href="admin-theme.html">Régler le thème</a>’ +
+              ‘<button class="adm-quick" type="button" id="dash-toggle-theme">Basculer thème</button>’ +
+            ‘</div></article>’ +
+
+          ‘<article class="adm-card adm-tool-card">’ +
+            ‘<div class="adm-tool-head"><span class="adm-tool-ico">’ + ICO.theme + ‘</span><h3>Musique par défaut</h3></div>’ +
+            ‘<p class="adm-tool-desc">Choisir la musique proposée par défaut aux visiteurs.</p>’ +
+            ‘<div class="adm-tool-footer">’ +
+              ‘<a class="adm-action" href="admin-musique.html">Régler la musique</a>’ +
+            ‘</div></article>’ +
+
+          ‘<article class="adm-card adm-tool-card">’ +
+            ‘<div class="adm-tool-head"><span class="adm-tool-ico">’ + ICO.user + ‘</span><h3>Mon profil</h3></div>’ +
+            ‘<p class="adm-tool-desc">Consulter le profil public associé à ton compte administrateur.</p>’ +
+            ‘<div class="adm-tool-footer">’ +
+              ‘<a class="adm-action" href="profil.html?id=’ + encodeURIComponent(moi.id) + ‘">Voir mon profil</a>’ +
+            ‘</div></article>’ +
+
+        ‘</div>’ +
       '</section>' +
 
       '<section class="adm-section">' +
@@ -100,8 +148,15 @@
               '<label class="adm-champ">Lien (facultatif)<input name="lien" type="url" placeholder="https://..."></label>' +
               '<p class="adm-msg" id="adm-annonce-msg" hidden></p>' +
               '<button class="btn-solid" type="submit" style="margin-top:0">Publier l’annonce</button></form></article>' +
-          '<article class="adm-card adm-tool-card"><h3>' + ICO.quest + 'Questionnaires</h3><p>Créer et gérer les questionnaires proposés sur la page d’accueil.</p><a class="adm-action" href="index.html#section-annonces">Gérer les questionnaires</a></article>' +
-          '<article class="adm-card adm-tool-card"><h3>' + ICO.fil + 'Fil de publications</h3><p>Consulter les publications et les échanges de la communauté.</p><a class="adm-action" href="fil.html">Ouvrir le fil</a></article>' +
+          ‘<article class="adm-card adm-tool-card">’ +
+            ‘<div class="adm-tool-head"><span class="adm-tool-ico">’ + ICO.quest + ‘</span><h3>Questionnaires</h3></div>’ +
+            ‘<p class="adm-tool-desc">Créer et gérer les questionnaires proposés sur la page d’accueil.</p>’ +
+            ‘<div class="adm-tool-footer"><a class="adm-action" href="index.html#section-annonces">Gérer les questionnaires</a></div></article>’ +
+
+          ‘<article class="adm-card adm-tool-card">’ +
+            ‘<div class="adm-tool-head"><span class="adm-tool-ico">’ + ICO.fil + ‘</span><h3>Fil de publications</h3></div>’ +
+            ‘<p class="adm-tool-desc">Consulter les publications et les échanges de la communauté.</p>’ +
+            ‘<div class="adm-tool-footer"><a class="adm-action" href="fil.html">Ouvrir le fil</a></div></article>’ +
         '</div>' +
       '</section>' +
 
@@ -136,6 +191,99 @@
         f.reset(); message(msgEl, "Annonce publiée. Elle apparaît sur l'accueil.", true); btn.disabled = false;
       }, function (er) { message(msgEl, er.message, false); btn.disabled = false; });
     });
+
+    // ---- Boutons rapides du dashboard ----
+
+    // Toggle bannière
+    var btnBanniere = document.getElementById("dash-toggle-banniere");
+    if (btnBanniere) {
+      K.appel("GET", "/api/reglages").then(function (reg) {
+        var opts = (reg.siteOptions && reg.siteOptions.banniere) || {};
+        var actif = !!opts.actif;
+        btnBanniere.textContent = "Bannière – " + (actif ? "ON" : "OFF");
+        btnBanniere.style.color = actif ? "var(--red)" : "";
+        btnBanniere.addEventListener("click", function () {
+          btnBanniere.disabled = true;
+          K.appel("PUT", "/api/reglages", { siteOptions: { banniere: Object.assign({}, opts, { actif: !actif }) } }).then(function () {
+            actif = !actif;
+            btnBanniere.textContent = "Bannière – " + (actif ? "ON" : "OFF");
+            btnBanniere.style.color = actif ? "var(--red)" : "";
+            btnBanniere.disabled = false;
+          }, function (e) { alert(e.message); btnBanniere.disabled = false; });
+        });
+      }, function () { btnBanniere.textContent = "Bannière"; });
+    }
+
+    // Toggle maintenance accueil
+    var btnMaint = document.getElementById("dash-toggle-maintenance");
+    if (btnMaint) {
+      K.appel("GET", "/api/reglages").then(function (reg) {
+        var maintenancePages = reg.maintenance || {};
+        var actif = !!maintenancePages.accueil;
+        btnMaint.textContent = "Maintenance accueil – " + (actif ? "ON" : "OFF");
+        btnMaint.style.color = actif ? "var(--red)" : "";
+        btnMaint.addEventListener("click", function () {
+          btnMaint.disabled = true;
+          var mise = Object.assign({}, maintenancePages, { accueil: !actif });
+          K.appel("PUT", "/api/reglages", { maintenance: mise }).then(function () {
+            actif = !actif;
+            maintenancePages = mise;
+            btnMaint.textContent = "Maintenance accueil – " + (actif ? "ON" : "OFF");
+            btnMaint.style.color = actif ? "var(--red)" : "";
+            btnMaint.disabled = false;
+          }, function (e) { alert(e.message); btnMaint.disabled = false; });
+        });
+      }, function () { btnMaint.textContent = "Maintenance accueil"; });
+    }
+
+    // Toggle thème par défaut
+    var btnTheme = document.getElementById("dash-toggle-theme");
+    if (btnTheme) {
+      K.appel("GET", "/api/reglages").then(function (reg) {
+        var defauts = (reg.reglagesParDefaut) || {};
+        var theme = defauts.theme || "normal";
+        btnTheme.textContent = "Thème : " + (theme === "sombre" ? "Sombre" : "Clair");
+        btnTheme.addEventListener("click", function () {
+          btnTheme.disabled = true;
+          var nouveau = theme === "sombre" ? "normal" : "sombre";
+          K.appel("PUT", "/api/reglages", { reglagesParDefaut: Object.assign({}, defauts, { theme: nouveau }) }).then(function () {
+            theme = nouveau;
+            btnTheme.textContent = "Thème : " + (theme === "sombre" ? "Sombre" : "Clair");
+            btnTheme.disabled = false;
+          }, function (e) { alert(e.message); btnTheme.disabled = false; });
+        });
+      }, function () { btnTheme.textContent = "Basculer thème"; });
+    }
+
+    // Export CSV depuis le dashboard
+    var btnCsv = document.getElementById("dash-export-csv");
+    if (btnCsv) {
+      btnCsv.addEventListener("click", function () {
+        btnCsv.disabled = true;
+        var tous = [], curseur = null;
+        function page(c) {
+          return K.appel("GET", "/api/admin/utilisateurs" + (c ? "?cursor=" + encodeURIComponent(c) : "")).then(function (d) {
+            tous = tous.concat(d.utilisateurs || []);
+            return d.nextCursor ? page(d.nextCursor) : tous;
+          });
+        }
+        page(null).then(function (liste) {
+          var csv = "Pseudo,ID,Fournisseur,Email,Rôle,Vérifié,Dernière activité\n" + liste.map(function (u) {
+            var comptes = u.comptes || [];
+            var email = comptes.filter(function (c) { return c.email; }).map(function (c) { return c.email; }).join("|");
+            return [u.pseudo, u.id, (u.fournisseurs || []).join("|"), email, u.role || "utilisateur",
+              (u.verifie || comptes.some(function (c) { return c.verifie; })) ? "oui" : "non",
+              u.derniereActivite ? new Date(u.derniereActivite).toLocaleString("fr-FR") : ""].map(function (v) {
+              return '"' + String(v).replace(/"/g, '""') + '"';
+            }).join(",");
+          }).join("\n");
+          var blob = new Blob([csv], { type: "text/csv" }); var url = URL.createObjectURL(blob);
+          var a = document.createElement("a"); a.href = url; a.download = "utilisateurs.csv"; a.click();
+          setTimeout(function () { URL.revokeObjectURL(url); }, 5000);
+          btnCsv.disabled = false;
+        }, function (e) { alert(e.message); btnCsv.disabled = false; });
+      });
+    }
 
     recherche.addEventListener("input", function () {
       var q = recherche.value.trim().toLowerCase();

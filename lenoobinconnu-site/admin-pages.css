@@ -33,14 +33,54 @@
 .adm-page-msg.err { color: #9b1c1c; background: #fde8e8; }
 html[data-theme="dark"] .adm-page-msg.ok { color: #9ae6b4; background: #173524; }
 html[data-theme="dark"] .adm-page-msg.err { color: #feb2b2; background: #3a1717; }
-.adm-page-users { list-style: none; margin: 0; padding: 0; }
-.adm-page-users li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: start; padding: 14px 0; border-top: 1px solid var(--line); }
+/* ---- Liste des utilisateurs ---- */
+.adm-page-users { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+.adm-page-users li { border-top: 1px solid var(--line); padding: 0; }
 .adm-page-users li:first-child { border-top: 0; }
-.adm-page-users .av { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; background: var(--line); }
-.adm-page-users .txt { min-width: 0; }
-.adm-page-users .txt strong, .adm-page-users .txt span, .adm-page-users .txt small { display: block; overflow-wrap: anywhere; }
-.adm-page-users .txt span { color: var(--text-soft); font-size: .9rem; }
-.adm-page-users .txt small { color: var(--gray); font: .68rem var(--font-mono); }
+
+/* Ligne principale compacte */
+.adm-user-row { display: grid; grid-template-columns: auto minmax(0,1fr) auto auto; gap: 12px; align-items: center; padding: 12px 0; }
+.adm-page-users .av { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: var(--line); flex: none; }
+.adm-user-info { min-width: 0; }
+.adm-user-info strong { display: block; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.adm-user-meta { display: block; font-size: .82rem; color: var(--text-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.adm-user-id { display: block; font: .65rem var(--font-mono); color: var(--gray); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.adm-user-status { display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; white-space: nowrap; }
+
+/* Badges statut */
+.adm-badge { display: inline-flex; align-items: center; padding: 3px 8px; border-radius: 99px; font: 700 .68rem var(--font-mono); letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+.adm-badge.ok { background: #e6f6ea; color: #17633a; }
+.adm-badge.err { background: #fde8e8; color: #9b1c1c; }
+.adm-badge.warn { background: #fff3cd; color: #7a5200; }
+.adm-badge.admin { background: var(--ink); color: var(--yellow); }
+.adm-badge.verifie { background: #e6f6ea; color: #17633a; padding: 3px 6px; }
+html[data-theme="dark"] .adm-badge.ok { background: #173524; color: #9ae6b4; }
+html[data-theme="dark"] .adm-badge.err { background: #3a1717; color: #feb2b2; }
+html[data-theme="dark"] .adm-badge.warn { background: #3a2f00; color: #ffd97a; }
+
+/* Boutons onglets */
+.adm-user-tabs-btns { display: flex; gap: 4px; flex-wrap: nowrap; }
+.adm-tab-btn { padding: 5px 10px; border: 1px solid var(--line); border-radius: 8px; background: transparent; color: var(--fg); font: 600 .78rem var(--font-body); cursor: pointer; white-space: nowrap; transition: background .15s, border-color .15s; }
+.adm-tab-btn:hover { border-color: var(--red); color: var(--red); }
+.adm-tab-btn.actif { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+/* Panneaux dépliables */
+.adm-user-panels { display: grid; }
+.adm-user-panel { display: grid; gap: 14px; padding: 16px; background: var(--bg); border: 1px solid var(--line); border-radius: 12px; margin-bottom: 10px; }
+.adm-user-panel[hidden] { display: none; }
+.adm-panel-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.adm-panel-sanction-form { grid-template-columns: auto 1fr; align-items: start; }
+.adm-panel-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.adm-panel-checks { display: flex; gap: 16px; flex-wrap: wrap; }
+.adm-panel-checks label { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+.adm-panel-note { margin: 0; color: var(--text-soft); font-size: .88rem; }
+.adm-panel-history { font-size: .85rem; }
+.adm-panel-history summary { cursor: pointer; font-weight: 600; color: var(--text-soft); }
+.adm-panel-casier { padding: 10px; background: var(--surface); border-radius: 10px; border: 1px solid var(--line); }
+
+/* Legacy : ces anciens sélecteurs ne servent plus mais ne cassent rien */
+.adm-page-users .txt { display: none; }
+.adm-page-users .adm-user-controls { display: none; }
 .adm-page-advanced { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; padding: 14px 0; }
 .adm-page-status-row { display: grid; grid-template-columns: minmax(130px, .8fr) repeat(2, minmax(110px, .7fr)) minmax(190px, 1.4fr); align-items: center; gap: 12px; padding: 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); }
 .adm-page-status-row > label:not(.adm-page-field) { display: flex; align-items: center; gap: 8px; font-weight: 600; }

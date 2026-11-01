@@ -61,8 +61,19 @@
 .adm-card h3 svg { width: 22px; height: 22px; color: var(--red); flex: none; }
 .adm-card h2 a { margin-left: auto; font-family: var(--font-body); text-transform: none; font-size: .85rem; font-weight: 600; color: var(--red); text-decoration: none; }
 .adm-card > p { margin: 0; color: var(--text-soft); font-size: .92rem; }
-.adm-tool-card { min-height: 205px; }
-.adm-action { margin-top: auto; display: inline-flex; align-items: center; justify-content: center; min-height: 42px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--fg); text-decoration: none; font-weight: 600; }
+/* Tool cards : hauteur uniforme, 3 zones empilées */
+.adm-tool-card { min-height: 0; display: grid; grid-template-rows: auto 1fr auto; gap: 14px; }
+.adm-tool-head { display: flex; align-items: center; gap: 12px; }
+.adm-tool-ico { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; background: var(--ink); color: var(--yellow); flex: none; }
+.adm-tool-ico svg { width: 22px; height: 22px; }
+.adm-tool-card h3 { margin: 0; }
+.adm-tool-desc { margin: 0; color: var(--text-soft); font-size: .9rem; }
+.adm-tool-footer { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; border-top: 1px solid var(--line); padding-top: 12px; }
+.adm-tool-footer .adm-action { flex: 1 1 auto; }
+/* Boutons rapides sur le dashboard */
+.adm-quick { padding: 8px 11px; border: 1px solid var(--line); border-radius: 8px; background: transparent; color: var(--fg); font: 600 .78rem var(--font-body); cursor: pointer; white-space: nowrap; line-height: 1; }
+.adm-quick:hover { border-color: var(--red); color: var(--red); }
+.adm-action { margin-top: 0; display: inline-flex; align-items: center; justify-content: center; min-height: 38px; padding: 8px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--fg); text-decoration: none; font-weight: 600; }
 .adm-action:hover { border-color: var(--red); color: var(--red); }
 .adm-champ { display: grid; gap: 6px; font-family: var(--font-mono); font-size: .66rem; letter-spacing: .16em; text-transform: uppercase; color: var(--gray); }
 .adm-champ input, .adm-champ textarea, .adm-champ select { font: 1rem var(--font-body); letter-spacing: 0; text-transform: none; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 11px 12px; width: 100%; }
